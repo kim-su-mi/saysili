@@ -41,6 +41,15 @@ body {
 .printable-area {
     position: absolute;
 }
+/* span 요소 스타일 추가 */
+.printable-area span {
+    position: absolute; /* 부모 요소(.printable-area) 기준으로 위치를 지정 */
+    top: 10px;
+    left: 10px;
+    font-size: 15px;
+    color: hsl(0, 100%, 50%);
+    z-index: 1; /* canvas 위에 표시되도록 설정 *z-index: 요소들의 쌓임 순서(층위)를 제어, 클수록 더 위애 표시*/
+}
 /* 작업 가능 영역 캔버스 */
 #activeCanvas{
     /* position: absolute;  */

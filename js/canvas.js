@@ -1,4 +1,6 @@
-// 캔버스 생성
+// 전역 변수로 fabricCanvas 선언
+let fabricCanvas;
+
 document.addEventListener('DOMContentLoaded', function() {
     /**
      * 방법1. canvas안쓰고 이미지에 바로 색상 변경 *이미지가 svg파일이어야함
@@ -38,6 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
     //         });
     //     }
     // }
+    // Fabric.js 캔버스 초기화
+    fabricCanvas = new fabric.Canvas('activeCanvas', {
+        width: 0,  // 초기 크기는 0으로 설정
+        height: 0
+    });
+
     /**
      * 색상 변경에 대한 js
      */
@@ -159,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
             's': { 
                 width: 603.153, 
                 height: 102.346,
+                printSize: '65 x 8mm',
                 rects: {
                     'cls-1': { y: 14.614, height: 87.732 },
                     'cls-2': { y: 0, height: 87.732 },
@@ -169,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'm': { 
                 width: 676.263, 
                 height: 102.387,
+                printSize: '75 x 8mm',
                 rects: {
                     'cls-1': { y: 14.614, height: 87.732 },
                     'cls-2': { y: 0, height: 87.732 },
@@ -179,6 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'l': { 
                 width: 731.095, 
                 height: 102.731,
+                printSize: '80 x 8mm',
                 rects: {
                     'cls-1': { y: 14.614, height: 87.732 },
                     'cls-2': { y: 0, height: 87.732 },
@@ -219,28 +230,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 activeCanvas.width = canvasWidth;
                 activeCanvas.height = canvasHeight;
                 
-                // 캔버스 생성
-                const canvas = new fabric.Canvas('activeCanvas');
-                // 캔버스 잘 생성 됐나 원 객체 생성해서 확인 ==> 니중에 삭제
-                const circle = new fabric.Circle({
-                    left: 0,
-                    top: 0,
-                    radius: 20,
-                    fill: 'red'
-                });
-                canvas.add(circle);
-                canvas.renderAll();
-                // // Canvas를 SVG 중앙에 위치시키기
-                // const leftOffset = (newSize.width - canvasWidth) / 2;
-                // const topOffset = (newSize.height - canvasHeight) / 2;
-                
-                // activeCanvas.style.position = 'absolute';
-                // activeCanvas.style.left = `${leftOffset}px`;
-                // activeCanvas.style.top = `${topOffset}px`;
+               // Fabric.js 캔버스 크기 설정
+               fabricCanvas.setWidth(canvasWidth);
+               fabricCanvas.setHeight(canvasHeight);
+               fabricCanvas.setDimensions({
+                   width: canvasWidth,
+                   height: canvasHeight
+               });
+
+               fabricCanvas.renderAll();
+
+                // 사이즈 변함에 따라 span영역 인쇄 가능 크기 텍스트 업데이트
+                const printableAreaSpan = document.querySelector('.printable-area span');
+                if (printableAreaSpan) {
+                    const existingText = printableAreaSpan.textContent.split('-')[0];  // html의 span태그의 "인쇄가능영역 -" 부분 유지
+                    printableAreaSpan.textContent = `${existingText}- ${newSize.printSize}`;
+                }    
             }
         }
     }
-    
+    // 테스트를 위한 도형 추가 (선택사항)
+    fabricCanvas.add(new fabric.Circle({
+        radius: 20,
+        fill: 'red',
+        left: 50,
+        top: 20
+    }));
+
     // 크기 변경 버튼 이벤트 리스너 추가
     document.getElementById('s-size').addEventListener('click', () => resizeBracelet('s'));
     document.getElementById('m-size').addEventListener('click', () => resizeBracelet('m'));
