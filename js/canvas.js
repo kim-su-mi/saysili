@@ -208,6 +208,36 @@ document.addEventListener('DOMContentLoaded', function() {
             // style 속성 업데이트
             svgElement.style.width = `${newSize.width}px`;
             svgElement.style.height = `${newSize.height}px`;
+
+            //activeCanvas 크기 조절
+            const activeCanvas = document.getElementById('activeCanvas');
+            if(activeCanvas){
+                // 팔찌 이미지의 크기를 기준으로 캔버스 크기 설정
+                const canvasWidth = newSize.width * 0.8;  // rect의 너비의 80%
+                const canvasHeight = newSize.height * 0.8;  // rect의 높이의 90%
+            
+                activeCanvas.width = canvasWidth;
+                activeCanvas.height = canvasHeight;
+                
+                // 캔버스 생성
+                const canvas = new fabric.Canvas('activeCanvas');
+                // 캔버스 잘 생성 됐나 원 객체 생성해서 확인 ==> 니중에 삭제
+                const circle = new fabric.Circle({
+                    left: 0,
+                    top: 0,
+                    radius: 20,
+                    fill: 'red'
+                });
+                canvas.add(circle);
+                canvas.renderAll();
+                // // Canvas를 SVG 중앙에 위치시키기
+                // const leftOffset = (newSize.width - canvasWidth) / 2;
+                // const topOffset = (newSize.height - canvasHeight) / 2;
+                
+                // activeCanvas.style.position = 'absolute';
+                // activeCanvas.style.left = `${leftOffset}px`;
+                // activeCanvas.style.top = `${topOffset}px`;
+            }
         }
     }
     
@@ -216,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('m-size').addEventListener('click', () => resizeBracelet('m'));
     document.getElementById('l-size').addEventListener('click', () => resizeBracelet('l'));
 
-
+    
 
     /**
      * 방법2. canvas로 이미지 사진 색상 변경

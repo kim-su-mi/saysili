@@ -44,7 +44,7 @@ body {
 /* 작업 가능 영역 캔버스 */
 #activeCanvas{
     /* position: absolute;  */
-    border: 2px dotted #f10909ce;
+    border: 3px dashed #f10909ce;
     left: 30px; 
     top: 30px;
 }
@@ -70,4 +70,3 @@ body {
     max-width: 600px;  /* 전체 너비 제한 */
     justify-content: center;  /* 버튼들을 중앙 정렬 */
 }
-
