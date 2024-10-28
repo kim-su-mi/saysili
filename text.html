@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Canvas with Focused Display Area</title>
+  
+</head>
+<body>
+    <canvas id="myCanvas" width="500" height="500"></canvas>
+
+  <script>
+  // Canvas 요소 가져오기
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+
+// Canvas 크기 설정
+canvas.width = 500;
+canvas.height = 500;
+
+// 활성화 영역 설정
+const activeWidth = 200;
+const activeHeight = 200;
+const activeX = (canvas.width - activeWidth) / 2;
+const activeY = (canvas.height - activeHeight) / 2;
+
+// 이미지 그리기 함수
+function drawImage(img) {
+  // Canvas 전체에 이미지를 그립니다.
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  // 활성화 영역에 테두리를 그립니다.
+  ctx.strokeStyle = 'red';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(activeX, activeY, activeWidth, activeHeight);
+}
+
+// 이미지 로드 및 그리기
+const img = new Image();
+img.src = 'images/bracelet.png';
+img.onload = function() {
+  // 이미지 크기를 50x50으로 변경
+  img.width = 50;
+  img.height = 50;
+  drawImage(this);
+}
+  </script>
+</body>
+</html>

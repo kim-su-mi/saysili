@@ -1,6 +1,9 @@
 // 전역 변수로 fabricCanvas 선언
 let fabricCanvas;
 
+// 텍스트 추가되는 위치 변경을 위한 전역변수
+let textLeft = 50;
+let textTop = 20;
 document.addEventListener('DOMContentLoaded', function() {
     /**
      * 방법1. canvas안쓰고 이미지에 바로 색상 변경 *이미지가 svg파일이어야함
@@ -249,7 +252,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    // 테스트를 위한 도형 추가 (선택사항)
+    // 크기 변경 버튼 이벤트 리스너 추가
+    document.getElementById('s-size').addEventListener('click', () => resizeBracelet('s'));
+    document.getElementById('m-size').addEventListener('click', () => resizeBracelet('m'));
+    document.getElementById('l-size').addEventListener('click', () => resizeBracelet('l'));
+
+    /**
+     * 텍스트 추가에 대한 js
+     */
+    document.getElementById('text-add').addEventListener('click', () => {
+        fabricCanvas.add(new fabric.IText('텍스트',{
+            left: textLeft,
+            top: textTop,
+            fontSize: 20,
+            fill: 'black',
+            fontFamily: 'Arial',
+            editable: true        // 텍스트 직접 수정 가능
+        }));
+        // 다음 텍스트를 위해 위치 업데이트
+        textLeft += 10;
+        textTop += 8;
+
+   
+    });
+
+    // 테스트를 위한 도형 추가
     fabricCanvas.add(new fabric.Circle({
         radius: 20,
         fill: 'red',
@@ -257,10 +284,11 @@ document.addEventListener('DOMContentLoaded', function() {
         top: 20
     }));
 
-    // 크기 변경 버튼 이벤트 리스너 추가
-    document.getElementById('s-size').addEventListener('click', () => resizeBracelet('s'));
-    document.getElementById('m-size').addEventListener('click', () => resizeBracelet('m'));
-    document.getElementById('l-size').addEventListener('click', () => resizeBracelet('l'));
+    
+    // fabricCanvas.add(text);
+    fabricCanvas.renderAll();
+
+    
 
     
 
