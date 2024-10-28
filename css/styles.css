@@ -2,15 +2,18 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
+    flex-direction: column;  /* 세로 방향으로 배치 */
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0;
+    gap: 20px;  /* 요소들 사이 간격 */
 }
 
 #container{
+    margin-top: 2%;
     width: 800px;
-    height: 600px;
+    height: 400px;
     border: 1px solid #000;
     position: relative;
     /* width: fit-content; */
@@ -30,9 +33,10 @@ body {
 } */
 #braceletImage {
     display: block;
-    width : "603.153px";
-    height : "87.732px";
+    width: 603.153px;  /* 기본 크기(S 사이즈)로 설정 */
+    height: 87.732px;
 }
+
 /* 작업 가능 영역을 이미지위에 띄우기위해 */
 .printable-area {
     position: absolute;
@@ -44,3 +48,26 @@ body {
     left: 30px; 
     top: 30px;
 }
+
+/* 컬러피커와 사이즈피커 영역 스타일 */
+#colorPicker, #sizepicker {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+}
+/* 컬러피커 영역 스타일 */
+#colorPicker {
+    display: flex;
+    flex-wrap: wrap;  /* 버튼들이 여러 줄로 나오도록 설정 */
+    gap: 5px;  /* 버튼 사이의 간격 */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+    max-width: 600px;  /* 전체 너비 제한 */
+    justify-content: center;  /* 버튼들을 중앙 정렬 */
+}
+

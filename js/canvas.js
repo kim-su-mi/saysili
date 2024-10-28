@@ -45,15 +45,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const colorPicker = document.getElementById('colorPicker');
     
     // SVG 내용 로드
-    fetch(braceletImage.data)
+    fetch(braceletImage.src)
         .then(response => response.text())
         .then(svgContent => {
             const parser = new DOMParser();
             const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
             braceletImage.parentNode.replaceChild(svgDoc.documentElement, braceletImage);
-            
+
             // 색상 선택 버튼 생성
-            const colors = ['#97fc2a','#ff0000', '#0000ff', '#00ff00', '#ffff00', '#800080'];
+            const colors = ['#f70303',
+                '#fd4eb5',
+                '#f284c1',
+                '#f2a9c4',
+                '#ff9f2f',
+                '#feed01',
+                '#87dc29',
+                '#f9ec90',
+                '#0bc349',
+                '#01c8a9',
+                '#00b7e9',
+                '#abebd3',
+                '#2456ed',
+                '#8f4fdb',
+                '#4a236d',
+                '#d7ccee',
+                '#898989',
+                '#aa967e',
+                '#202020',
+                '#ffffff', //기본
+                '#fa9529',
+                '#fbf666',
+                '#54e669',
+                '#d6e00d',
+                '#fbc9d4',
+                '#fac79c',
+                '#c6f5b1',
+                '#b5ebd1',
+                '#1896e3',
+                '#9473c2', //야광
+                '#ebebeb',
+                '#f6cfd2',
+                '#d7edfa',
+                '#e3f1da',
+                '#ecdff3', // 투명
+            ];
             colors.forEach(color => {
                 const colorButton = document.createElement('button');
                 colorButton.style.backgroundColor = color;
@@ -62,6 +97,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 colorButton.addEventListener('click', () => changeBraceletColor(color));
                 colorPicker.appendChild(colorButton);
             });
+
+            //SVG 요소에 ID 추가
+            const svgElement = document.querySelector('#bracelet svg');
+            svgElement.id = 'braceletSVG';
+            
+            // 초기 크기를 S 사이즈로 설정
+            resizeBracelet('s');
+
+            
         });
 
     // 색상 조정 helper 함수
@@ -103,33 +147,74 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     /**
      * 크기 변경에 대한 js
      */
-     document.getElementById('s-size').addEventListener('click', () => resizeBracelet('s'));
-     document.getElementById('m-size').addEventListener('click', () => resizeBracelet('m'));
-     document.getElementById('l-size').addEventListener('click', () => resizeBracelet('l'));
-
-     function resizeBracelet(size){
-        const braceletImage = document.getElementById('braceletImage');
-        switch(size){
-            case 's':
-                braceletImage.style.width = "603.153px";
-                braceletImage.style.height = "87.732px";
-                break;
-            case 'm':
-                braceletImage.style.width = "676.263px";
-                braceletImage.style.height = "91.387px";
-                break;
-            case 'l':
-                braceletImage.style.width = "731.095px";
-                braceletImage.style.height = "87.731px";
-                break;
-        }
-     }
+    function resizeBracelet(size) {
+        const svgElement = document.querySelector('#braceletSVG');
+        if (!svgElement) return;
     
-
+        const sizes = {
+            's': { 
+                width: 603.153, 
+                height: 102.346,
+                rects: {
+                    'cls-1': { y: 14.614, height: 87.732 },
+                    'cls-2': { y: 0, height: 87.732 },
+                    'cls-3': { y: 11.101, height: 87.732 },
+                    'cls-4': { y: 7.678, height: 87.732 }
+                }
+            },
+            'm': { 
+                width: 676.263, 
+                height: 102.387,
+                rects: {
+                    'cls-1': { y: 14.614, height: 87.732 },
+                    'cls-2': { y: 0, height: 87.732 },
+                    'cls-3': { y: 11.101, height: 87.732 },
+                    'cls-4': { y: 7.678, height: 87.732 }
+                }
+            },
+            'l': { 
+                width: 731.095, 
+                height: 102.731,
+                rects: {
+                    'cls-1': { y: 14.614, height: 87.732 },
+                    'cls-2': { y: 0, height: 87.732 },
+                    'cls-3': { y: 11.101, height: 87.732 },
+                    'cls-4': { y: 7.678, height: 87.732 }
+                }
+            }
+        };
+    
+        const newSize = sizes[size];
+        if (newSize) {
+            // viewBox 속성 업데이트
+            svgElement.setAttribute('viewBox', `0 0 ${newSize.width} ${newSize.height}`);
+            svgElement.setAttribute('width', `${newSize.width}`);
+            svgElement.setAttribute('height', `${newSize.height}`);
+    
+            // 각 rect 클래스별로 적절한 y좌표와 height 설정
+            Object.entries(newSize.rects).forEach(([className, values]) => {
+                const rect = svgElement.querySelector(`.${className}`);
+                if (rect) {
+                    rect.setAttribute('width', `${newSize.width}`);
+                    rect.setAttribute('y', `${values.y}`);
+                    rect.setAttribute('height', `${values.height}`);
+                }
+            });
+    
+            // style 속성 업데이트
+            svgElement.style.width = `${newSize.width}px`;
+            svgElement.style.height = `${newSize.height}px`;
+        }
+    }
+    
+    // 크기 변경 버튼 이벤트 리스너 추가
+    document.getElementById('s-size').addEventListener('click', () => resizeBracelet('s'));
+    document.getElementById('m-size').addEventListener('click', () => resizeBracelet('m'));
+    document.getElementById('l-size').addEventListener('click', () => resizeBracelet('l'));
 
 
 
