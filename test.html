@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>SVG Color Changer</title>
+</head>
+<body>
+    <div id="svgContainer">
+        <img id="braceletImage" src="images/bracelet.svg" alt="팔찌 이미지">
+    </div>
+
+    <!-- 버튼 정의 -->
+    <div style="margin-top: 20px;">
+        <button onclick="changeColor('#FF0000')">빨간색</button>
+        <button onclick="changeColor('#000000')">검정색</button>
+        <button onclick="changeColor('#008000')">녹색</button>
+    </div>
+
+    <script>
+        // SVG 파일을 불러와서 DOM에 삽입
+        fetch('images/bracelet.svg')
+            .then(response => response.text())
+            .then(svgText => {
+                const container = document.getElementById('svgContainer');
+                container.innerHTML = svgText;
+                // img 태그 제거
+                const imgElement = document.getElementById('braceletImage');
+                if (imgElement) {
+                    imgElement.remove();
+                }
+            })
+            .catch(error => {
+                console.error('SVG 로드 실패:', error);
+            });
+
+        function changeColor(baseColor) {
+            // 색상 조정 함수
+            function adjustColor(color, amount) {
+                const hex = color.replace('#', '');
+                const r = Math.min(255, Math.max(0, parseInt(hex.slice(0,2), 16) + amount));
+                const g = Math.min(255, Math.max(0, parseInt(hex.slice(2,4), 16) + amount));
+                const b = Math.min(255, Math.max(0, parseInt(hex.slice(4,6), 16) + amount));
+                return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+            }
+
+            // 각 그라디언트의 색상 업데이트
+            const gradients = [
+                '_무제_그라디언트_95',
+                '_무제_그라디언트_92',
+                '_무제_그라디언트_78'
+            ];
+
+            gradients.forEach((gradientId, index) => {
+                const gradient = document.getElementById(gradientId);
+                if (gradient) {
+                    const stops = gradient.getElementsByTagName('stop');
+                    const adjustment = [-20, 0, -40][index]; // 각 그라디언트마다 다른 밝기 조정
+
+                    for (let stop of stops) {
+                        stop.setAttribute('stop-color', adjustColor(baseColor, adjustment));
+                    }
+                }
+            });
+
+            // 두 번째 그라디언트도 업데이트 (무제_그라디언트_95-2)
+            const gradient2 = document.getElementById('_무제_그라디언트_95-2');
+            if (gradient2) {
+                const stops = gradient2.getElementsByTagName('stop');
+                for (let stop of stops) {
+                    stop.setAttribute('stop-color', adjustColor(baseColor, -20));
+                }
+            }
+        }
+    </script>
+</body>
+</html>

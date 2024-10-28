@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas 프로젝트</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- fabric.js 사용하기 위한 cdn-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <!-- 본인이 추가한 js 파일들 -->
+    <script src="js/canvas.js"></script>
+   
+</head>
+<body>
+    <div id="container">
+        <!-- 팔찌 이미지 띄우기 위한 배경 캔버스 -->
+         <div id="bracelet">
+            <!-- 방법1. canvas안쓰고 이미지에 바로 색상 변경 *이미지가 svg파일이어야함-->
+            <!-- <img id="braceletImage" src="images/bracelet.svg" alt="팔찌 이미지">-->
+            <object id="braceletImage" type="image/svg+xml" data="images/bracelet.svg"></object>
+            <!-- 방법2. canvas로 이미지 사진 변경 -->
+            <!-- <canvas id="backgroundCanvas"> -->
+            <!-- 작업 가능 영역 캔버스 -->
+                <div class="printable-area">
+                    <canvas id="activeCanvas"></canvas>
+                </div>
+            <!-- </canvas> -->
+        </div>
+    </div>
+    <div id="colorPicker"></div>
+    <div id="sizepicker">
+        <button type="button" id="s-size">S</button>
+        <button type="button" id="m-size">M</button>
+        <button type="button" id="l-size">L</button>
+    </div>
+    
+</body>
+</html>

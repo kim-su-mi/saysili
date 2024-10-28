@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>색상 변경</title>
+    <link rel="stylesheet" href="css/changeColor.css">
+    <!-- fabric.js 사용하기 위한 cdn-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <!-- 본인이 추가한 js 파일들 -->
+    <script src="js/changeColor.js"></script>
+
+</head>
+<body>
+    <!-- 전체 영역 -->
+    <div class="container">
+        <!-- 팔찌 이미지 -->
+        <div id="bracelet">
+            <!-- canvas로 작업 가능 영역 -->
+            <div class="printable-area">
+                <canvas id="canvas"></canvas>
+                <!-- <span class="printable-area-text">인쇄가능영역 - 75 x 3mm</span> -->
+            </div>
+        </div>
+    </div>
+    <div id="colorPicker"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script>
+        // Canvas 초기화 및 설정
+        const canvas = new fabric.Canvas('canvas', {
+            width: 450,
+            height: 60,
+            backgroundColor: 'transparent'
+        });
+        //색상 선택하는 버튼 생성
+        const colors =['rgb(255, 0, 0)', 'blue', 'green', 'yellow', 'purple'];
+        const colorPicker = document.getElementById('colorPicker');
+
+        colors.forEach(color => {
+            const colorButton = document.createElement('button');
+            colorButton.style.background = color;
+            colorButton.style.width = '100px';
+            colorButton.style.height = '100px';
+            colorButton.addEventListener('click', () => changeBraceletColor(color));
+            colorPicker.appendChild(colorButton); /*colorPicker 요소에 colorButton을 자식 요소로 추가 (화면에 버튼 표시하기 위해)*/
+        });
+        // 팔찌 영역 색상 변경 함수
+        function changeBraceletColor(color) {
+            const bracelet = document.getElementById('bracelet');
+            bracelet.style.background = color;
+        }
+
+        // 예시: 캔버스에 움직일 수 있는 원 추가
+        // const rect = new fabric.Rect({
+        //     fill: 'red',
+        //     left: 100, /*왼쪽에서 얼마나 떨어트려 생성할지 위치*/
+        //     top: 10, /*위쪽에서 얼마나 떨어트려 생성할지*/
+        //     width: 20,
+        //     height: 20,
+        //     angle: 30 /*기울기*/
+        // });
+
+        canvas.add(rect);
+        canvas.renderAll();
+    </script>
+    
+</body>
+</html>

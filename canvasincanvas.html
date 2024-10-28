@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas </title>
+    <link rel="stylesheet" href="css/canvasincanvas.css">
+    <!-- fabric.js 사용하기 위한 cdn-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script src="js/canvasincanvas.js"></script>
+    <style>
+        #canvas-container {
+          position: relative;
+          width: 800px;
+          margin: 20px auto;
+        }
+        #color-picker {
+          margin-top: 20px;
+          display: flex;
+          justify-content: center;
+        }
+        .color-btn {
+          width: 30px;
+          height: 30px;
+          border: none;
+          margin: 5px;
+          cursor: pointer;
+        }
+      </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <canvas id="braceletCanvas" width="800" height="300"></canvas>
+      </div>
+      <div id="color-picker">
+        <button class="color-btn" style="background-color: #ff0000;" onclick="changeBraceletColor('#ff0000')"></button>
+        <button class="color-btn" style="background-color: #00ff00;" onclick="changeBraceletColor('#00ff00')"></button>
+        <button class="color-btn" style="background-color: #0000ff;" onclick="changeBraceletColor('#0000ff')"></button>
+        <!-- 필요에 따라 색상 버튼 추가 -->
+      </div>
+    
+</body>
+</html>
