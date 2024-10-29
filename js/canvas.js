@@ -288,9 +288,65 @@ document.addEventListener('DOMContentLoaded', function() {
     // fabricCanvas.add(text);
     fabricCanvas.renderAll();
 
-    
+    /**
+     * 템플릿 추가에 대한 js
+     */
+    const modal = document.getElementById('templateModal');
+    const btn = document.getElementById('template-btn');
+    const span = document.getElementsByClassName('close')[0];
+    const templateItems = document.querySelectorAll('.template-item');
 
-    
+    // 템플릿 버튼 클릭시 모달 열기
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // X 버튼 클릭시 모달 닫기
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // 모달 외부 클릭시 닫기
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // 템플릿 아이템 클릭 이벤트
+    templateItems.forEach(item => {
+        item.onclick = function() {
+            const templateType = this.dataset.template;
+            // 여기에 템플릿 선택 시 실행할 코드 추가
+            console.log('Selected template:', templateType);
+            modal.style.display = "none";
+        }
+    });
+
+    const pageButtons = document.querySelectorAll('.page-btn');
+    const templatePages = document.querySelectorAll('.template-page');
+
+    pageButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const pageNum = button.dataset.page;
+            
+            // 모든 페이지 숨기기
+            templatePages.forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // 선택된 페이지만 보이기
+            document.querySelector(`.template-page[data-page="${pageNum}"]`).style.display = 'grid';
+            
+            // 버튼 활성화 상태 변경
+            pageButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
+
+    // 첫 페이지 버튼을 기본으로 활성화
+    pageButtons[0].classList.add('active');
+
 
     /**
      * 방법2. canvas로 이미지 사진 색상 변경

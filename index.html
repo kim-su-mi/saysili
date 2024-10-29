@@ -40,6 +40,61 @@
     <div id="text">
         <button type="button" id="text-add">텍스트 추가</button>
     </div>
-    
+    <!-- 템플릿 버튼과 모달 추가 시작-->
+    <div id="template">
+        <button type="button" id="template-btn">템플릿</button>
+    </div>
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>템플릿 선택</h2>
+            <div class="template-grid">
+                <!-- 첫 페이지 템플릿 -->
+                <div class="template-page" data-page="1">
+                    <div class="template-item" data-template="alphabet">
+                        <img src="templates/alphabet/자산 97.svg" alt="숫자문자">
+                        <p>숫자문자</p>
+                    </div>
+                    <div class="template-item" data-template="diagram">
+                        <img src="templates/diagram/자산 1.svg" alt="기본도형">
+                        <p>기본도형</p>
+                    </div>
+                    <div class="template-item" data-template="illustrate">
+                        <img src="templates/illustrate/자산 9.svg" alt="일러스트">
+                        <p>일러스트</p>
+                    </div>
+                    <div class="template-item" data-template="office">
+                        <img src="templates/office/자산 1.svg" alt="관공서">
+                        <p>관공서</p>
+                    </div>
+                    <div class="template-item" data-template="picktogram">
+                        <img src="templates/picktogram/자산 61.svg" alt="픽토그램">
+                        <p>픽토그램</p>
+                    </div>
+                    <div class="template-item" data-template="religion">
+                        <img src="templates/religion/자산 1.svg" alt="종교">
+                        <p>종교</p>
+                    </div>
+                </div>
+                <!-- 두번째 페이지 템플릿 -->
+                <div class="template-page" data-page="2" style="display: none;">
+                    <div class="template-item" data-template="season">
+                        <img src="templates/season/자산 58.svg" alt="시즌기획전">
+                        <p>시즌기획전</p>
+                    </div>
+                    <div class="template-item" data-template="sports">
+                        <img src="templates/sports/자산 55.svg" alt="스포츠">
+                        <p>스포츠</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 페이지네이션 버튼 추가 -->
+            <div class="pagination">
+                <button class="page-btn" data-page="1">1</button>
+                <button class="page-btn" data-page="2">2</button>
+            </div>
+        </div>
+    </div>
+    <!-- 템플릿 버튼과 모달 추가 끝-->
 </body>
 </html>
