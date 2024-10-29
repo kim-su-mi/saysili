@@ -291,6 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * 템플릿 추가에 대한 js
      */
+    // 모달 관련 기본 설정
     const modal = document.getElementById('templateModal');
     const btn = document.getElementById('template-btn');
     const span = document.getElementsByClassName('close')[0];
@@ -313,39 +314,156 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 템플릿 아이템 클릭 이벤트
-    templateItems.forEach(item => {
-        item.onclick = function() {
-            const templateType = this.dataset.template;
-            // 여기에 템플릿 선택 시 실행할 코드 추가
-            console.log('Selected template:', templateType);
-            modal.style.display = "none";
-        }
-    });
-
-    const pageButtons = document.querySelectorAll('.page-btn');
-    const templatePages = document.querySelectorAll('.template-page');
-
-    pageButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const pageNum = button.dataset.page;
-            
-            // 모든 페이지 숨기기
-            templatePages.forEach(page => {
-                page.style.display = 'none';
-            });
-            
-            // 선택된 페이지만 보이기
-            document.querySelector(`.template-page[data-page="${pageNum}"]`).style.display = 'grid';
-            
-            // 버튼 활성화 상태 변경
-            pageButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
+    // 원래 모달의 이벤트 리스너들을 다시 설정하는 함수
+    function setupOriginalModalEvents() {
+        // 모든 템플릿 아이템에 대해 클릭 이벤트 다시 설정
+        const templateItems = document.querySelectorAll('.template-item');
+        templateItems.forEach(item => {
+            item.onclick = function() {
+                const templateType = this.dataset.template;
+                const templateTitle = this.querySelector('p').textContent;
+                showDetailPage(templateType, templateTitle);
+            };
         });
-    });
+
+        // 페이지네이션 버튼 이벤트 다시 설정
+        const pageButtons = document.querySelectorAll('.page-btn');
+        const templatePages = document.querySelectorAll('.template-page');
+        pageButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const pageNum = button.dataset.page;
+                templatePages.forEach(page => {
+                    page.style.display = 'none';
+                });
+                document.querySelector(`.template-page[data-page="${pageNum}"]`).style.display = 'grid';
+                pageButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        // X 버튼 이벤트 
+        const closeBtn = document.querySelector('.close');
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+            modal.style.display = "none";
+            };
+        }
+    }
+
+    // 상세 페이지 표시 함수
+    async function showDetailPage(templateType, templateTitle) {
+        // 1. 원래 모달 내용 저장
+        const originalContent = document.querySelector('.modal-content').innerHTML;
+    
+        // 2. 새로운 모달 내용으로 변경
+        const modalContent = document.querySelector('.modal-content');
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h2>${templateTitle}</h2>
+                <button class="back-btn">← 뒤로가기</button>
+            </div>
+            <div class="detail-template-grid" id="detailGrid"></div>
+            <div class="pagination" id="detailPagination"></div>
+        `;
+    
+        // 3. SVG 파일 로드
+        try {
+            const templatePath = `templates/${templateType}/`;  // 경로 설정
+            const response = await fetch(templatePath);         // 폴더 내용 가져오기
+            const files = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(files, 'text/html');
+            const images = Array.from(doc.querySelectorAll('a'))
+                .filter(a => a.href.match(/\.svg$/i))  // SVG 파일만 필터링
+                .map(a => a.href);
+    
+            // 4. 페이지네이션 처리
+            const itemsPerPage = 16;  // 한 페이지당 16개 이미지
+            const totalPages = Math.ceil(images.length / itemsPerPage);
+            
+            // 페이지 표시 함수
+            function showPage(pageNum) {
+                const start = (pageNum - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const pageImages = images.slice(start, end);  // 현재 페이지에 표시할 이미지들
+                
+                const detailGrid = document.getElementById('detailGrid');
+                detailGrid.innerHTML = '';
+                
+                // 이미지 그리드 생성
+                pageImages.forEach(imgSrc => {
+                    const item = document.createElement('div');
+                    item.className = 'detail-template-item';
+                    item.innerHTML = `<img src="${imgSrc}" alt="템플릿 이미지">`;
+                    item.onclick = () => {
+                        // SVG 이미지를 Fabric Canvas에 추가
+                        fabric.loadSVGFromURL(imgSrc, function(objects, options) {
+                            const loadedObject = fabric.util.groupSVGElements(objects, options);
+                            
+                            // 이미지 크기 조정 (필요한 경우)
+                            loadedObject.scaleToWidth(50);  // 원하는 크기로 조정
+                            
+                            // 이미지 위치 설정
+                            loadedObject.set({
+                                left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2, /**이미지가 가운데 뜨게 설정 */
+                                top: fabricCanvas.height / 2 - loadedObject.height * loadedObject.scaleY / 2,
+                                selectable: true,  // 선택 가능하도록 설정
+                                evented: true      // 이벤트 활성화
+                            });
+                            
+                            // Canvas에 추가
+                            fabricCanvas.add(loadedObject);
+                            fabricCanvas.renderAll();
+                            
+                            // 모달 닫기
+                            modal.style.display = "none";
+                        });
+                    };
+                    detailGrid.appendChild(item);
+                });
+            }
+    
+            // 페이지네이션 버튼 생성
+            const pagination = document.getElementById('detailPagination');
+            pagination.innerHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.className = 'page-btn';
+                button.textContent = i;
+                button.onclick = () => {
+                    document.querySelectorAll('#detailPagination .page-btn')
+                        .forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    showPage(i);
+                };
+                pagination.appendChild(button);
+            }
+    
+            // 첫 페이지 표시
+            if (totalPages > 0) {
+                showPage(1);
+                pagination.querySelector('.page-btn').classList.add('active');
+            }
+    
+        } catch (error) {
+            console.error('Error loading template images:', error);
+            document.getElementById('detailGrid').innerHTML = 
+                '<p style="grid-column: 1/-1; text-align: center;">Error loading templates</p>';
+        }
+    
+        // 5. 뒤로가기 버튼 이벤트
+        document.querySelector('.back-btn').onclick = function() {
+            modalContent.innerHTML = originalContent;  // 원래 내용으로 복원
+            setupOriginalModalEvents();  // 이벤트 리스너 다시 설정
+        };
+    }
+
+    // 처음 템플릿 아이템 클릭시 이벤트 설정
+    setupOriginalModalEvents();
 
     // 첫 페이지 버튼을 기본으로 활성화
-    pageButtons[0].classList.add('active');
+    document.querySelector('.page-btn').classList.add('active');
 
 
     /**

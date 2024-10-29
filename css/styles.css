@@ -139,7 +139,63 @@ body {
     margin: 0;
     font-size: 12px;
 }
+/* 상세 템플릿 그리드 스타일 */
+.detail-template-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4x4 그리드 */
+    gap: 15px;
+    padding: 10px;
+}
 
+.detail-template-item {
+    aspect-ratio: 1;/* 정사각형 비율 유지 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.detail-template-item:hover {
+    background-color: #f5f5f5;
+}
+
+.detail-template-item img {
+    width: 60px;  /* 모든 이미지의 너비를 60px로 고정 */
+    height: 60px; /* 모든 이미지의 높이를 60px로 고정 */
+    object-fit: contain; /* 이미지 비율 유지하면서 컨테이너에 맞춤 */
+    padding: 5px;
+}
+
+/* 뒤로가기 버튼 스타일 */
+.back-btn {
+    float: right;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: none;
+    background: none;
+}
+
+.back-btn:hover {
+    color: #666;
+}
+
+/* 모달 헤더 스타일 */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+/* 페이징 처리 */
 .template-page {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3열 유지 */
