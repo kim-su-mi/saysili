@@ -27,10 +27,7 @@ body {
     justify-content: center;
     align-items: center;
 }
-/* #backgroundCanvas{
-    border: 1px solid #00ff04;
-    position: relative;
-} */
+
 #braceletImage {
     display: block;
     width: 603.153px;  /* 기본 크기(S 사이즈)로 설정 */
@@ -195,6 +192,7 @@ body {
 .modal-header h2 {
     margin: 0;
 }
+
 /* 페이징 처리 */
 .template-page {
     display: grid;
@@ -219,3 +217,34 @@ body {
     background-color: #007bff;
     color: white;
 }
+
+/**
+* 텍스트 모달 스타일    
+*/
+/* .text-options {
+    padding: 20px;
+}
+
+.font-select {
+    margin-bottom: 20px;
+}
+
+.font-select select {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+.text-preview {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.text-preview p {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.5;
+} */

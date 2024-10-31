@@ -276,7 +276,12 @@ document.addEventListener('DOMContentLoaded', function() {
    
     });
 
-    // 테스트를 위한 도형 추가
+
+
+    
+    /*
+    *테스트를 위한 도형 추가
+    */
     fabricCanvas.add(new fabric.Circle({
         radius: 20,
         fill: 'red',
@@ -287,6 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // fabricCanvas.add(text);
     fabricCanvas.renderAll();
+
 
     /**
      * 템플릿 추가에 대한 js
@@ -531,4 +537,3 @@ document.addEventListener('DOMContentLoaded', function() {
     // });
 
 });
-
