@@ -5,6 +5,40 @@ let fabricCanvas;
 let textLeft = 50;
 let textTop = 20;
 
+// 전역 변수로 현재 선택된 텍스트 객체 저장
+let currentText = null;
+
+// 폰트 옵션 로드 함수
+async function loadFontOptions() {
+    try {
+        // font.css 파일 가져오기
+        const response = await fetch('css/font.css');
+        const cssText = await response.text();
+        
+        // font-family 이름 추출을 위한 정규식
+        const fontFamilyRegex = /font-family:\s*['"]([^'"]+)['"]/g;
+        const fontSelect = document.getElementById('fontSelect');
+        
+        // 추출된 모든 font-family를 옵션으로 추가
+        const fonts = new Set(); // 중복 제거를 위해 Set 사용
+        let match;
+        while ((match = fontFamilyRegex.exec(cssText)) !== null) {
+            fonts.add(match[1]);
+        }
+        
+        // 옵션 추가
+        fonts.forEach(fontName => {
+            const option = document.createElement('option');
+            option.value = fontName;
+            option.textContent = fontName;
+            fontSelect.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error('폰트 목록을 불러오는데 실패했습니다:', error);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
    
     // Fabric.js 캔버스 초기화
@@ -224,23 +258,190 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * 텍스트 추가에 대한 js
      */
+    // document.getElementById('text-add').addEventListener('click', () => {
+    //     fabricCanvas.add(new fabric.IText('텍스트',{
+    //         left: textLeft,
+    //         top: textTop,
+    //         fontSize: 20,
+    //         fill: 'black',
+    //         fontFamily: 'Arial',
+    //         editable: true        // 텍스트 직접 수정 가능
+    //     }));
+    //     // 다음 텍스트를 위해 위치 업데이트
+    //     textLeft += 10;
+    //     textTop += 8;
+    // });
+    // 폰트 옵션 로드
+    loadFontOptions();
+    
+    // 텍스트 색상 버튼 생성
+    createTextColorButtons();
+
+    // 텍스트 추가 버튼 클릭 이벤트
     document.getElementById('text-add').addEventListener('click', () => {
-        fabricCanvas.add(new fabric.IText('텍스트',{
+        // 새로운 텍스트 객체 생성
+        currentText = new fabric.IText('텍스트를 입력하세요', {
             left: textLeft,
             top: textTop,
             fontSize: 20,
-            fill: 'black',
+            fill: '#000000',
             fontFamily: 'Arial',
-            editable: true        // 텍스트 직접 수정 가능
-        }));
-        // 다음 텍스트를 위해 위치 업데이트
+            editable: true
+        });
+        
+        // 캔버스에 텍스트 추가
+        fabricCanvas.add(currentText);
+        fabricCanvas.setActiveObject(currentText);
+        
+        // 다음 텍스트 위치 업데이트
         textLeft += 10;
         textTop += 8;
-
-   
     });
 
+    // 폰트 변경 이벤트
+    document.getElementById('fontSelect').addEventListener('change', function() {
+        if (currentText) {
+            currentText.set('fontFamily', this.value);
+            fabricCanvas.renderAll();
+        }
+    });
 
+    // 볼드체 토글 이벤트
+    document.getElementById('boldBtn').addEventListener('click', function() {
+        if (currentText) {
+            this.classList.toggle('active');
+            currentText.set('fontWeight', this.classList.contains('active') ? 'bold' : 'normal');
+            fabricCanvas.renderAll();
+        }
+    });
+
+    // 이탤릭체 토글 이벤트
+    document.getElementById('italicBtn').addEventListener('click', function() {
+        if (currentText) {
+            this.classList.toggle('active');
+            currentText.set('fontStyle', this.classList.contains('active') ? 'italic' : 'normal');
+            fabricCanvas.renderAll();
+        }
+    });
+
+    // 밑줄 토글 이벤트
+    document.getElementById('underlineBtn').addEventListener('click', function() {
+        if (currentText) {
+            this.classList.toggle('active');
+            currentText.set('underline', this.classList.contains('active'));
+            fabricCanvas.renderAll();
+        }
+    });
+
+    // 텍스트 정렬 이벤트
+    ['alignLeftBtn', 'alignCenterBtn', 'alignRightBtn'].forEach(btnId => {
+        document.getElementById(btnId).addEventListener('click', function() {
+            if (currentText) {
+                const alignMap = {
+                    'alignLeftBtn': 'left',
+                    'alignCenterBtn': 'center',
+                    'alignRightBtn': 'right'
+                };
+                
+                // 다른 정렬 버튼의 active 클래스 제거
+                document.querySelectorAll('.btn-group button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // 클릭한 버튼에 active 클래스 추가
+                this.classList.add('active');
+                
+                currentText.set('textAlign', alignMap[btnId]);
+                fabricCanvas.renderAll();
+            }
+        });
+    });
+
+    // 자간 조절 이벤트
+    document.getElementById('charSpacing').addEventListener('input', function() {
+        if (currentText) {
+            currentText.set('charSpacing', parseInt(this.value));
+            fabricCanvas.renderAll();
+        }
+    });
+
+    // 행간 조절 이벤트
+    document.getElementById('lineHeight').addEventListener('input', function() {
+        if (currentText) {
+            currentText.set('lineHeight', parseFloat(this.value));
+            fabricCanvas.renderAll();
+        }
+    });
+
+    // 텍스트 색상 버튼 생성 함수
+    function createTextColorButtons() {
+        const colors = [
+            '#f70303', '#fd4eb5', '#f284c1', '#f2a9c4', '#ff9f2f',
+            '#feed01', '#87dc29', '#f9ec90', '#0bc349', '#01c8a9',
+            '#00b7e9', '#abebd3', '#2456ed', '#8f4fdb', '#4a236d',
+            '#d7ccee', '#898989', '#aa967e', '#202020', '#ffffff'
+        ];
+
+        const colorPicker = document.getElementById('textColorPicker');
+        
+        colors.forEach(color => {
+            const colorBtn = document.createElement('button');
+            colorBtn.className = 'color-btn';
+            colorBtn.style.backgroundColor = color;
+            
+            colorBtn.addEventListener('click', function() {
+                if (currentText) {
+                    // 선택된 버튼 스타일 변경
+                    document.querySelectorAll('.color-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    
+                    // 텍스트 색상 변경
+                    currentText.set('fill', color);
+                    fabricCanvas.renderAll();
+                }
+            });
+            
+            colorPicker.appendChild(colorBtn);
+        });
+    }
+
+    // 캔버스 객체 선택 이벤트
+    fabricCanvas.on('selection:created', function(e) {
+        if (e.selected[0] instanceof fabric.IText) {
+            currentText = e.selected[0];
+            updateModalControls();
+        }
+    });
+
+    // 캔버스 객체 선택 해제 이벤트
+    fabricCanvas.on('selection:cleared', function() {
+        currentText = null;
+    });
+
+    // 모달 컨트롤 상태 업데이트 함수
+    function updateModalControls() {
+        if (currentText) {
+            // 폰트 선택
+            document.getElementById('fontSelect').value = currentText.fontFamily;
+            
+            // 스타일 버튼 상태
+            document.getElementById('boldBtn').classList.toggle('active', currentText.fontWeight === 'bold');
+            document.getElementById('italicBtn').classList.toggle('active', currentText.fontStyle === 'italic');
+            document.getElementById('underlineBtn').classList.toggle('active', currentText.underline);
+            
+            // 정렬 버튼 상태
+            document.querySelectorAll('[data-align]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-align="${currentText.textAlign}"]`)?.classList.add('active');
+            
+            // 자간, 행간 값
+            document.getElementById('charSpacing').value = currentText.charSpacing || 0;
+            document.getElementById('lineHeight').value = currentText.lineHeight || 1;
+        }
+    }
 
     
     /*
@@ -261,28 +462,6 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * 템플릿 추가에 대한 js
      */
-    // 모달 관련 기본 설정
-    const modal = document.getElementById('templateModal');
-    const btn = document.getElementById('template-btn');
-    const span = document.getElementsByClassName('close')[0];
-    const templateItems = document.querySelectorAll('.template-item');
-
-    // 템플릿 버튼 클릭시 모달 열기
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
-
-    // X 버튼 클릭시 모달 닫기
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // 모달 외부 클릭시 닫기
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
 
     // 원래 모달의 이벤트 리스너들을 다시 설정하는 함수
     function setupOriginalModalEvents() {
@@ -297,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 페이지네이션 버튼 이벤트 다시 설정
-        const pageButtons = document.querySelectorAll('.page-btn');
+        const pageButtons = document.querySelectorAll('.page-dot');
         const templatePages = document.querySelectorAll('.template-page');
         pageButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -311,22 +490,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // X 버튼 이벤트 
-        const closeBtn = document.querySelector('.close');
-        if (closeBtn) {
-            closeBtn.onclick = function() {
-            modal.style.display = "none";
-            };
-        }
+    
     }
 
     // 상세 페이지 표시 함수
     async function showDetailPage(templateType, templateTitle) {
-        // 1. 원래 모달 내용 저장
-        const originalContent = document.querySelector('.modal-content').innerHTML;
-    
+        // 1. 템플릿 모달의 content를 찾습니다.
+        const templateModal = document.getElementById('templateModal');
+        const modalContent = templateModal.querySelector('.modal-content');
+        
+        // 1-1. 원래 모달 내용 저장
+        const originalContent = modalContent.innerHTML;
+
         // 2. 새로운 모달 내용으로 변경
-        const modalContent = document.querySelector('.modal-content');
         modalContent.innerHTML = `
             <div class="modal-header">
                 <h2>${templateTitle}</h2>
@@ -385,24 +561,26 @@ document.addEventListener('DOMContentLoaded', function() {
                             fabricCanvas.add(loadedObject);
                             fabricCanvas.renderAll();
                             
-                            // 모달 닫기
-                            modal.style.display = "none";
+                             // 부트스트랩 모달 인스턴스를 가져와서 닫기
+                            const templateModal = document.getElementById('templateModal');
+                            const modal = bootstrap.Modal.getInstance(templateModal);
+                            modal.hide();
                         });
                     };
                     detailGrid.appendChild(item);
                 });
             }
     
-            // 페이지네이션 버튼 생성
+            // 페이지네이션 버튼 생
             const pagination = document.getElementById('detailPagination');
             pagination.innerHTML = '';
             
             for (let i = 1; i <= totalPages; i++) {
                 const button = document.createElement('button');
-                button.className = 'page-btn';
-                button.textContent = i;
+                button.className = 'page-dot';
+                button.setAttribute('data-page', i);
                 button.onclick = () => {
-                    document.querySelectorAll('#detailPagination .page-btn')
+                    document.querySelectorAll('#detailPagination .page-dot')
                         .forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                     showPage(i);
@@ -413,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 첫 페이지 표시
             if (totalPages > 0) {
                 showPage(1);
-                pagination.querySelector('.page-btn').classList.add('active');
+                pagination.querySelector('.page-dot').classList.add('active');
             }
     
         } catch (error) {
@@ -423,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     
         // 5. 뒤로가기 버튼 이벤트
-        document.querySelector('.back-btn').onclick = function() {
+        modalContent.querySelector('.back-btn').onclick = function() {
             modalContent.innerHTML = originalContent;  // 원래 내용으로 복원
             setupOriginalModalEvents();  // 이벤트 리스너 다시 설정
         };
@@ -433,7 +611,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupOriginalModalEvents();
 
     // 첫 페이지 버튼을 기본으로 활성화
-    document.querySelector('.page-btn').classList.add('active');
+    document.querySelector('.page-dot').classList.add('active');
 
 
    

@@ -1,0 +1,242 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    /* justify-content: center; */
+    flex-direction: column;  /* 세로 방향으로 배치 */
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    gap: 20px;  /* 요소들 사이 간격 */
+}
+
+#container{
+    margin-top: 2%;
+    width: 800px;
+    height: 400px;
+    border: 1px solid #000;
+    position: relative;
+    /* width: fit-content; */
+}
+/* 팔찌 이미지 영역 */
+#bracelet {
+    border: 2px dotted #000;
+    position: relative;
+    /* margin: 20px auto; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#braceletImage {
+    display: block;
+    width: 603.153px;  /* 기본 크기(S 사이즈)로 설정 */
+    height: 87.732px;
+}
+
+/* 작업 가능 영역을 이미지위에 띄우기위해 */
+.printable-area {
+    position: absolute;
+}
+/* span 요소 스타일 추가 */
+.printable-area span {
+    position: absolute; /* 부모 요소(.printable-area) 기준으로 위치를 지정 */
+    top: 10px;
+    left: 10px;
+    font-size: 15px;
+    color: hsl(0, 100%, 50%);
+    z-index: 1; /* canvas 위에 표시되도록 설정 *z-index: 요소들의 쌓임 순서(층위)를 제어, 클수록 더 위애 표시*/
+}
+/* 작업 가능 영역 캔버스 */
+#activeCanvas{
+    /* position: absolute;  */
+    border: 3px dashed #f10909ce;
+    left: 30px; 
+    top: 30px;
+}
+
+/* 컬러피커와 사이즈피커 영역 스타일 */
+#colorPicker, #sizepicker {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+}
+/* 컬러피커 영역 스타일 */
+#colorPicker {
+    display: flex;
+    flex-wrap: wrap;  /* 버튼들이 여러 줄로 나오도록 설정 */
+    gap: 5px;  /* 버튼 사이의 간격 */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+    max-width: 600px;  /* 전체 너비 제한 */
+    justify-content: center;  /* 버튼들을 중앙 정렬 */
+}
+
+/* 템플릿 모달 영역 스타일 */
+
+
+.modal-content { /*모달 컨텐츠 스타일 및 크기 조정*/
+    background-color: #fff;
+    margin: 10% auto; 
+    padding: 20px;
+    border-radius: 10px;
+    width: 60%; 
+    max-width: 600px; 
+}
+
+
+
+.template-grid {
+    width: 100%;
+    padding: 10px; 
+}
+
+.template-item {
+    aspect-ratio: 1; /* 정사각형 비율 설정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.template-item:hover {
+    background-color: #f5f5f5;
+}
+
+.template-item img {
+    width: 50%; /* 이미지 크기 조정 */
+    height: auto;
+    margin-bottom: 8px;
+}
+
+.template-item p {
+    margin: 0;
+    font-size: 12px;
+}
+/* 상세 템플릿 그리드 스타일 */
+.detail-template-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4x4 그리드 */
+    gap: 15px;
+    padding: 10px;
+}
+
+.detail-template-item {
+    aspect-ratio: 1;/* 정사각형 비율 유지 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.detail-template-item:hover {
+    background-color: #f5f5f5;
+}
+
+.detail-template-item img {
+    width: 60px;  /* 모든 이미지의 너비를 60px로 고정 */
+    height: 60px; /* 모든 이미지의 높이를 60px로 고정 */
+    object-fit: contain; /* 이미지 비율 유지하면서 컨테이너에 맞춤 */
+    padding: 5px;
+}
+
+/* 뒤로가기 버튼 스타일 */
+.back-btn {
+    float: right;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: none;
+    background: none;
+}
+
+.back-btn:hover {
+    color: #666;
+}
+
+/* 모달 헤더 스타일 */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+/* 페이징 처리 */
+.template-page {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3열 유지 */
+    grid-template-rows: repeat(2, 1fr); /* 2행 추가 */
+    gap: 15px;
+    width: 100%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.page-dot {
+    width: 8px;  /* 더 작은 동그라미 크기 */
+    height: 8px;  /* 더 작은 동그라미 크기 */
+    border-radius: 50%;
+    border: none;
+    background-color: #ddd;  /* 기본 색상 */
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+.page-dot:hover {
+    background-color: #b0b0b0;
+}
+.page-dot.active {
+    background-color: #666;  /* 활성화된 동그라미 색상 */
+}
+
+/**
+* 텍스트 모달 스타일    
+*/
+.color-btn {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.color-btn.selected {
+    border: 2px solid #000;
+    transform: scale(1.1);
+}
+
+.text-color-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    padding: 10px;
+}
+
+.btn-group .btn.active {
+    background-color: #0d6efd;
+    color: white;
+}
