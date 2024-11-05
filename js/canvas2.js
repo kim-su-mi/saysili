@@ -33,11 +33,12 @@ async function loadFontOptions() {
             option.textContent = fontName;
             fontSelect.appendChild(option);
         });
-
     } catch (error) {
         console.error('폰트 목록을 불러오는데 실패했습니다:', error);
     }
 }
+
+
 // async function loadFontOptions() {
 //     try {
 //         const response = await fetch('css/font.css');
@@ -293,19 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * 텍스트 추가에 대한 js
      */
-    // document.getElementById('text-add').addEventListener('click', () => {
-    //     fabricCanvas.add(new fabric.IText('텍스트',{
-    //         left: textLeft,
-    //         top: textTop,
-    //         fontSize: 20,
-    //         fill: 'black',
-    //         fontFamily: 'Arial',
-    //         editable: true        // 텍스트 직접 수정 가능
-    //     }));
-    //     // 다음 텍스트를 위해 위치 업데이트
-    //     textLeft += 10;
-    //     textTop += 8;
-    // });
     // 폰트 옵션 로드
     loadFontOptions();
     
@@ -420,8 +408,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 자간 조절 이벤트
     document.getElementById('charSpacing').addEventListener('input', function() {
         if (currentText) {
-            // input의 값에 50을 곱해서 적용
-            const scaledValue = parseInt(this.value) * 50;
+            // input의 값은 1씩 조정되는데 charSpacing값을 1씩 조정하면 너무 변화가 없어서 input값에 10을 곱해서 적용
+            const scaledValue = parseInt(this.value) * 10;
             currentText.set('charSpacing', scaledValue);
             fabricCanvas.renderAll();
         }

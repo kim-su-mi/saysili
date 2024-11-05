@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <!-- 본인이 추가한 js 파일들 -->
     <script src="js/canvas2.js"></script>
+    <script src="js/imageUpload.js"></script>
    
 </head>
 <body>
@@ -184,5 +185,44 @@
         </div>
     </div>
     <!-- 템플릿 버튼과 모달 추가 끝-->
+
+    <!-- 이미지 업로드 버튼과 모달 추가 시작-->
+    <div id="imageUpload">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageModal">
+            이미지 업로드
+        </button>
+    </div>
+    
+    <div class="modal fade" id="imageModal" tabindex="-1" data-bs-backdrop="false" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg"> <!-- modal-lg 추가 -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">내 이미지</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 이미지 업로드 버튼 -->
+                    <div class="upload-section mb-3">
+                        <input type="file" id="imageInput" accept="image/jpeg, image/png" style="display: none;">
+                        <button type="button" class="btn btn-primary" id="uploadBtn">이미지 업로드</button>
+                        <small class="text-muted d-block mt-1">* JPG, PNG 파일 (최대 25MB)</small>
+                    </div>
+                    
+                    <!-- 업로드된 이미지 그리드 -->
+                    <div class="image-grid">
+                        <div class="image-page" data-page="1">
+                            <div id="uploadedImages">
+                                <!-- 업로드된 이미지들이 여기에 표시됨 -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 페이지네이션 -->
+                    <div class="pagination" id="imagePagination">
+                        <!-- 페이지 버튼들이 동적으로 추가됨 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
