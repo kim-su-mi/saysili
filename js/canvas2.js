@@ -316,21 +316,40 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('text-add').addEventListener('click', () => {
         // 모달 초기화
         resetModalControls();
+        
+        const defaultColor = '#000000'; // 기본 색상 설정
+        
         // 새로운 텍스트 객체 생성
-        currentText = new fabric.IText('텍스트를 입력하세요', {
+        currentText = new fabric.IText('텍스트를 \n입ssss', {
             left: textLeft,
             top: textTop,
             fontSize: 20,
-            fill: '#000000',
+            fill: defaultColor,        // 기본 색상 적용
             fontFamily: '칠백삼체',
-            editable: true
+            editable: true,
+            textAlign: 'center',      // 기본 가운데 정렬
+            charSpacing: 0,  // 초기 자간은 0으로 설정
+            lineHeight: 1
         });
         
         // 캔버스에 텍스트 추가
         fabricCanvas.add(currentText);
         fabricCanvas.setActiveObject(currentText);
         
-        // 다음 텍스트 위치 업데이트
+        // 가운데 정렬 버튼 활성화
+        alignButtons.forEach(id => {
+            document.getElementById(id).classList.remove('active');
+        });
+        document.getElementById('alignCenterBtn').classList.add('active');
+        
+        // 기본 색상 버튼 활성화
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.classList.remove('selected');
+            if (btn.getAttribute('data-color') === defaultColor) {
+                btn.classList.add('selected');
+            }
+        });
+        
         textLeft += 10;
         textTop += 8;
     });
@@ -342,23 +361,6 @@ document.addEventListener('DOMContentLoaded', function() {
             fabricCanvas.renderAll();
         }
     });
-    // document.getElementById('fontSelect').addEventListener('change', function() {
-    //     if (currentText) {
-    //         const selectedFont = this.value;
-    //         // 폰트 로드 확인 후 적용
-    //         const font = new FontFace(selectedFont, `url(fonts/${selectedFont}.ttf)`);
-    //         font.load().then(() => {
-    //             document.fonts.add(font);
-    //             currentText.set('fontFamily', selectedFont);
-    //             fabricCanvas.renderAll();
-    //         }).catch(err => {
-    //             console.error('폰트 로드 실패:', err);
-    //             // 폰트 로드 실패시 기본 폰트 적용
-    //             currentText.set('fontFamily', 'Arial');
-    //             fabricCanvas.renderAll();
-    //         });
-    //     }
-    // });
 
     // 볼드체 토글 이벤트
     document.getElementById('boldBtn').addEventListener('click', function() {
@@ -388,7 +390,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 텍스트 정렬 이벤트
-    ['alignLeftBtn', 'alignCenterBtn', 'alignRightBtn'].forEach(btnId => {
+    const alignButtons = ['alignLeftBtn', 'alignCenterBtn', 'alignRightBtn'];
+    alignButtons.forEach(btnId => {
         document.getElementById(btnId).addEventListener('click', function() {
             if (currentText) {
                 const alignMap = {
@@ -397,15 +400,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     'alignRightBtn': 'right'
                 };
                 
-                // 모든 정렬 버튼의 활성화 상태 제거
-                document.querySelectorAll('.btn-group button').forEach(btn => {
-                    btn.classList.remove('active');
+                // 다른 정렬 버튼들의 활성화 상태 해제
+                alignButtons.forEach(id => {
+                    document.getElementById(id).classList.remove('active');
                 });
                 
                 // 클릭한 버튼만 활성화
                 this.classList.add('active');
                 
-                currentText.set('textAlign', alignMap[btnId]);
+                // 텍스트 정렬 적용
+                currentText.set({
+                    textAlign: alignMap[btnId]
+                });
                 fabricCanvas.renderAll();
             }
         });
@@ -414,7 +420,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 자간 조절 이벤트
     document.getElementById('charSpacing').addEventListener('input', function() {
         if (currentText) {
-            currentText.set('charSpacing', parseInt(this.value));
+            // input의 값에 50을 곱해서 적용
+            const scaledValue = parseInt(this.value) * 50;
+            currentText.set('charSpacing', scaledValue);
             fabricCanvas.renderAll();
         }
     });
@@ -422,7 +430,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 행간 조절 이벤트
     document.getElementById('lineHeight').addEventListener('input', function() {
         if (currentText) {
-            currentText.set('lineHeight', parseFloat(this.value));
+            
+            const value = parseFloat(this.value);
+            currentText.set('lineHeight', value);
             fabricCanvas.renderAll();
         }
     });
@@ -450,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '#f70303', '#fd4eb5', '#f284c1', '#f2a9c4', '#ff9f2f',
             '#feed01', '#87dc29', '#f9ec90', '#0bc349', '#01c8a9',
             '#00b7e9', '#abebd3', '#2456ed', '#8f4fdb', '#4a236d',
-            '#d7ccee', '#898989', '#aa967e', '#202020', '#ffffff'
+            '#d7ccee', '#898989', '#aa967e', '#202020', '#000000'  
         ];
         
         const colorPicker = document.getElementById('textColorPicker');
@@ -459,7 +469,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const colorBtn = document.createElement('button');
             colorBtn.className = 'color-btn';
             colorBtn.style.backgroundColor = color;
-            colorBtn.setAttribute('data-color', color.toLowerCase()); // 색상 값 저장
+            colorBtn.setAttribute('data-color', color);
+            
+            // 기본 색상인 경우 선택 상태로 설정
+            if (color === '#000000') {
+                colorBtn.classList.add('selected');
+            }
             
             colorBtn.addEventListener('click', function() {
                 if (currentText) {
@@ -469,8 +484,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     this.classList.add('selected');
                     
-                    const selectedColor = this.getAttribute('data-color');
-                    currentText.set('fill', selectedColor);
+                    currentText.set('fill', color);
                     fabricCanvas.renderAll();
                 }
             });
@@ -479,11 +493,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 캔버스 객체 선택 이벤트
+    // 캔버스 객체 선택시 발생하는 이벤트
     fabricCanvas.on('selection:created', function(e) {
         // 선택된 객체가 텍스트인 경우에만 모달 표시
         const selectedObject = fabricCanvas.getActiveObject();
-        if (selectedObject && selectedObject instanceof fabric.IText) {
+        if (selectedObject && selectedObject instanceof fabric.IText) { // 선택된 객체가 텍스트인 경우에만 모달 표시
             currentText = selectedObject;
             
             // 텍스트 모달 열기
@@ -499,8 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateModalControls() {
         if (currentText) {
             // 폰트 선택 상태 업데이트
-            const fontSelect = document.getElementById('fontSelect');
-            fontSelect.value = currentText.fontFamily;
+            document.getElementById('fontSelect').value = currentText.fontFamily;
             
             // 스타일 버튼 상태 업데이트
             document.getElementById('boldBtn').classList.toggle('active', 
@@ -511,16 +524,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentText.underline);
             
             // 정렬 버튼 상태 업데이트
-            ['alignLeftBtn', 'alignCenterBtn', 'alignRightBtn'].forEach(btnId => {
-                document.getElementById(btnId).classList.remove('active');
+            alignButtons.forEach(id => {
+                document.getElementById(id).classList.remove('active');
             });
-            const alignMap = {
+            
+            const alignBtnMap = {
                 'left': 'alignLeftBtn',
                 'center': 'alignCenterBtn',
                 'right': 'alignRightBtn'
             };
-            if (currentText.textAlign && alignMap[currentText.textAlign]) {
-                document.getElementById(alignMap[currentText.textAlign]).classList.add('active');
+            
+            if (currentText.textAlign && alignBtnMap[currentText.textAlign]) {
+                document.getElementById(alignBtnMap[currentText.textAlign]).classList.add('active');
             }
             
             // 색상 버튼 상태 업데이트
@@ -736,4 +751,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
    
 
+});
+
+// 모달 외부 클릭 시 닫기 이벤트 추가
+document.addEventListener('click', function(event) {
+    const textModal = document.getElementById('textModal');
+    const templateModal = document.getElementById('templateModal');
+    
+    // 텍스트 모달 외부 클릭 감지
+    if (event.target.classList.contains('modal') && event.target === textModal) {
+        const modal = bootstrap.Modal.getInstance(textModal);
+        if (modal) {
+            modal.hide();
+        }
+    }
+    
+    // 템플릿 모달 외부 클릭 감지
+    if (event.target.classList.contains('modal') && event.target === templateModal) {
+        const modal = bootstrap.Modal.getInstance(templateModal);
+        if (modal) {
+            modal.hide();
+        }
+    }
 });
