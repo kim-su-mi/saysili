@@ -188,9 +188,10 @@
 
     <!-- 이미지 업로드 버튼과 모달 추가 시작-->
     <div id="imageUpload">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageModal">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-custom-tooltip="true" data-bs-placement="right">
             이미지 업로드
         </button>
+        
     </div>
     
     <div class="modal fade" id="imageModal" tabindex="-1" data-bs-backdrop="false" aria-labelledby="imageModalLabel" aria-hidden="true">
@@ -201,13 +202,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- 이미지 업로드 버튼 -->
-                    <div class="upload-section mb-3">
-                        <input type="file" id="imageInput" accept="image/jpeg, image/png" style="display: none;">
-                        <button type="button" class="btn btn-primary" id="uploadBtn">이미지 업로드</button>
-                        <small class="text-muted d-block mt-1">* JPG, PNG 파일 (최대 25MB)</small>
-                    </div>
-                    
                     <!-- 업로드된 이미지 그리드 -->
                     <div class="image-grid">
                         <div class="image-page" data-page="1">
@@ -216,6 +210,13 @@
                             </div>
                         </div>
                     </div>
+                    <!-- 이미지 업로드 버튼 -->
+                    <div class="upload-section mb-3">
+                        <input type="file" id="imageInput" accept="image/jpeg, image/png" style="display: none;">
+                        <button type="button" class="btn btn-primary" id="uploadBtn">이미지 업로드</button>
+                        <small class="text-muted d-block mt-1">* JPG, PNG 파일 (최대 25MB)</small>
+                    </div>
+                    
                     <!-- 페이지네이션 -->
                     <div class="pagination" id="imagePagination">
                         <!-- 페이지 버튼들이 동적으로 추가됨 -->

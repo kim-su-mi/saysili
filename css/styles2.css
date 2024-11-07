@@ -342,3 +342,57 @@ body {
     margin-bottom: 20px;
 }
 
+.drag-drop-zone {
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.drag-drop-zone.drag-over {
+    background: #e9ecef;
+    border-color: #0d6efd;
+}
+
+.drag-drop-content {
+    text-align: center;
+    color: #6c757d;
+}
+
+.drag-drop-content p {
+    margin: 16px 0;
+    font-size: 14px;
+}
+
+#uploadedImages.has-images {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.uploaded-image-item {
+    aspect-ratio: 1;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.uploaded-image-item:hover {
+    transform: scale(1.05);
+}
+
+.uploaded-image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

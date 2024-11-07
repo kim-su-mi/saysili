@@ -308,12 +308,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const defaultColor = '#000000'; // 기본 색상 설정
         
         // 새로운 텍스트 객체 생성
-        currentText = new fabric.IText('텍스트를 \n입ssss', {
+        currentText = new fabric.IText('텍^스*트我를 \n입abc력de♥하세요', {
             left: textLeft,
             top: textTop,
             fontSize: 20,
             fill: defaultColor,        // 기본 색상 적용
-            fontFamily: '칠백삼체',
+            fontFamily: 'Arial',
             editable: true,
             textAlign: 'center',      // 기본 가운데 정렬
             charSpacing: 0,  // 초기 자간은 0으로 설정
@@ -745,6 +745,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('click', function(event) {
     const textModal = document.getElementById('textModal');
     const templateModal = document.getElementById('templateModal');
+    const imageModal = document.getElementById('imageModal');
     
     // 텍스트 모달 외부 클릭 감지
     if (event.target.classList.contains('modal') && event.target === textModal) {
@@ -757,6 +758,14 @@ document.addEventListener('click', function(event) {
     // 템플릿 모달 외부 클릭 감지
     if (event.target.classList.contains('modal') && event.target === templateModal) {
         const modal = bootstrap.Modal.getInstance(templateModal);
+        if (modal) {
+            modal.hide();
+        }
+    }
+
+    // 이미지 모달 외부 클릭 감지
+    if (event.target.classList.contains('modal') && event.target === imageModal) {
+        const modal = bootstrap.Modal.getInstance(imageModal);
         if (modal) {
             modal.hide();
         }
