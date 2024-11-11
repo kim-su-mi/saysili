@@ -65,7 +65,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 colorButton.style.backgroundColor = color;
                 colorButton.style.width = '50px';
                 colorButton.style.height = '50px';
-                colorButton.addEventListener('click', () => changeBraceletColor(color));
+                // 초기 선택된 색상(#00b7e9)에 active 클래스 추가
+                if (color === '#00b7e9') {
+                    colorButton.classList.add('active');
+                }
+                colorButton.addEventListener('click', () => {
+                    // 기존 active 클래스 제거
+                    document.querySelectorAll('#colorPicker button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    // 클릭된 버튼에 active 클래스 추가
+                    colorButton.classList.add('active');
+                    changeBraceletColor(color);
+                });
                 colorPicker.appendChild(colorButton);
             });
 
@@ -212,10 +224,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+    // 사이즈 버튼 상태 업데이트 함수
+    function updateSizeButtonState(activeId) {
+        ['s-size', 'm-size', 'l-size'].forEach(id => {
+            document.getElementById(id).classList.remove('active');
+        });
+        document.getElementById(activeId).classList.add('active');
+    }
+    
+    // 초기 S 사이즈 버튼에 active 클래스 추가
+    document.getElementById('s-size').classList.add('active');
+
     // 크기 변경 버튼 이벤트 리스너 추가
-    document.getElementById('s-size').addEventListener('click', () => resizeBracelet('s'));
-    document.getElementById('m-size').addEventListener('click', () => resizeBracelet('m'));
-    document.getElementById('l-size').addEventListener('click', () => resizeBracelet('l'));
+    document.getElementById('s-size').addEventListener('click', () => {
+        updateSizeButtonState('s-size');
+        resizeBracelet('s');
+    });
+    document.getElementById('m-size').addEventListener('click', () => {
+        updateSizeButtonState('m-size');
+        resizeBracelet('m');
+    });
+    document.getElementById('l-size').addEventListener('click', () => {
+        updateSizeButtonState('l-size');
+        resizeBracelet('l');
+    });
 
     
     /*

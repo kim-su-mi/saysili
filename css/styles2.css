@@ -77,6 +77,39 @@ body {
     justify-content: center;  /* 버튼들을 중앙 정렬 */
 }
 
+/* 컬러피커 버튼 active 상태 스타일 */
+#colorPicker button.active {
+    transform: scale(1.1);
+    border: 3px solid #000;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* 사이즈 버튼 기본 스타일 */
+#sizepicker button {
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+/* 사이즈 버튼 active 상태 스타일 */
+#sizepicker button.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+    transform: scale(1.05);
+}
+
+/* 사이즈 버튼 호버 효과 */
+#sizepicker button:hover {
+    background-color: #f0f0f0;
+}
+
+#sizepicker button.active:hover {
+    background-color: #0b5ed7;
+}
 /* 템플릿 모달 영역 스타일 */
 
 
