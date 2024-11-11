@@ -295,6 +295,9 @@ body {
 }
 
 /* 이미지 업로드 모달 스타일 */
+.modal-lg {
+    max-width: 900px; /* 모달 전체 크기도 키워줍니다 */
+}
 .image-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -313,27 +316,12 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     grid-column: 1 / -1;
+    
 }
 
-.uploaded-image-item {
-    aspect-ratio: 1;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s;
-    background: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
-.uploaded-image-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 10px;
-}
+
+
 
 .upload-section {
     text-align: center;
@@ -344,7 +332,7 @@ body {
 
 .drag-drop-zone {
     width: 100%;
-    max-width: 400px;
+    max-width: 800px; /* 드래그 앤 드롭 영역도 키워줍니다 */
     aspect-ratio: 1;
     border: 2px dashed #ccc;
     border-radius: 12px;
@@ -379,14 +367,18 @@ body {
 }
 
 .uploaded-image-item {
+    min-height: 150px; /* 최소 높이 설정 */
     aspect-ratio: 1;
-    border: 1px solid #dee2e6;
+    border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.2s;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
 .uploaded-image-item:hover {
     transform: scale(1.05);
 }
@@ -394,5 +386,6 @@ body {
 .uploaded-image-item img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 10px;
 }

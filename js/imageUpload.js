@@ -80,7 +80,7 @@ function initImageUpload() {
 
             const reader = new FileReader();
             reader.onload = (event) => {
-                uploadedImagesList.push(event.target.result);
+                uploadedImagesList.unshift(event.target.result);
                 updateImageDisplay();
             };
             reader.readAsDataURL(file);
@@ -92,7 +92,7 @@ function initImageUpload() {
         // 1. 페이지에 표시할 이미지의 시작과 끝 인덱스 계산
         const start = (pageNum - 1) * itemsPerPage; // itemsPerPage는 한 페이지당 표시할 이미지 수(6개)
         const end = start + itemsPerPage;
-        const pageImages = uploadedImagesList.reverse().slice(start, end); //최근 추가된 이미지를 제일 앞에 보이게 하기위해 배열 뒤집음 , 배열에서 start부터 end까지의 이미지를 추출
+        const pageImages = uploadedImagesList.slice(start, end); //최근 추가된 이미지를 제일 앞에 보이게 하기위해 배열 뒤집음 , 배열에서 start부터 end까지의 이미지를 추출
         
         // 2. 이미지 HTML 생성 및 표시
         uploadedImages.innerHTML = pageImages.map(imageData => `
@@ -108,7 +108,7 @@ function initImageUpload() {
                 // 4. Fabric.js를 사용하여 이미지를 캔버스에 추가
                 fabric.Image.fromURL(imageData, (img) => {
                     // 5. 이미지 크기 조정
-                    const scale = Math.min(50 / img.width, 50 / img.height);
+                    const scale = Math.min(100 / img.width, 100 / img.height);
                     img.scale(scale);
                     
                     // 6. 이미지 위치 설정 (캔버스 중앙)
