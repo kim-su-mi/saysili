@@ -1,4 +1,3 @@
-
 // 전역 변수로 fabricCanvas 선언
 let fabricCanvas;
 
@@ -101,25 +100,57 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 이미지 색상 변경 함수
+    // 이미지 색상 변경 함수
     function changeBraceletColor(baseColor) {
-        const gradients = [
+        // bracelet.svg용 그라디언트
+        const outerGradients = [
             '_무제_그라디언트_95',
             '_무제_그라디언트_92',
             '_무제_그라디언트_78'
         ];
 
-        // 각 그라디언트 업데이트
-        gradients.forEach((gradientId, index) => {
+        // bracelet.svg 그라디언트 업데이트
+        outerGradients.forEach((gradientId, index) => {
             const gradient = document.getElementById(gradientId);
             if (gradient) {
                 const stops = gradient.getElementsByTagName('stop');
-                const adjustment = [-20, 0, -40][index]; // 각 그라디언트마다 다른 밝기 조정
+                const adjustment = [-20, 0, -40][index];
 
                 for (let stop of stops) {
                     stop.setAttribute('stop-color', adjustColor(baseColor, adjustment));
                 }
             }
         });
+
+        // braceletInner.svg용 그라디언트 업데이트
+        const innerGradient = document.getElementById('_무제_그라디언트_78');
+        if (innerGradient) {
+            const stops = innerGradient.getElementsByTagName('stop');
+            const gradientStops = [
+                { offset: "0", adjustment: -45 },
+                { offset: "0.057", adjustment: -30 },
+                { offset: "0.128", adjustment: -20 },
+                { offset: "0.183", adjustment: -10 },
+                { offset: "0.625", adjustment: -10 },
+                { offset: "0.784", adjustment: -20 },
+                { offset: "0.897", adjustment: -30 },
+                { offset: "0.988", adjustment: -40 },
+                { offset: "1", adjustment: -45 }
+            ];
+
+            // 기존 stop 요소들 제거
+            while (stops.length > 0) {
+                stops[0].remove();
+            }
+
+            // 새로운 stop 요소들 추가
+            gradientStops.forEach(({ offset, adjustment }) => {
+                const stop = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop.setAttribute("offset", offset);
+                stop.setAttribute("stop-color", adjustColor(baseColor, adjustment));
+                innerGradient.appendChild(stop);
+            });
+        }
 
         // 두 번째 그라디언트 업데이트 (무제_그라디언트_95-2)
         const gradient2 = document.getElementById('_무제_그라디언트_95-2');
@@ -181,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
             svgElement.setAttribute('width', `${newSize.width}`);
             svgElement.setAttribute('height', `${newSize.height}`);
     
-            // 각 rect 클래스별로 적절한 y좌표와 height 설정
+            // bracelet.svg용 rect 업데이트
             Object.entries(newSize.rects).forEach(([className, values]) => {
                 const rect = svgElement.querySelector(`.${className}`);
                 if (rect) {
@@ -191,34 +222,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
     
+            // braceletInner.svg용 path 업데이트
+            const innerPath = svgElement.querySelector('.cls-1');
+            if (innerPath) {
+                const newPath = `M${newSize.width},102.346H0C4.004,102.346,4.004,0,0,0h${newSize.width}c-4.18,0-4.18,102.346,0,102.346Z`;
+                innerPath.setAttribute('d', newPath);
+            }
+    
+            // 그라디언트 업데이트 (bracelet.svg와 braceletInner.svg 모두)
+            const gradients = [
+                '_무제_그라디언트_95',
+                '_무제_그라디언트_92',
+                '_무제_그라디언트_78'
+            ];
+    
+            gradients.forEach(gradientId => {
+                const gradient = svgElement.querySelector(`#${gradientId}`);
+                if (gradient) {
+                    gradient.setAttribute('x2', newSize.width);
+                }
+            });
+    
             // style 속성 업데이트
             svgElement.style.width = `${newSize.width}px`;
             svgElement.style.height = `${newSize.height}px`;
-
+    
             //activeCanvas 크기 조절
             const activeCanvas = document.getElementById('activeCanvas');
             if(activeCanvas){
-                // 팔찌 이미지의 크기를 기준으로 캔버스 크기 설정
-                const canvasWidth = newSize.width * 0.8;  // rect의 너비의 80%
-                const canvasHeight = newSize.height * 0.8;  // rect의 높이의 90%
+                const canvasWidth = newSize.width * 0.8;
+                const canvasHeight = newSize.height * 0.8;
             
                 activeCanvas.width = canvasWidth;
                 activeCanvas.height = canvasHeight;
                 
-               // Fabric.js 캔버스 크기 설정
-               fabricCanvas.setWidth(canvasWidth);
-               fabricCanvas.setHeight(canvasHeight);
-               fabricCanvas.setDimensions({
-                   width: canvasWidth,
-                   height: canvasHeight
-               });
-
-               fabricCanvas.renderAll();
-
-                // 사이즈 변함에 따라 span영역 인쇄 가능 크기 텍스트 업데이트
+                fabricCanvas.setWidth(canvasWidth);
+                fabricCanvas.setHeight(canvasHeight);
+                fabricCanvas.setDimensions({
+                    width: canvasWidth,
+                    height: canvasHeight
+                });
+    
+                fabricCanvas.renderAll();
+    
                 const printableAreaSpan = document.querySelector('.printable-area span');
                 if (printableAreaSpan) {
-                    const existingText = printableAreaSpan.textContent.split('-')[0];  // html의 span태그의 "인쇄가능영역 -" 부분 유지
+                    const existingText = printableAreaSpan.textContent.split('-')[0];
                     printableAreaSpan.textContent = `${existingText}- ${newSize.printSize}`;
                 }    
             }
@@ -263,6 +312,75 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // fabricCanvas.add(text);
     fabricCanvas.renderAll();
+
+     /**
+     * 팔찌 뷰 전환에 대한 js
+     */
+     const viewButtons = document.querySelectorAll('#viewButtons button');
+     
+     viewButtons.forEach(button => {
+         button.addEventListener('click', function() {
+             // 모든 버튼의 활성화 상태 제거
+             viewButtons.forEach(btn => btn.classList.remove('active'));
+             
+             // 클릭된 버튼 활성화
+             this.classList.add('active');
+             
+             // 뷰에 따른 이미지 변경
+             const view = this.dataset.view;
+             switch(view) {
+                 case 'outer-front':
+                 case 'outer-back':
+                     braceletImage.src = 'images/bracelet.svg';
+                     break;
+                 case 'inner-front':
+                 case 'inner-back':
+                     braceletImage.src = 'images/braceletInner.svg';
+                     break;
+             }
+             
+             // SVG 다시 로드 및 현재 색상 유지
+             fetch(braceletImage.src)
+                 .then(response => response.text())
+                 .then(svgContent => {
+                     const parser = new DOMParser();
+                     const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+                     const oldSvg = document.querySelector('#braceletSVG');
+                     if (oldSvg) {
+                         oldSvg.parentNode.replaceChild(svgDoc.documentElement, oldSvg);
+                         const newSvg = document.querySelector('svg');
+                         newSvg.id = 'braceletSVG';
+                         
+                         // 현재 선택된 사이즈 유지
+                         const currentSize = document.querySelector('#sizepicker button.active')?.id?.charAt(0) || 's';
+                         resizeBracelet(currentSize);
+
+                         // 현재 선택된 색상 유지
+                        const activeColorButton = document.querySelector('#colorPicker button.active');
+                        if (activeColorButton) {
+                            const currentColor = activeColorButton.style.backgroundColor;
+                        changeBraceletColor(rgbToHex(currentColor));
+                    }
+                     }
+                 });
+         });
+     });
+
+     // RGB 색상을 HEX 코드로 변환하는 헬퍼 함수
+    function rgbToHex(rgb) {
+        // rgb(r, g, b) 형식에서 숫자만 추출
+        const rgbArray = rgb.match(/\d+/g);
+        if (!rgbArray) return rgb; // 이미 hex 형식이면 그대로 반환
+
+        const r = parseInt(rgbArray[0]);
+        const g = parseInt(rgbArray[1]);
+        const b = parseInt(rgbArray[2]);
+
+        return '#' + 
+            r.toString(16).padStart(2, '0') + 
+            g.toString(16).padStart(2, '0') + 
+            b.toString(16).padStart(2, '0');
+    }
 
 
    

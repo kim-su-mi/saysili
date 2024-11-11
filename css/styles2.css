@@ -110,6 +110,16 @@ body {
 #sizepicker button.active:hover {
     background-color: #0b5ed7;
 }
+
+/* 뷰 버튼 스타일 */
+#viewButtons {
+    margin: 10px 0;
+}
+
+#viewButtons .btn.active {
+    background-color: #0d6efd;
+    color: white;
+}
 /* 템플릿 모달 영역 스타일 */
 
 
