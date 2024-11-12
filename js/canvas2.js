@@ -1,11 +1,23 @@
 // 전역 변수로 fabricCanvas 선언
 let fabricCanvas;
+// 전역 변수로 canvasInstances 선언
+let canvasInstances = {
+    'outer-front': null,
+    'outer-back': null,
+    'inner-front': null,
+    'inner-back': null
+};
+let currentView = 'outer-front';
 
 document.addEventListener('DOMContentLoaded', function() {
     // Fabric.js 캔버스 초기화
     fabricCanvas = new fabric.Canvas('activeCanvas', {
         width: 0,  // 초기 크기는 0으로 설정
         height: 0
+    });
+    // 각 면의 canvas 인스턴스 초기화
+    Object.keys(canvasInstances).forEach(view => {
+        canvasInstances[view] = new fabric.Canvas(null);
     });
 
     /**
@@ -252,7 +264,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if(activeCanvas){
                 const canvasWidth = newSize.width * 0.8;
                 const canvasHeight = newSize.height * 0.8;
-            
+                
+                // 현재 상태 임시 저장
+                const tempState = fabricCanvas.toJSON();
+                
                 activeCanvas.width = canvasWidth;
                 activeCanvas.height = canvasHeight;
                 
@@ -262,9 +277,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     width: canvasWidth,
                     height: canvasHeight
                 });
-    
-                fabricCanvas.renderAll();
-    
+        
+                // 상태 복원
+                fabricCanvas.loadFromJSON(tempState, function() {
+                    fabricCanvas.renderAll();
+                });
+        
                 const printableAreaSpan = document.querySelector('.printable-area span');
                 if (printableAreaSpan) {
                     const existingText = printableAreaSpan.textContent.split('-')[0];
@@ -326,9 +344,14 @@ document.addEventListener('DOMContentLoaded', function() {
              // 클릭된 버튼 활성화
              this.classList.add('active');
              
+             // 현재 view의 상태 저장
+             saveCurrentCanvasState();
+ 
              // 뷰에 따른 이미지 변경
-             const view = this.dataset.view;
-             switch(view) {
+             const newView = this.dataset.view;
+             currentView = newView;
+ 
+             switch(newView) {
                  case 'outer-front':
                  case 'outer-back':
                      braceletImage.src = 'images/bracelet.svg';
@@ -354,13 +377,16 @@ document.addEventListener('DOMContentLoaded', function() {
                          // 현재 선택된 사이즈 유지
                          const currentSize = document.querySelector('#sizepicker button.active')?.id?.charAt(0) || 's';
                          resizeBracelet(currentSize);
-
+ 
                          // 현재 선택된 색상 유지
-                        const activeColorButton = document.querySelector('#colorPicker button.active');
-                        if (activeColorButton) {
-                            const currentColor = activeColorButton.style.backgroundColor;
-                        changeBraceletColor(rgbToHex(currentColor));
-                    }
+                         const activeColorButton = document.querySelector('#colorPicker button.active');
+                         if (activeColorButton) {
+                             const currentColor = activeColorButton.style.backgroundColor;
+                             changeBraceletColor(rgbToHex(currentColor));
+                         }
+ 
+                         // 저장된 canvas 상태 복원
+                         loadCanvasState();
                      }
                  });
          });
@@ -386,6 +412,27 @@ document.addEventListener('DOMContentLoaded', function() {
    
 
 });
+// Canvas 상태 저장 함수
+function saveCurrentCanvasState() {
+    if (currentView && fabricCanvas) {
+        canvasInstances[currentView] = new fabric.Canvas(null);
+        canvasInstances[currentView].loadFromJSON(fabricCanvas.toJSON(), function() {
+            console.log(`Saved state for ${currentView}`);
+        });
+    }
+}
+
+// Canvas 상태 로드 함수
+function loadCanvasState() {
+    if (currentView && canvasInstances[currentView]) {
+        fabricCanvas.clear();
+        fabricCanvas.loadFromJSON(canvasInstances[currentView].toJSON(), function() {
+            console.log(`Loaded state for ${currentView}`);
+            fabricCanvas.renderAll();
+        });
+    }
+}
+
 
 // 모달 외부 클릭 시 닫기 이벤트 추가
 document.addEventListener('click', function(event) {

@@ -26,6 +26,7 @@ function initTemplatesUpload() {
             });
         });
     }
+    
 
     // 상세 페이지 표시 함수
     async function showDetailPage(templateType, templateTitle) {
