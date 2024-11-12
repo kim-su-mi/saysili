@@ -24,15 +24,15 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    width: 100%; /* 전체 너비로 설정 */
-    max-width: 800px; /* 최대 너비 설정 */
+    width: 800px;
     margin: 0 auto;
     padding: 20px;
-    height: 80%; /* 높이 자동 조정 */
+    height: 80%; /* 높이 추가 */
+    justify-content: center; /* 세로 중앙 정렬 */
 }
 
 .canvas_div #bracelet {
-    border: 2px dotted #000;
+    /* border: 2px dotted #000; */
     position: relative;
     /* margin: 20px auto; */
     display: flex;
@@ -44,9 +44,8 @@ body {
 
 .canvas_div #braceletImage {
     display: block;
-    width: 80%; /* 반응형 너비 */
-    max-width: 603.153px; /* 최대 크기 설정 */
-    height: auto; /* 비율 유지 */
+    width: 603.153px;  /* 기본 크기(S 사이즈)로 설정 */
+    height: 87.732px;
 }
 
 /* 작업 가능 영역을 이미지위에 띄우기위해 */
@@ -66,8 +65,8 @@ body {
 #activeCanvas{
     /* position: absolute;  */
     border: 3px dashed #f10909ce;
-    width: 100%; /* 반응형 너비 */
-    height: auto; /* 비율 유지 */
+    left: 30px; 
+    top: 30px;
 }
 
 /* 컬러피커와 사이즈피커 영역 스타일 */
