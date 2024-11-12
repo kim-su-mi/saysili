@@ -19,37 +19,23 @@ body {
     /* width: fit-content; */
 }
 /* 팔찌 이미지 영역 */
-.canvas_div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    height: 80%; /* 높이 추가 */
-    justify-content: center; /* 세로 중앙 정렬 */
-}
-
-.canvas_div #bracelet {
+#bracelet {
     border: 2px dotted #000;
     position: relative;
     /* margin: 20px auto; */
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    margin: auto 0; /* 세로 중앙 정렬을 위해 추가 */
 }
 
-.canvas_div #braceletImage {
+#braceletImage {
     display: block;
     width: 603.153px;  /* 기본 크기(S 사이즈)로 설정 */
     height: 87.732px;
 }
 
 /* 작업 가능 영역을 이미지위에 띄우기위해 */
-.canvas_div .printable-area {
+.printable-area {
     position: absolute;
 }
 /* span 요소 스타일 추가 */
@@ -70,30 +56,25 @@ body {
 }
 
 /* 컬러피커와 사이즈피커 영역 스타일 */
-/* #colorPicker, #sizepicker {
+#colorPicker, #sizepicker {
     display: flex;
     gap: 10px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: white;
-} */
+}
 /* 컬러피커 영역 스타일 */
-
 #colorPicker {
     display: flex;
     flex-wrap: wrap;  /* 버튼들이 여러 줄로 나오도록 설정 */
     gap: 5px;  /* 버튼 사이의 간격 */
     padding: 10px;
-    /* border: 1px solid #ddd; */
+    border: 1px solid #ddd;
     border-radius: 5px;
-    /* background-color: white; */
+    background-color: white;
     max-width: 600px;  /* 전체 너비 제한 */
     justify-content: center;  /* 버튼들을 중앙 정렬 */
-}
-
-#colorPicker button {
-    border: 1px solid #898989;
 }
 
 /* 컬러피커 버튼 active 상태 스타일 */
@@ -102,18 +83,16 @@ body {
     border: 3px solid #000;
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
-.color-grid {
-    align-self: flex-start; /* 왼쪽 정렬 */
-}
+
 /* 사이즈 버튼 기본 스타일 */
-/* #sizepicker button {
+#sizepicker button {
     padding: 10px 20px;
     border: 2px solid #ddd;
     background-color: white;
     cursor: pointer;
     border-radius: 5px;
     transition: all 0.3s ease;
-} */
+}
 
 /* 사이즈 버튼 active 상태 스타일 */
 #sizepicker button.active {

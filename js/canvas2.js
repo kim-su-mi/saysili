@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 '#898989',
                 '#aa967e',
                 '#202020',
-                '#ffffff', //일반
+                '#ffffff', //기본
                 '#fa9529',
                 '#fbf666',
                 '#54e669',
@@ -59,48 +59,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 '#e3f1da',
                 '#ecdff3', // 투명
             ];
-
-            // 색상 배열을 카테고리별로 분리
-            const colorCategories = {
-                normal: colors.slice(0, 20),    // 일반 컬러
-                glow: colors.slice(20, 30),     // 야광 컬러
-                transparent: colors.slice(30)    // 투명 컬러
-            };
-
-            // 각 카테고리별 컬러 버튼 생성
-            Object.entries(colorCategories).forEach(([category, categoryColors]) => {
-                const container = document.querySelector(`.color-grid.${category}`);
-                if (container) {
-                    categoryColors.forEach((color, index) => {
-                        const colorButton = document.createElement('button');
-                        colorButton.className = 'color_selection_btn w-button';
-                        colorButton.style.backgroundColor = color;
-                        
-                        const prefix = {
-                            normal: 'col_',
-                            glow: 'lum_',
-                            transparent: 'tp_'
-                        }[category];
-                        colorButton.id = `${prefix}${index + 1}`;
-                        
-                        // 초기 선택된 색상(#00b7e9)에 active 클래스 추가
-                        if (color === '#00b7e9') {
-                            colorButton.classList.add('active');
-                        }
-                        
-                        colorButton.addEventListener('click', () => {
-                            // 모든 카테고리의 버튼에서 active 클래스 제거
-                            document.querySelectorAll('.color-grid button').forEach(btn => {
-                                btn.classList.remove('active');
-                            });
-                            // 클릭된 버튼에 active 클래스 추가
-                            colorButton.classList.add('active');
-                            changeBraceletColor(color);
-                        });
-                        
-                        container.appendChild(colorButton);
-                    });
+            colors.forEach(color => {
+                const colorButton = document.createElement('button');
+                colorButton.style.backgroundColor = color;
+                colorButton.style.width = '50px';
+                colorButton.style.height = '50px';
+                // 초기 선택된 색상(#00b7e9)에 active 클래스 추가
+                if (color === '#00b7e9') {
+                    colorButton.classList.add('active');
                 }
+                colorButton.addEventListener('click', () => {
+                    // 기존 active 클래스 제거
+                    document.querySelectorAll('#colorPicker button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    // 클릭된 버튼에 active 클래스 추가
+                    colorButton.classList.add('active');
+                    changeBraceletColor(color);
+                });
+                colorPicker.appendChild(colorButton);
             });
 
             //SVG 요소에 ID 추가
@@ -298,26 +275,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // 사이즈 버튼 상태 업데이트 함수
     function updateSizeButtonState(activeId) {
-        ['size_S', 'size_M', 'size_L'].forEach(id => {
+        ['s-size', 'm-size', 'l-size'].forEach(id => {
             document.getElementById(id).classList.remove('active');
         });
         document.getElementById(activeId).classList.add('active');
     }
     
     // 초기 S 사이즈 버튼에 active 클래스 추가
-    document.getElementById('size_S').classList.add('active');
+    document.getElementById('s-size').classList.add('active');
 
     // 크기 변경 버튼 이벤트 리스너 추가
-    document.getElementById('size_S').addEventListener('click', () => {
-        updateSizeButtonState('size_S');
+    document.getElementById('s-size').addEventListener('click', () => {
+        updateSizeButtonState('s-size');
         resizeBracelet('s');
     });
-    document.getElementById('size_M').addEventListener('click', () => {
-        updateSizeButtonState('size_M');
+    document.getElementById('m-size').addEventListener('click', () => {
+        updateSizeButtonState('m-size');
         resizeBracelet('m');
     });
-    document.getElementById('size_L').addEventListener('click', () => {
-        updateSizeButtonState('size_L');
+    document.getElementById('l-size').addEventListener('click', () => {
+        updateSizeButtonState('l-size');
         resizeBracelet('l');
     });
 

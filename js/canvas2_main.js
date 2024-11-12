@@ -197,34 +197,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 width: 603.153, 
                 height: 102.346,
                 printSize: '65 x 8mm',
-                rects: {
-                    'cls-1': { y: 14.614, height: 87.732 },
-                    'cls-2': { y: 0, height: 87.732 },
-                    'cls-3': { y: 11.101, height: 87.732 },
-                    'cls-4': { y: 7.678, height: 87.732 }
-                }
             },
             'm': { 
                 width: 676.263, 
                 height: 102.387,
                 printSize: '75 x 8mm',
-                rects: {
-                    'cls-1': { y: 14.614, height: 87.732 },
-                    'cls-2': { y: 0, height: 87.732 },
-                    'cls-3': { y: 11.101, height: 87.732 },
-                    'cls-4': { y: 7.678, height: 87.732 }
-                }
             },
             'l': { 
                 width: 731.095, 
                 height: 102.731,
                 printSize: '80 x 8mm',
-                rects: {
-                    'cls-1': { y: 14.614, height: 87.732 },
-                    'cls-2': { y: 0, height: 87.732 },
-                    'cls-3': { y: 11.101, height: 87.732 },
-                    'cls-4': { y: 7.678, height: 87.732 }
-                }
             }
         };
     
@@ -252,33 +234,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 innerPath.setAttribute('d', newPath);
             }
     
-            // 그라디언트 업데이트 (bracelet.svg와 braceletInner.svg 모두)
-            const gradients = [
-                '_무제_그라디언트_95',
-                '_무제_그라디언트_92',
-                '_무제_그라디언트_78'
-            ];
-    
-            gradients.forEach(gradientId => {
-                const gradient = svgElement.querySelector(`#${gradientId}`);
-                if (gradient) {
-                    gradient.setAttribute('x2', newSize.width);
-                }
-            });
-    
-            // style 속성 업데이트
-            svgElement.style.width = `${newSize.width}px`;
-            svgElement.style.height = `${newSize.height}px`;
-    
-            //activeCanvas 크기 조절
+            // activeCanvas 크기 조절
             const activeCanvas = document.getElementById('activeCanvas');
-            if(activeCanvas){
-                const canvasWidth = newSize.width * 0.8;
-                const canvasHeight = newSize.height * 0.8;
-            
+            if (activeCanvas) {
+                const canvasWidth = newSize.width * 0.8; // 팔찌 너비의 80%
+                const canvasHeight = newSize.height * 0.8; // 팔찌 높이의 80%
+    
                 activeCanvas.width = canvasWidth;
                 activeCanvas.height = canvasHeight;
-                
+    
                 fabricCanvas.setWidth(canvasWidth);
                 fabricCanvas.setHeight(canvasHeight);
                 fabricCanvas.setDimensions({
@@ -292,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (printableAreaSpan) {
                     const existingText = printableAreaSpan.textContent.split('-')[0];
                     printableAreaSpan.textContent = `${existingText}- ${newSize.printSize}`;
-                }    
+                }
             }
         }
     }
