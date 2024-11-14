@@ -1,6 +1,6 @@
-// 전역 변수로 fabricCanvas 선언
+// 전역 변수로 fabricCanvas 선언(실제 작업 영역)
 let fabricCanvas;
-// 전역 변수로 canvasInstances 선언
+// 전역 변수로 canvasInstances 선언(각면의 상태를 저장)
 let canvasInstances = {
     'outer-front': null,
     'outer-back': null,
@@ -15,10 +15,20 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 0,  // 초기 크기는 0으로 설정
         height: 0
     });
-    // 각 면의 canvas 인스턴스 초기화
-    Object.keys(canvasInstances).forEach(view => {
-        canvasInstances[view] = new fabric.Canvas(null);
-    });
+    const emptyState = {
+        version: "5.3.1",
+        objects: [],
+        background: null
+    };
+
+    // 각 뷰마다 독립된 빈 상태 객체 생성
+    canvasInstances = {
+        'outer-front': JSON.parse(JSON.stringify(emptyState)),
+        'outer-back': JSON.parse(JSON.stringify(emptyState)),
+        'inner-front': JSON.parse(JSON.stringify(emptyState)),
+        'inner-back': JSON.parse(JSON.stringify(emptyState))
+    };
+    
 
     /**
      * 색상 변경에 대한 js
@@ -98,6 +108,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 초기 크기를 S 사이즈로 설정
             resizeBracelet('s');
+
+            /*
+            *테스트를 위한 도형 추가
+            */
+            fabricCanvas.add(new fabric.Circle({
+                radius: 20,
+                fill: 'red',
+                left: 50,
+                top: 20
+            }));
+            // fabricCanvas.add(text);
+            fabricCanvas.renderAll();
 
             
         });
@@ -265,9 +287,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const canvasWidth = newSize.width * 0.8;
                 const canvasHeight = newSize.height * 0.8;
                 
-                // 현재 상태 임시 저장
-                const tempState = fabricCanvas.toJSON();
-                
                 activeCanvas.width = canvasWidth;
                 activeCanvas.height = canvasHeight;
                 
@@ -277,12 +296,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     width: canvasWidth,
                     height: canvasHeight
                 });
-        
-                // 상태 복원
-                fabricCanvas.loadFromJSON(tempState, function() {
+
+                // 현재 뷰의 상태 확인
+                const viewState = canvasInstances[currentView];
+                if (!viewState || !viewState.objects || viewState.objects.length === 0) {
+                    // 빈 상태라면 그대로 빈 상태 유지
+                    fabricCanvas.clear();
                     fabricCanvas.renderAll();
-                });
-        
+                } else {
+                    // 저장된 상태가 있다면 해당 상태로 복원
+                    fabricCanvas.loadFromJSON(viewState, function() {
+                        fabricCanvas.renderAll();
+                    });
+                }
+
                 const printableAreaSpan = document.querySelector('.printable-area span');
                 if (printableAreaSpan) {
                     const existingText = printableAreaSpan.textContent.split('-')[0];
@@ -317,80 +344,91 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     
-    /*
-    *테스트를 위한 도형 추가
-    */
-    fabricCanvas.add(new fabric.Circle({
-        radius: 20,
-        fill: 'red',
-        left: 50,
-        top: 20
-    }));
-
     
-    // fabricCanvas.add(text);
-    fabricCanvas.renderAll();
 
      /**
      * 팔찌 뷰 전환에 대한 js
      */
      const viewButtons = document.querySelectorAll('#viewButtons button');
      
-     viewButtons.forEach(button => {
-         button.addEventListener('click', function() {
-             // 모든 버튼의 활성화 상태 제거
-             viewButtons.forEach(btn => btn.classList.remove('active'));
-             
-             // 클릭된 버튼 활성화
-             this.classList.add('active');
-             
-             // 현재 view의 상태 저장
-             saveCurrentCanvasState();
- 
-             // 뷰에 따른 이미지 변경
-             const newView = this.dataset.view;
-             currentView = newView;
- 
-             switch(newView) {
-                 case 'outer-front':
-                 case 'outer-back':
-                     braceletImage.src = 'images/bracelet.svg';
-                     break;
-                 case 'inner-front':
-                 case 'inner-back':
-                     braceletImage.src = 'images/braceletInner.svg';
-                     break;
-             }
-             
-             // SVG 다시 로드 및 현재 색상 유지
-             fetch(braceletImage.src)
-                 .then(response => response.text())
-                 .then(svgContent => {
-                     const parser = new DOMParser();
-                     const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
-                     const oldSvg = document.querySelector('#braceletSVG');
-                     if (oldSvg) {
-                         oldSvg.parentNode.replaceChild(svgDoc.documentElement, oldSvg);
-                         const newSvg = document.querySelector('svg');
-                         newSvg.id = 'braceletSVG';
-                         
-                         // 현재 선택된 사이즈 유지
-                         const currentSize = document.querySelector('#sizepicker button.active')?.id?.charAt(0) || 's';
-                         resizeBracelet(currentSize);
- 
-                         // 현재 선택된 색상 유지
-                         const activeColorButton = document.querySelector('#colorPicker button.active');
-                         if (activeColorButton) {
-                             const currentColor = activeColorButton.style.backgroundColor;
-                             changeBraceletColor(rgbToHex(currentColor));
-                         }
- 
-                         // 저장된 canvas 상태 복원
-                         loadCanvasState();
-                     }
-                 });
-         });
-     });
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // 모든 버튼의 활성화 상태 제거
+            viewButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // 클릭된 버튼 활성화
+            this.classList.add('active');
+
+            // 현재 view의 상태를 저장
+            const previousView = currentView;
+            // 현재 캔버스의 상태를 JSON으로 저장
+            canvasInstances[previousView] = fabricCanvas.toJSON();
+            console.log(`Saved state for ${previousView}`);
+            
+            // 새로운 뷰 설정
+            const newView = button.dataset.view;
+            currentView = newView;
+
+            // SVG 이미지 변경
+            switch(newView) {
+                case 'outer-front':
+                case 'outer-back':
+                    braceletImage.src = 'images/bracelet.svg';
+                    break;
+                case 'inner-front':
+                case 'inner-back':
+                    braceletImage.src = 'images/braceletInner.svg';
+                    break;
+            }
+        
+            fetch(braceletImage.src)
+            .then(response => response.text())
+            .then(svgContent => {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+                const oldSvg = document.querySelector('#braceletSVG');
+                if (oldSvg) {
+                    oldSvg.parentNode.replaceChild(svgDoc.documentElement, oldSvg);
+                    const newSvg = document.querySelector('svg');
+                    newSvg.id = 'braceletSVG';
+                    
+                    // 현재 선택된 사이즈 유지
+                    const currentSize = document.querySelector('#sizepicker button.active')?.id?.charAt(0) || 's';
+                    resizeBracelet(currentSize);
+
+                    // 현재 선택된 색상 유지
+                    const activeColorButton = document.querySelector('#colorPicker button.active');
+                    if (activeColorButton) {
+                        const currentColor = activeColorButton.style.backgroundColor;
+                        changeBraceletColor(rgbToHex(currentColor));
+                    }
+
+                    // 새로운 뷰의 상태 로드
+                     // 캔버스 초기화
+                    fabricCanvas.clear();
+
+                    // 해당 뷰의 상태 확인
+                    const viewState = canvasInstances[newView];
+                    
+                    if (!viewState || !viewState.objects || viewState.objects.length === 0) {
+                        // 빈 상태라면 새로운 빈 상태로 초기화
+                        fabricCanvas.loadFromJSON({
+                            version: "5.3.1",
+                            objects: [],
+                            background: null
+                        }, function() {
+                            fabricCanvas.renderAll();
+                        });
+                    } else {
+                        // 저장된 상태가 있다면 로드
+                        fabricCanvas.loadFromJSON(viewState, function() {
+                            fabricCanvas.renderAll();
+                        });
+                    }
+                }
+            });
+        });
+    });
 
      // RGB 색상을 HEX 코드로 변환하는 헬퍼 함수
     function rgbToHex(rgb) {
@@ -413,25 +451,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 // Canvas 상태 저장 함수
-function saveCurrentCanvasState() {
-    if (currentView && fabricCanvas) {
-        canvasInstances[currentView] = new fabric.Canvas(null);
-        canvasInstances[currentView].loadFromJSON(fabricCanvas.toJSON(), function() {
-            console.log(`Saved state for ${currentView}`);
-        });
-    }
-}
+// function saveCurrentCanvasState() {
+//     if (currentView) {
+//         const tempCanvas = new fabric.Canvas(null);
+//         tempCanvas.loadFromJSON(fabricCanvas.toJSON(), function() {
+//             canvasInstances[currentView] = tempCanvas;
+//             console.log(`Saved state for ${currentView}`);
+//         });
+//     }
+// }
 
-// Canvas 상태 로드 함수
-function loadCanvasState() {
-    if (currentView && canvasInstances[currentView]) {
-        fabricCanvas.clear();
-        fabricCanvas.loadFromJSON(canvasInstances[currentView].toJSON(), function() {
-            console.log(`Loaded state for ${currentView}`);
-            fabricCanvas.renderAll();
-        });
-    }
-}
+// // Canvas 상태 로드 함수
+// function loadCanvasState() {
+//     if (canvasInstances[currentView]) {
+//         fabricCanvas.clear();
+//         fabricCanvas.loadFromJSON(canvasInstances[currentView].toJSON(), function() {
+//             console.log(`Loaded state for ${currentView}`);
+//             fabricCanvas.renderAll();
+//         });
+//     }
+// }
 
 
 // 모달 외부 클릭 시 닫기 이벤트 추가
