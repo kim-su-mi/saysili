@@ -103,42 +103,41 @@ function initImageUpload() {
 
         // 3. 각 이미지에 클릭 이벤트 추가
         document.querySelectorAll('.uploaded-image-item').forEach((item, index) => {
-            item.addEventListener('click', async () => {
+            item.addEventListener('click', () => {
                 const imageData = pageImages[index];
-
-                // 4. Fabric.js를 사용하여 이미지를 캔버스에 추가
-                const addImageToCanvas = () => {
-                    return new Promise((resolve) => {
-                        fabric.Image.fromURL(imageData, (img) => {
-                            // 5. 이미지 크기 조정
-                            const scale = Math.min(100 / img.width, 100 / img.height);
-                            img.scale(scale);
-                            
-                            // 6. 이미지 위치 설정 (캔버스 중앙)
-                            img.set({
-                                left: fabricCanvas.width / 2 - (img.width * scale) / 2,
-                                top: fabricCanvas.height / 2 - (img.height * scale) / 2
-                            });
-
-                            // 7. 캔버스에 이미지 추가 및 렌더링
-                            fabricCanvas.add(img);
-                            fabricCanvas.renderAll();
-
+                
+                // Promise로 이미지 로딩 처리
+                new Promise((resolve) => {
+                    fabric.Image.fromURL(imageData, (img) => {
+                        const scale = Math.min(100 / img.width, 100 / img.height);
+                        img.scale(scale);
                         
-                            resolve();
-                        
+                        img.set({
+                            left: fabricCanvas.width / 2 - (img.width * scale) / 2,
+                            top: fabricCanvas.height / 2 - (img.height * scale) / 2
                         });
-                    });
-                };
-
-                // 이미지 추가 후 현재 뷰의 상태만 업데이트
-                await addImageToCanvas();
-                    
-                // 8.모달 닫기
-                const imageModal = document.getElementById('imageModal');
-                const modal = bootstrap.Modal.getInstance(imageModal);
-                 modal.hide();
     
+                        fabricCanvas.add(img);
+                        fabricCanvas.renderAll();
+                        resolve();
+                    });
+                }).then(() => {
+                    // 이미지 추가가 완료된 후 현재 view의 canvas 상태를 업데이트
+                    if (canvasInstances[currentView]) {
+                        canvasInstances[currentView] = new fabric.Canvas(null);
+                        canvasInstances[currentView].loadFromJSON(
+                            fabricCanvas.toJSON(),
+                            function() {
+                                console.log(`Updated state for ${currentView}`);
+                            }
+                        );
+                    }
+                    
+                    // 모달 닫기
+                    const imageModal = document.getElementById('imageModal');
+                    const modal = bootstrap.Modal.getInstance(imageModal);
+                    modal.hide();
+                });
             });
         });
     }
