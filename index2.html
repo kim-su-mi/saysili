@@ -18,7 +18,8 @@
     <script src="js/textUpload.js"></script>
     <script src="js/templatesUpload.js"></script>
     <script src="js/saveCanvas.js"></script>
-    <script src="js/imageUpload2.js"></script>
+    <script src="js/imageUpload.js"></script>
+    <script src="js/editTool.js"></script>
    
 </head>
 <body>
@@ -50,9 +51,9 @@
         <button type="button" id="m-size">M</button>
         <button type="button" id="l-size">L</button>
     </div>
-    <h3 style="font-family: '티웨이하늘체';">티웨이하늘체</h3>
+    <!-- <h3 style="font-family: '티웨이하늘체';">티웨이하늘체</h3>
     <h3 style="font-family: '칠백삼체';">칠백삼체</h3>
-    <h3 style="font-family: '세방고딕체';">세방고딕체</h3>
+    <h3 style="font-family: '세방고딕체';">세방고딕체</h3> -->
     <!-- 텍스트 버튼과 모달 시작 -->
     <div id="text">
         <button type="button" id="text-add" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#textModal">
@@ -233,5 +234,14 @@
         </div>
     </div>
     <button type="button" id="saveButton" class="btn btn-primary">디자인 저장</button>
+    <!-- 실행 취소/다시 실행 버튼 추가 -->
+    <div id="editButtons" class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-secondary" id="undoBtn">
+            ↩ 실행 취소
+        </button>
+        <button type="button" class="btn btn-outline-secondary" id="redoBtn">
+            ↪ 다시 실행
+        </button>
+    </div>
 </body>
 </html>

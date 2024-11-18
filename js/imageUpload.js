@@ -107,7 +107,7 @@ function initImageUpload() {
                 const imageData = pageImages[index];
                 
                 // Promise로 이미지 로딩 처리
-                new Promise((resolve) => {
+                
                     fabric.Image.fromURL(imageData, (img) => {
                         const scale = Math.min(100 / img.width, 100 / img.height);
                         img.scale(scale);
@@ -116,28 +116,29 @@ function initImageUpload() {
                             left: fabricCanvas.width / 2 - (img.width * scale) / 2,
                             top: fabricCanvas.height / 2 - (img.height * scale) / 2
                         });
+
+                        // 업로드된 이미지 색상 변경 (디폴트 흰색)
+                        img.filters.push(new fabric.Image.filters.BlendColor({
+                            // color: selectedColor,
+                            color: '#FFFFFF',
+                            mode: 'tint',
+                            alpha: 1  // 색상 적용 강도 (0~1)
+                        }));
+
+                        // 필터 적용
+                        img.applyFilters();
     
                         fabricCanvas.add(img);
                         fabricCanvas.renderAll();
-                        resolve();
+                        
                     });
-                }).then(() => {
-                    // 이미지 추가가 완료된 후 현재 view의 canvas 상태를 업데이트
-                    if (canvasInstances[currentView]) {
-                        canvasInstances[currentView] = new fabric.Canvas(null);
-                        canvasInstances[currentView].loadFromJSON(
-                            fabricCanvas.toJSON(),
-                            function() {
-                                console.log(`Updated state for ${currentView}`);
-                            }
-                        );
-                    }
-                    
+               
+                   
                     // 모달 닫기
                     const imageModal = document.getElementById('imageModal');
                     const modal = bootstrap.Modal.getInstance(imageModal);
                     modal.hide();
-                });
+                
             });
         });
     }
