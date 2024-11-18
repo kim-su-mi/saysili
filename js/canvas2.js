@@ -36,40 +36,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 색상 선택 버튼 생성
             const colors = ['#f70303',
-                '#fd4eb5',
-                '#f284c1',
-                '#f2a9c4',
-                '#ff9f2f',
-                '#feed01',
-                '#87dc29',
-                '#f9ec90',
-                '#0bc349',
-                '#01c8a9',
-                '#00b7e9',
-                '#abebd3',
-                '#2456ed',
-                '#8f4fdb',
-                '#4a236d',
-                '#d7ccee',
-                '#898989',
-                '#aa967e',
-                '#202020',
-                '#ffffff', //기본
-                '#fa9529',
-                '#fbf666',
-                '#54e669',
-                '#d6e00d',
-                '#fbc9d4',
-                '#fac79c',
-                '#c6f5b1',
-                '#b5ebd1',
-                '#1896e3',
-                '#9473c2', //야광
-                '#ebebeb',
-                '#f6cfd2',
-                '#d7edfa',
-                '#e3f1da',
-                '#ecdff3', // 투명
+                '#fd4eb5','#f284c1','#f2a9c4','#ff9f2f','#feed01',
+                '#87dc29','#f9ec90','#0bc349','#01c8a9','#00b7e9',
+                '#abebd3','#2456ed','#8f4fdb','#4a236d','#d7ccee',
+                '#898989','#aa967e','#202020','#ffffff', //기본
+                '#fa9529','#fbf666','#54e669','#d6e00d','#fbc9d4',
+                '#fac79c','#c6f5b1','#b5ebd1','#c6f5b1','#b5ebd1',
+                '#1896e3','#9473c2', //야광
+                '#ebebeb','#f6cfd2','#d7edfa','#e3f1da','#ecdff3', // 투명
             ];
             colors.forEach(color => {
                 const colorButton = document.createElement('button');
@@ -98,6 +72,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 초기 크기를 S 사이즈로 설정
             resizeBracelet('s');
+
+            /*
+            *테스트를 위한 도형 추가
+            */
+            fabricCanvas.add(new fabric.Circle({
+                radius: 20,
+                fill: 'red',
+                left: 50,
+                top: 20
+            }));
+            fabricCanvas.renderAll();
 
             
         });
@@ -264,6 +249,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if(activeCanvas){
                 const canvasWidth = newSize.width * 0.8;
                 const canvasHeight = newSize.height * 0.8;
+
+                // 현재 뷰의 상태만 가져오기
+                const currentViewState = canvasInstances[currentView]?.toJSON() || fabricCanvas.toJSON();
                 
                 activeCanvas.width = canvasWidth;
                 activeCanvas.height = canvasHeight;
@@ -275,18 +263,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     height: canvasHeight
                 });
 
-                // 현재 뷰의 상태 확인
-                const viewState = canvasInstances[currentView];
-                if (!viewState || !viewState.objects || viewState.objects.length === 0) {
-                    // 빈 상태라면 그대로 빈 상태 유지
-                    fabricCanvas.clear();
+                // 현재 뷰의 상태만 복원
+                fabricCanvas.loadFromJSON(currentViewState, function() {
                     fabricCanvas.renderAll();
-                } else {
-                    // 저장된 상태가 있다면 해당 상태로 복원
-                    fabricCanvas.loadFromJSON(viewState, function() {
-                        fabricCanvas.renderAll();
+                    
+                    // 현재 뷰의 상태만 업데이트
+                    canvasInstances[currentView] = new fabric.Canvas(null);
+                    canvasInstances[currentView].loadFromJSON(fabricCanvas.toJSON(), function() {
+                        console.log(`Updated ${currentView} state after resize`);
                     });
-                }
+                });
 
                 const printableAreaSpan = document.querySelector('.printable-area span');
                 if (printableAreaSpan) {
@@ -322,19 +308,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     
-    /*
-    *테스트를 위한 도형 추가
-    */
-    fabricCanvas.add(new fabric.Circle({
-        radius: 20,
-        fill: 'red',
-        left: 50,
-        top: 20
-    }));
-
     
-    // fabricCanvas.add(text);
-    fabricCanvas.renderAll();
+    
 
      /**
      * 팔찌 뷰 전환에 대한 js

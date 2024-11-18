@@ -52,7 +52,7 @@ function createTextColorButtons() {
         '#f70303', '#fd4eb5', '#f284c1', '#f2a9c4', '#ff9f2f',
         '#feed01', '#87dc29', '#f9ec90', '#0bc349', '#01c8a9',
         '#00b7e9', '#abebd3', '#2456ed', '#8f4fdb', '#4a236d',
-        '#d7ccee', '#898989', '#aa967e', '#202020', '#000000'  
+        '#d7ccee', '#898989', '#aa967e', '#000000', '#ffffff'  
     ];
     
     const colorPicker = document.getElementById('textColorPicker');
@@ -63,7 +63,7 @@ function createTextColorButtons() {
         colorBtn.style.backgroundColor = color;
         colorBtn.setAttribute('data-color', color);
         
-        if (color === '#000000') {
+        if (color === '#ffffff') {
             colorBtn.classList.add('selected');
         }
         
@@ -157,7 +157,7 @@ function initializeTextEvents() {
     document.getElementById('text-add').addEventListener('click', () => {
         resetModalControls();
         
-        const defaultColor = '#000000';
+        const defaultColor = '#ffffff';
         
         currentText = new fabric.IText('텍^스*트我를 \n입abc력de♥하세요', {
             left: textLeft,

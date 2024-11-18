@@ -116,37 +116,18 @@ function initImageUpload() {
                             left: fabricCanvas.width / 2 - (img.width * scale) / 2,
                             top: fabricCanvas.height / 2 - (img.height * scale) / 2
                         });
-
-                        // 현재 선택된 색상 가져오기
-                        const activeColorButton = document.querySelector('#colorPicker button.active');
-                        if (activeColorButton) {
-                            const selectedColor = activeColorButton.style.backgroundColor;
-                            // RGB 문자열을 숫자 배열로 변환
-                            const rgbValues = selectedColor.match(/\d+/g).map(Number);
                             
-                            // 흑백 필터 적용 (이미지를 흑백으로 만듦)
-                            img.filters.push(new fabric.Image.filters.Grayscale());
-                            
-                            // 색조 필터 적용 (선택된 색상으로 변경)
-                            img.filters.push(new fabric.Image.filters.BlendColor({
-                                // color: selectedColor,
-                                color: '#FFFFFF',
-                                mode: 'tint',
-                                alpha: 1  // 색상 적용 강도 (0~1)
-                            }));
-                            // // 밝기 조정
-                            // img.filters.push(new fabric.Image.filters.Brightness({
-                            //     brightness: 0.1
-                            // }));
+                        // 업로드된 이미지 색상 변경 (디폴트 흰색)
+                        img.filters.push(new fabric.Image.filters.BlendColor({
+                            // color: selectedColor,
+                            color: '#FFFFFF',
+                            mode: 'tint',
+                            alpha: 1  // 색상 적용 강도 (0~1)
+                        }));
 
-                            // // 대비 조정
-                            // img.filters.push(new fabric.Image.filters.Contrast({
-                            //     contrast: 0.1
-                            // }));
-
-                            // 필터 적용
-                            img.applyFilters();
-                        }
+                        // 필터 적용
+                        img.applyFilters();
+                        
     
                         fabricCanvas.add(img);
                         fabricCanvas.renderAll();
