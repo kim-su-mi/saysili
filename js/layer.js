@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
             layerName = 'Text';
         } else if (obj instanceof fabric.Image) {
             layerName = 'Image';
-        } else if (obj instanceof fabric.Group || obj._objects) {
+        } else if (obj.type === 'group' || obj instanceof fabric.Group || obj._objects) {
             layerName = 'Template';
         }
 
