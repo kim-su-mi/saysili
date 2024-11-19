@@ -321,16 +321,16 @@ document.addEventListener('DOMContentLoaded', function() {
     /*
     *테스트를 위한 도형 추가
     */
-    fabricCanvas.add(new fabric.Circle({
-        radius: 20,
-        fill: 'red',
-        left: 50,
-        top: 20
-    }));
+    // fabricCanvas.add(new fabric.Circle({
+    //     radius: 20,
+    //     fill: 'red',
+    //     left: 50,
+    //     top: 20
+    // }));
 
     
-    // fabricCanvas.add(text);
-    fabricCanvas.renderAll();
+    // // fabricCanvas.add(text);
+    // fabricCanvas.renderAll();
 
      /**
      * 팔찌 뷰 전환에 대한 js
@@ -412,8 +412,23 @@ document.addEventListener('DOMContentLoaded', function() {
             b.toString(16).padStart(2, '0');
     }
 
+    // fabricCanvas 초기화 후에 추가
+    fabricCanvas.on('object:added', function(e) {
+        if (!e.target.layerCreated) {
+            const layerIndex = document.querySelectorAll('.layer-item').length + 1;
+            createLayerItem(e.target, layerIndex);
+            e.target.layerCreated = true;
+        }
+    });
 
-   
+    // 테스트용 원 추가 코드 수정
+    const circle = new fabric.Circle({
+        radius: 20,
+        fill: 'red',
+        left: 50,
+        top: 20
+    });
+    fabricCanvas.add(circle);
 
 });
 // Canvas 상태 저장 함수

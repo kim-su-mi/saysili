@@ -61,6 +61,14 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
+    padding: 4px;
+    flex-grow: 1;
+}
+
+.layer-info:hover {
+    background-color: #f8f9fa;
+    border-radius: 4px;
 }
 
 .visibility-btn {
@@ -111,4 +119,10 @@
 /* 펼쳐진 상태일 때 버튼 스타일 */
 .layer-panel:not(.collapsed) .toggle-btn::after {
     content: '-';  /* 마이너스 기호로 변경 */
+}
+
+/* 선택된 레이어 스타일 */
+.layer-item.selected .layer-info {
+    background-color: #e9ecef;
+    border-radius: 4px;
 }
