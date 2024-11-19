@@ -80,7 +80,7 @@ function initTemplatesUpload() {
                         // SVG 이미지를 Fabric Canvas에 추가
                         fabric.loadSVGFromURL(imgSrc, function(objects, options) {
                             const loadedObject = fabric.util.groupSVGElements(objects, options);
-                            
+
                             // 이미지 크기 조정 (필요한 경우)
                             loadedObject.scaleToWidth(50);  // 원하는 크기로 조정
                             

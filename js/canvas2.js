@@ -265,11 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const canvasWidth = newSize.width * 0.8;
                 const canvasHeight = newSize.height * 0.8;
                 
-                // 현재 상태 임시 저장
-                const tempState = fabricCanvas.toJSON();
                 
-                activeCanvas.width = canvasWidth;
-                activeCanvas.height = canvasHeight;
                 
                 fabricCanvas.setWidth(canvasWidth);
                 fabricCanvas.setHeight(canvasHeight);
@@ -278,10 +274,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     height: canvasHeight
                 });
         
-                // 상태 복원
-                fabricCanvas.loadFromJSON(tempState, function() {
-                    fabricCanvas.renderAll();
-                });
+              
+                fabricCanvas.renderAll();
+               
 
         
                 const printableAreaSpan = document.querySelector('.printable-area span');
@@ -354,6 +349,9 @@ document.addEventListener('DOMContentLoaded', function() {
              // 뷰에 따른 이미지 변경
              const newView = this.dataset.view;
              currentView = newView;
+
+             // 레이어 패널 업데이트
+            window.updateLayerPanel(currentView);
  
              switch(newView) {
                  case 'outer-front':
@@ -411,18 +409,26 @@ document.addEventListener('DOMContentLoaded', function() {
             g.toString(16).padStart(2, '0') + 
             b.toString(16).padStart(2, '0');
     }
+    function generateUniqueId() {
+        return '_' + Math.random().toString(36).substr(2, 9);
+    }
 
     // fabricCanvas 초기화 후에 추가
     fabricCanvas.on('object:added', function(e) {
-        if (!e.target.layerCreated) { // e.target은 캔버스에 새로 추가된 객체
-            // 현재 존재하는 레이어 아이템의 개수를 세고 +1하여 새 레이어의 인덱스 결정
-            const layerIndex = document.querySelectorAll('.layer-item').length + 1;
-            // 레이어 아이템 생성 함수 호출
-            createLayerItem(e.target, layerIndex);
-            // 레이어 생성 완료 표시 (중복 생성 방지)
-            e.target.layerCreated = true;
+        const obj = e.target;
+        
+        // Only create layer if object doesn't already have an ID
+        if (!obj.id) {
+            obj.id = generateUniqueId();
+            const layer = createLayerItem(obj, layerInstances[currentView].length + 1);
+            const layerContent = document.querySelector('.layer-content');
+            layerContent.appendChild(layer.element);
         }
+        
+        // Update layer indices
+        updateLayerIndices();
     });
+
 
     // // 테스트용 원 추가 코드 수정
     // const circle = new fabric.Circle({
@@ -437,8 +443,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // Canvas 상태 저장 함수
 function saveCurrentCanvasState() {
     if (currentView && fabricCanvas) {
-        canvasInstances[currentView] = new fabric.Canvas(null);
-        canvasInstances[currentView].loadFromJSON(fabricCanvas.toJSON(), function() {
+        const currentState = fabricCanvas.toJSON(['id']); // Include id in serialization
+        canvasInstances[currentView].loadFromJSON(currentState, function() {
             console.log(`Saved state for ${currentView}`);
             fabricCanvas.clear();
         });
@@ -449,12 +455,26 @@ function saveCurrentCanvasState() {
 function loadCanvasState() {
     if (currentView && canvasInstances[currentView]) {
         fabricCanvas.clear();
-        fabricCanvas.loadFromJSON(canvasInstances[currentView].toJSON(), function() {
-            console.log(`Loaded state for ${currentView}`);
+        const savedState = canvasInstances[currentView].toJSON(['id']);
+        
+        // Clear existing layers for current view
+        const layerContent = document.querySelector('.layer-content');
+        layerContent.innerHTML = '';
+        layerInstances[currentView] = [];
+        
+        fabricCanvas.loadFromJSON(savedState, function() {
+            // Recreate layers for all objects
+            fabricCanvas.getObjects().forEach((obj, index) => {
+                if (!obj.layerCreated) {
+                    const layer = createLayerItem(obj, index + 1);
+                    layerContent.appendChild(layer.element);
+                    obj.layerCreated = true;
+                }
+            });
+            
             fabricCanvas.renderAll();
+            updateLayerIndices();
         });
-    } else {
-        fabricCanvas.clear();
     }
 }
 
