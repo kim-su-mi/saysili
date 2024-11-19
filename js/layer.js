@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupLayerControls(layer, layerItem) {
         // 레이어 클릭 이벤트
         layerItem.querySelector('.layer-info').addEventListener('click', function(e) {
-            if (!e.target.closest('.layer-controls')) {
+            if (!e.target.closest('.layer-controls') && !layer.fabricObject.lockMovementX) {
                 fabricCanvas.discardActiveObject();
                 fabricCanvas.setActiveObject(layer.fabricObject);
                 fabricCanvas.renderAll();
@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
             layer.fabricObject.set('visible', !isVisible);
             this.textContent = isVisible ? '👁‍🗨' : '👁';
             fabricCanvas.renderAll();
+            saveCurrentCanvasState(); // 상태 저장
         });
     
         // 잠금 버튼 초기 상태 설정
@@ -112,18 +113,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // 잠금 버튼 이벤트
         lockBtn.addEventListener('click', function() {
             const isLocked = layer.fabricObject.lockMovementX;
+            const newLockState = !isLocked;
+            
             layer.fabricObject.set({
-                lockMovementX: !isLocked,
-                lockMovementY: !isLocked,
-                lockRotation: !isLocked,
-                lockScalingX: !isLocked,
-                lockScalingY: !isLocked,
-                selectable: !isLocked,
-                hoverCursor: isLocked ? 'move' : 'default',
-                moveCursor: isLocked ? 'move' : 'default'
+                lockMovementX: newLockState,
+                lockMovementY: newLockState,
+                lockRotation: newLockState,
+                lockScalingX: newLockState,
+                lockScalingY: newLockState,
+                selectable: !newLockState,
+                evented: !newLockState, // 클릭 이벤트 비활성화
+                hoverCursor: newLockState ? 'default' : 'move',
+                moveCursor: newLockState ? 'default' : 'move'
             });
-            this.textContent = isLocked ? '🔓' : '🔒';
+            
+            this.textContent = newLockState ? '🔒' : '🔓';
             fabricCanvas.renderAll();
+            saveCurrentCanvasState(); // 상태 저장
         });
     
         // 삭제 버튼 이벤트는 동일

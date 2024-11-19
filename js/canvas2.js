@@ -445,10 +445,10 @@ function saveCurrentCanvasState() {
     if (currentView && fabricCanvas) {
         const currentState = fabricCanvas.toJSON(['id', 'visible', 'lockMovementX', 
             'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
-            'selectable', 'hoverCursor', 'moveCursor']); 
+            'selectable', 'evented', 'hoverCursor', 'moveCursor']); 
+        canvasInstances[currentView] = new fabric.Canvas(null);
         canvasInstances[currentView].loadFromJSON(currentState, function() {
             console.log(`Saved state for ${currentView}`);
-            fabricCanvas.clear();
         });
     }
 }
@@ -457,16 +457,26 @@ function saveCurrentCanvasState() {
 function loadCanvasState() {
     if (currentView && canvasInstances[currentView]) {
         fabricCanvas.clear();
-        const savedState = canvasInstances[currentView].toJSON(['id']);
+        const savedState = canvasInstances[currentView].toJSON(['id', 'visible', 
+            'lockMovementX', 'lockMovementY', 'lockRotation', 'lockScalingX', 
+            'lockScalingY', 'selectable', 'evented', 'hoverCursor', 'moveCursor']);
         
-        // Clear existing layers for current view
         const layerContent = document.querySelector('.layer-content');
         layerContent.innerHTML = '';
         layerInstances[currentView] = [];
         
         fabricCanvas.loadFromJSON(savedState, function() {
-            // Recreate layers for all objects
             fabricCanvas.getObjects().forEach((obj, index) => {
+                // 객체의 잠금 상태 복원
+                if (obj.lockMovementX) {
+                    obj.set({
+                        selectable: false,
+                        evented: false,
+                        hoverCursor: 'default',
+                        moveCursor: 'default'
+                    });
+                }
+                
                 if (!obj.layerCreated) {
                     const layer = createLayerItem(obj, index + 1);
                     layerContent.appendChild(layer.element);
