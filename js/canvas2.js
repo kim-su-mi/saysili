@@ -414,21 +414,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // fabricCanvas 초기화 후에 추가
     fabricCanvas.on('object:added', function(e) {
-        if (!e.target.layerCreated) {
+        if (!e.target.layerCreated) { // e.target은 캔버스에 새로 추가된 객체
+            // 현재 존재하는 레이어 아이템의 개수를 세고 +1하여 새 레이어의 인덱스 결정
             const layerIndex = document.querySelectorAll('.layer-item').length + 1;
+            // 레이어 아이템 생성 함수 호출
             createLayerItem(e.target, layerIndex);
+            // 레이어 생성 완료 표시 (중복 생성 방지)
             e.target.layerCreated = true;
         }
     });
 
-    // 테스트용 원 추가 코드 수정
-    const circle = new fabric.Circle({
-        radius: 20,
-        fill: 'red',
-        left: 50,
-        top: 20
-    });
-    fabricCanvas.add(circle);
+    // // 테스트용 원 추가 코드 수정
+    // const circle = new fabric.Circle({
+    //     radius: 20,
+    //     fill: 'red',
+    //     left: 50,
+    //     top: 20
+    // });
+    // fabricCanvas.add(circle);
 
 });
 // Canvas 상태 저장 함수
