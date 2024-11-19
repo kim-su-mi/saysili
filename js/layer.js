@@ -88,21 +88,29 @@ document.addEventListener('DOMContentLoaded', function() {
         layerItem.querySelector('.layer-info').addEventListener('click', function(e) {
             if (!e.target.closest('.layer-controls')) {
                 fabricCanvas.discardActiveObject();
-                fabricCanvas.setActiveObject(layer.fabricObject); // 업데이트된 참조 사용
+                fabricCanvas.setActiveObject(layer.fabricObject);
                 fabricCanvas.renderAll();
             }
         });
-
+    
+        // 숨기기 버튼 초기 상태 설정
+        const visibilityBtn = layerItem.querySelector('.visibility-btn');
+        visibilityBtn.textContent = layer.fabricObject.visible ? '👁' : '👁‍🗨';
+    
         // 숨기기 버튼 이벤트
-        layerItem.querySelector('.visibility-btn').addEventListener('click', function() {
+        visibilityBtn.addEventListener('click', function() {
             const isVisible = layer.fabricObject.visible;
             layer.fabricObject.set('visible', !isVisible);
             this.textContent = isVisible ? '👁‍🗨' : '👁';
             fabricCanvas.renderAll();
         });
-
+    
+        // 잠금 버튼 초기 상태 설정
+        const lockBtn = layerItem.querySelector('.lock-btn');
+        lockBtn.textContent = layer.fabricObject.lockMovementX ? '🔒' : '🔓';
+    
         // 잠금 버튼 이벤트
-        layerItem.querySelector('.lock-btn').addEventListener('click', function() {
+        lockBtn.addEventListener('click', function() {
             const isLocked = layer.fabricObject.lockMovementX;
             layer.fabricObject.set({
                 lockMovementX: !isLocked,
@@ -110,21 +118,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 lockRotation: !isLocked,
                 lockScalingX: !isLocked,
                 lockScalingY: !isLocked,
-                selectable: isLocked,
-                hoverCursor: !isLocked ? 'default' : 'move',
-                moveCursor: !isLocked ? 'default' : 'move'
+                selectable: !isLocked,
+                hoverCursor: isLocked ? 'move' : 'default',
+                moveCursor: isLocked ? 'move' : 'default'
             });
             this.textContent = isLocked ? '🔓' : '🔒';
             fabricCanvas.renderAll();
         });
-
-        // 삭제 버튼 이벤트
+    
+        // 삭제 버튼 이벤트는 동일
         layerItem.querySelector('.delete-btn').addEventListener('click', function() {
             if (confirm('이 레이어를 삭제하시겠습니까?')) {
                 fabricCanvas.remove(layer.fabricObject);
                 layerItem.remove();
                 
-                // layerInstances에서도 제거
                 const index = layerInstances[currentView].findIndex(l => l === layer);
                 if (index > -1) {
                     layerInstances[currentView].splice(index, 1);

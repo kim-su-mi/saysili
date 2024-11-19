@@ -443,7 +443,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // Canvas 상태 저장 함수
 function saveCurrentCanvasState() {
     if (currentView && fabricCanvas) {
-        const currentState = fabricCanvas.toJSON(['id']); // Include id in serialization
+        const currentState = fabricCanvas.toJSON(['id', 'visible', 'lockMovementX', 
+            'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
+            'selectable', 'hoverCursor', 'moveCursor']); 
         canvasInstances[currentView].loadFromJSON(currentState, function() {
             console.log(`Saved state for ${currentView}`);
             fabricCanvas.clear();
