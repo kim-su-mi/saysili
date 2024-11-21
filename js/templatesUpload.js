@@ -80,30 +80,10 @@ function initTemplatesUpload() {
                         // SVG 이미지를 Fabric Canvas에 추가
                         fabric.loadSVGFromURL(imgSrc, function(objects, options) {
                             
+                            // 템플릿 객체의 색상 변경
                             const templateColor = '#ffffff';
-                            // SVG의 모든 객체를 흰색으로 변경
-                            objects.forEach(obj => {
-                                obj.set({
-                                    fill: templateColor,        // 채우기 색상
-                                    stroke: templateColor,      // 선 색상
-                                    opacity: 1,             // 불투명도
-                                    fillOpacity: 1,         // 채우기 불투명도
-                                    strokeOpacity: 1,       // 선 불투명도
-                                    strokeWidth: 1,         // 선 굵기 통일
-                                    strokeDashArray: null,  // 점선 제거
-                                    gradientFill: null,     // 그라데이션 제거
-                                    shadow: null,           // 그림자 제거
-                                    filters: []             // 모든 필터 제거
-                                });
-                    
-                                // gradient나 pattern이 있다면 제거
-                                if (obj.fill instanceof fabric.Pattern || obj.fill instanceof fabric.Gradient) {
-                                    obj.set('fill', templateColor);
-                                }
-                                if (obj.stroke instanceof fabric.Pattern || obj.stroke instanceof fabric.Gradient) {
-                                    obj.set('stroke', templateColor);
-                                }
-                            });
+                            changeTemplateColor(objects, templateColor);
+
 
                             const loadedObject = fabric.util.groupSVGElements(objects, options);
 
@@ -174,6 +154,7 @@ function initTemplatesUpload() {
     // 첫 페이지 버튼을 기본으로 활성화
     document.querySelector('.page-dot').classList.add('active');
 }
+
 
 // DOM이 로드된 후 초기화
 document.addEventListener('DOMContentLoaded', initTemplatesUpload);

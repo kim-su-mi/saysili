@@ -117,16 +117,8 @@ function initImageUpload() {
                             top: fabricCanvas.height / 2 - (img.height * scale) / 2
                         });
 
-                        // 업로드된 이미지 색상 변경 (디폴트 흰색)
-                        img.filters.push(new fabric.Image.filters.BlendColor({
-                            // color: selectedColor,
-                            color: imageColor,
-                            mode: 'tint',
-                            alpha: 1  // 색상 적용 강도 (0~1)
-                        }));
-
-                        // 필터 적용
-                        img.applyFilters();
+                        // 이미지 색상 변경 함수 
+                        changeImageColor(img, imageColor);
     
                         fabricCanvas.add(img);
                         fabricCanvas.renderAll();
@@ -143,6 +135,7 @@ function initImageUpload() {
         });
     }
 
+    
     // 페이지네이션 업데이트
     function updatePagination() {
         const pagination = document.getElementById('imagePagination');

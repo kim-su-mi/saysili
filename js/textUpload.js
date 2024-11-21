@@ -74,7 +74,28 @@ function createTextColorButtons() {
                 });
                 this.classList.add('selected');
                 
-                currentText.set('fill', color);
+                const selectedColor = color;
+            
+                // Canvas의 모든 객체 색상 변경
+                fabricCanvas.getObjects().forEach(obj => {
+                    if (obj instanceof fabric.IText) {
+                        // 텍스트 객체인 경우
+                        obj.set('fill', selectedColor);
+                    } 
+                    else if (obj instanceof fabric.Image) {
+                        // 이미지 객체인 경우
+                        changeImageColor(obj, selectedColor);
+                    }
+                    else if (obj instanceof fabric.Group) {  
+                        console.log('템플릿 색상 변경');
+                        // 템플릿 객체(SVG/템플릿)인 경우
+                        const templateObjects = obj.getObjects();
+                        changeTemplateColor(templateObjects, selectedColor);
+                    }
+                });
+                
+
+
                 fabricCanvas.renderAll();
             }
         });
