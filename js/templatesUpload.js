@@ -81,19 +81,34 @@ function initTemplatesUpload() {
                         fabric.loadSVGFromURL(imgSrc, function(objects, options) {
                             const loadedObject = fabric.util.groupSVGElements(objects, options);
 
+                            // 추가 : 로드된 객체 타입 확인용
+                            console.log('로드된 객체 확인:', {
+                                type: loadedObject.type,
+                                isGroup: loadedObject instanceof fabric.Group,
+                                objects: loadedObject._objects,
+                                originalSVG: objects
+                            });
+
                             // 이미지 크기 조정 (필요한 경우)
                             loadedObject.scaleToWidth(50);  // 원하는 크기로 조정
                             
-                            // 이미지 위치 설정
-                            loadedObject.set({
-                                left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2, /**이미지가 가운데 뜨게 설정 */
+                            // // 이미지 위치 설정
+                            // loadedObject.set({
+                            //     left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2, /**이미지가 가운데 뜨게 설정 */
+                            //     top: fabricCanvas.height / 2 - loadedObject.height * loadedObject.scaleY / 2,
+                            //     selectable: true,  // 선택 가능하도록 설정
+                            //     evented: true      // 이벤트 활성화
+                            // });
+                            // 명시적으로 Group으로 변환
+                            const group = new fabric.Group([loadedObject], {
+                                left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2,
                                 top: fabricCanvas.height / 2 - loadedObject.height * loadedObject.scaleY / 2,
-                                selectable: true,  // 선택 가능하도록 설정
-                                evented: true      // 이벤트 활성화
+                                selectable: true,
+                                evented: true
                             });
                             
                             // Canvas에 추가
-                            fabricCanvas.add(loadedObject);
+                            fabricCanvas.add(group);
                             fabricCanvas.renderAll();
                             
                              // 부트스트랩 모달 인스턴스를 가져와서 닫기

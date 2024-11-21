@@ -42,20 +42,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (existingLayer) {
             return existingLayer;
         }
-        // 새로운 레이어 아이템 요소 생성
-        const layerItem = document.createElement('div');
-        layerItem.className = 'layer-item';
-        layerItem.dataset.objectId = obj.id; // fabric 객체의 ID를 HTML 요소에 데이터 속성으로 저장, 레이어와 캔버스 객체를 연결
 
-        // Determine layer name based on object type
-        let layerName = 'Layer';
+        // let layerName = 'Layer';
+        // if (obj instanceof fabric.IText) {
+        //     layerName = 'Text';
+        // } else if (obj instanceof fabric.Image) {
+        //     layerName = 'Image';
+        // } else if (obj.type === 'group' || obj instanceof fabric.Group || obj._objects) {
+        //     layerName = 'Template';
+        // }
+        let layerName = 'Template';  // 기본값을 Template로 설정
         if (obj instanceof fabric.IText) {
             layerName = 'Text';
         } else if (obj instanceof fabric.Image) {
             layerName = 'Image';
-        } else if (obj.type === 'group' || obj instanceof fabric.Group || obj._objects) {
-            layerName = 'Template';
         }
+        
+        // 새로운 레이어 아이템 요소 생성
+        const layerItem = document.createElement('div');
+        layerItem.className = 'layer-item';
+        layerItem.dataset.objectId = obj.id; // fabric 객체의 ID를 HTML 요소에 데이터 속성으로 저장, 레이어와 캔버스 객체를 연결
 
         layerItem.innerHTML = `
             <div class="layer-info">
