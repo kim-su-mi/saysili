@@ -43,20 +43,20 @@ document.addEventListener('DOMContentLoaded', function() {
             return existingLayer;
         }
 
-        // let layerName = 'Layer';
-        // if (obj instanceof fabric.IText) {
-        //     layerName = 'Text';
-        // } else if (obj instanceof fabric.Image) {
-        //     layerName = 'Image';
-        // } else if (obj.type === 'group' || obj instanceof fabric.Group || obj._objects) {
-        //     layerName = 'Template';
-        // }
-        let layerName = 'Template';  // 기본값을 Template로 설정
+        let layerName = 'Layer';
         if (obj instanceof fabric.IText) {
             layerName = 'Text';
         } else if (obj instanceof fabric.Image) {
             layerName = 'Image';
+        } else if (obj.type === 'group' || obj instanceof fabric.Group || obj._objects) {
+            layerName = 'Template';
         }
+        // let layerName = 'Template';  // 기본값을 Template로 설정
+        // if (obj instanceof fabric.IText) {
+        //     layerName = 'Text';
+        // } else if (obj instanceof fabric.Image) {
+        //     layerName = 'Image';
+        // }
         
         // 새로운 레이어 아이템 요소 생성
         const layerItem = document.createElement('div');
