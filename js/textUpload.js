@@ -75,31 +75,47 @@ function createTextColorButtons() {
                 this.classList.add('selected');
                 
                 const selectedColor = color;
-            
-                // Canvas의 모든 객체 색상 변경
+                
+                // 현재 활성화된 canvas의 객체들 색상 변경
                 fabricCanvas.getObjects().forEach(obj => {
                     if (obj instanceof fabric.IText) {
-                        // 텍스트 객체인 경우
                         obj.set('fill', selectedColor);
                     } 
                     else if (obj instanceof fabric.Image) {
-                        // 이미지 객체인 경우
                         changeImageColor(obj, selectedColor);
                     }
-                    else if (obj instanceof fabric.Group) {  
-                        console.log('템플릿 색상 변경');
-                        // 템플릿 객체(SVG/템플릿)인 경우
+                    else if (obj instanceof fabric.Group) {
                         const templateObjects = obj.getObjects();
                         changeTemplateColor(templateObjects, selectedColor);
                     }
                 });
-                
-
-
                 fabricCanvas.renderAll();
+                
+                // 현재 뷰의 상태를 저장
+                saveCurrentCanvasState();
+                
+                // 현재 뷰를 제외한 다른 뷰들의 canvas 객체들 색상 변경
+                Object.keys(canvasInstances).forEach(view => {
+                    if (view !== currentView && canvasInstances[view]) {  // 현재 뷰 제외
+                        const canvas = canvasInstances[view];
+                        canvas.getObjects().forEach(obj => {
+                            if (obj instanceof fabric.IText) {
+                                obj.set('fill', selectedColor);
+                            } 
+                            else if (obj instanceof fabric.Image) {
+                                changeImageColor(obj, selectedColor);
+                            }
+                            else if (obj instanceof fabric.Group) {
+                                const templateObjects = obj.getObjects();
+                                changeTemplateColor(templateObjects, selectedColor);
+                            }
+                        });
+                        // 각 뷰의 상태도 저장
+                        canvasInstances[view] = canvas;
+                    }
+                });
             }
         });
-        
         colorPicker.appendChild(colorBtn);
     });
 }

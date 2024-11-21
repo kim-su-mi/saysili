@@ -18,16 +18,16 @@ function changeImageColor(img, color) {
 
 // 템플릿 객체의 색상을 변경하는 함수
 function changeTemplateColor(objects, color) {
-    console.log('Starting color change to:', color);
-    console.log('Number of objects to change:', objects.length);
+    // console.log('Starting color change to:', color);
+    // console.log('Number of objects to change:', objects.length);
 
     objects.forEach((obj, index) => {
-        console.log(`\nChanging object ${index + 1}:`);
-        console.log('Before change:', {
-            type: obj.type,
-            fill: obj.fill,
-            stroke: obj.stroke
-        });
+        // console.log(`\nChanging object ${index + 1}:`);
+        // console.log('Before change:', {
+        //     type: obj.type,
+        //     fill: obj.fill,
+        //     stroke: obj.stroke
+        // });
 
         const colorSettings = {
             fill: color,
@@ -60,13 +60,13 @@ function changeTemplateColor(objects, color) {
             changeTemplateColor(innerObjects, color); // 재귀적으로 내부 객체들의 색상도 변경
         }
 
-        console.log('After change:', {
-            type: obj.type,
-            fill: obj.fill,
-            stroke: obj.stroke
-        });
+        // console.log('After change:', {
+        //     type: obj.type,
+        //     fill: obj.fill,
+        //     stroke: obj.stroke
+        // });
     });
 
-    console.log('\nColor change completed');
+    // console.log('\nColor change completed');
     return objects;
 }
