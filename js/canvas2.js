@@ -35,41 +35,13 @@ document.addEventListener('DOMContentLoaded', function() {
             braceletImage.parentNode.replaceChild(svgDoc.documentElement, braceletImage);
 
             // 색상 선택 버튼 생성
-            const colors = ['#f70303',
-                '#fd4eb5',
-                '#f284c1',
-                '#f2a9c4',
-                '#ff9f2f',
-                '#feed01',
-                '#87dc29',
-                '#f9ec90',
-                '#0bc349',
-                '#01c8a9',
-                '#00b7e9',
-                '#abebd3',
-                '#2456ed',
-                '#8f4fdb',
-                '#4a236d',
-                '#d7ccee',
-                '#898989',
-                '#aa967e',
-                '#202020',
-                '#ffffff', //기본
-                '#fa9529',
-                '#fbf666',
-                '#54e669',
-                '#d6e00d',
-                '#fbc9d4',
-                '#fac79c',
-                '#c6f5b1',
-                '#b5ebd1',
-                '#1896e3',
-                '#9473c2', //야광
-                '#ebebeb',
-                '#f6cfd2',
-                '#d7edfa',
-                '#e3f1da',
-                '#ecdff3', // 투명
+            const colors = ['#f70303','#fd4eb5','#f284c1','#f2a9c4','#ff9f2f',
+                            '#feed01','#87dc29','#f9ec90','#0bc349','#01c8a9',
+                            '#00b7e9','#abebd3','#2456ed','#8f4fdb','#4a236d',
+                            '#d7ccee','#898989','#aa967e','#202020','#ffffff', //기본
+                            '#fa9529','#fbf666','#54e669','#d6e00d','#fbc9d4',
+                            '#fac79c','#c6f5b1','#b5ebd1','#1896e3','#9473c2', //야광
+                            '#ebebeb','#f6cfd2','#d7edfa','#e3f1da','#ecdff3', // 투명
             ];
             colors.forEach(color => {
                 const colorButton = document.createElement('button');
@@ -337,8 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
              // 모든 버튼의 활성화 상태 제거
              viewButtons.forEach(btn => btn.classList.remove('active'));
              
-             
-             
              // 클릭된 버튼 활성화
              this.classList.add('active');
              
@@ -409,17 +379,21 @@ document.addEventListener('DOMContentLoaded', function() {
             g.toString(16).padStart(2, '0') + 
             b.toString(16).padStart(2, '0');
     }
+    
+    // 캔버스에 추가되는 객체에 고유 ID 생성
     function generateUniqueId() {
-        return '_' + Math.random().toString(36).substr(2, 9);
+        // uuid 모듈을 사용하여 고유 ID 생성
+        return uuid.v4();
     }
 
-    // fabricCanvas 초기화 후에 추가
+    // 객체가 캔버스에 추가될 때마다 실행 
     fabricCanvas.on('object:added', function(e) {
-        const obj = e.target;
+        const obj = e.target; // e.target = 캔버스에 새로 추가된 객체
         
-        // Only create layer if object doesn't already have an ID
+        // 객체에 고유 ID가 없는 경우에만 새 레이어 생성
         if (!obj.id) {
             obj.id = generateUniqueId();
+            console.log(obj.id);    
             const layer = createLayerItem(obj, layerInstances[currentView].length + 1);
             const layerContent = document.querySelector('.layer-content');
             layerContent.appendChild(layer.element);
@@ -461,10 +435,12 @@ function loadCanvasState() {
             'lockMovementX', 'lockMovementY', 'lockRotation', 'lockScalingX', 
             'lockScalingY', 'selectable', 'evented', 'hoverCursor', 'moveCursor']);
         
+        // 레이어 패널 초기화
         const layerContent = document.querySelector('.layer-content');
         layerContent.innerHTML = '';
         layerInstances[currentView] = [];
         
+        //저장된 상태 복원
         fabricCanvas.loadFromJSON(savedState, function() {
             fabricCanvas.getObjects().forEach((obj, index) => {
                 // 객체의 잠금 상태 복원

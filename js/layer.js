@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 새로운 레이어 아이템 요소 생성
         const layerItem = document.createElement('div');
         layerItem.className = 'layer-item';
-        layerItem.dataset.objectId = obj.id; // fabric 객체의 ID를 데이터 속성으로 저장, 레이어와 캔버스 객체를 연결
+        layerItem.dataset.objectId = obj.id; // fabric 객체의 ID를 HTML 요소에 데이터 속성으로 저장, 레이어와 캔버스 객체를 연결
 
         // Determine layer name based on object type
         let layerName = 'Layer';
@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 moveCursor: newLockState ? 'default' : 'move'
             });
             
+            // UI 업데이트
             this.textContent = newLockState ? '🔒' : '🔓';
             fabricCanvas.renderAll();
             saveCurrentCanvasState(); // 상태 저장
@@ -135,14 +136,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // 삭제 버튼 이벤트는 동일
         layerItem.querySelector('.delete-btn').addEventListener('click', function() {
             if (confirm('이 레이어를 삭제하시겠습니까?')) {
+                // 캔버스에서 객체 삭제
                 fabricCanvas.remove(layer.fabricObject);
+                // UI 레이어 요소 삭제
                 layerItem.remove();
                 
+                // 레이어 배열 인스턴스에서 삭제
                 const index = layerInstances[currentView].findIndex(l => l === layer);
                 if (index > -1) {
                     layerInstances[currentView].splice(index, 1);
                 }
-                
+                // 레이어 인덱스 업데이트
                 updateLayerIndices();
             }
         });
