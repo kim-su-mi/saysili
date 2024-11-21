@@ -79,26 +79,37 @@ function initTemplatesUpload() {
                     item.onclick = () => {
                         // SVG 이미지를 Fabric Canvas에 추가
                         fabric.loadSVGFromURL(imgSrc, function(objects, options) {
-                            const loadedObject = fabric.util.groupSVGElements(objects, options);
-
-                            // 추가 : 로드된 객체 타입 확인용
-                            console.log('로드된 객체 확인:', {
-                                type: loadedObject.type,
-                                isGroup: loadedObject instanceof fabric.Group,
-                                objects: loadedObject._objects,
-                                originalSVG: objects
+                            
+                            const templateColor = '#ffffff';
+                            // SVG의 모든 객체를 흰색으로 변경
+                            objects.forEach(obj => {
+                                obj.set({
+                                    fill: templateColor,        // 채우기 색상
+                                    stroke: templateColor,      // 선 색상
+                                    opacity: 1,             // 불투명도
+                                    fillOpacity: 1,         // 채우기 불투명도
+                                    strokeOpacity: 1,       // 선 불투명도
+                                    strokeWidth: 1,         // 선 굵기 통일
+                                    strokeDashArray: null,  // 점선 제거
+                                    gradientFill: null,     // 그라데이션 제거
+                                    shadow: null,           // 그림자 제거
+                                    filters: []             // 모든 필터 제거
+                                });
+                    
+                                // gradient나 pattern이 있다면 제거
+                                if (obj.fill instanceof fabric.Pattern || obj.fill instanceof fabric.Gradient) {
+                                    obj.set('fill', templateColor);
+                                }
+                                if (obj.stroke instanceof fabric.Pattern || obj.stroke instanceof fabric.Gradient) {
+                                    obj.set('stroke', templateColor);
+                                }
                             });
+
+                            const loadedObject = fabric.util.groupSVGElements(objects, options);
 
                             // 이미지 크기 조정 (필요한 경우)
                             loadedObject.scaleToWidth(50);  // 원하는 크기로 조정
                             
-                            // // 이미지 위치 설정
-                            // loadedObject.set({
-                            //     left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2, /**이미지가 가운데 뜨게 설정 */
-                            //     top: fabricCanvas.height / 2 - loadedObject.height * loadedObject.scaleY / 2,
-                            //     selectable: true,  // 선택 가능하도록 설정
-                            //     evented: true      // 이벤트 활성화
-                            // });
                             // 명시적으로 Group으로 변환
                             const group = new fabric.Group([loadedObject], {
                                 left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2,

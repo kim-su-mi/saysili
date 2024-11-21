@@ -105,7 +105,7 @@ function initImageUpload() {
         document.querySelectorAll('.uploaded-image-item').forEach((item, index) => {
             item.addEventListener('click', () => {
                 const imageData = pageImages[index];
-                
+                const imageColor = '#ffffff';
                 // Promise로 이미지 로딩 처리
                 
                     fabric.Image.fromURL(imageData, (img) => {
@@ -120,7 +120,7 @@ function initImageUpload() {
                         // 업로드된 이미지 색상 변경 (디폴트 흰색)
                         img.filters.push(new fabric.Image.filters.BlendColor({
                             // color: selectedColor,
-                            color: '#FFFFFF',
+                            color: imageColor,
                             mode: 'tint',
                             alpha: 1  // 색상 적용 강도 (0~1)
                         }));
