@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Canvas 상태 저장 함수
 function saveCurrentCanvasState() {
     if (currentView && fabricCanvas) {
-        const currentState = fabricCanvas.toJSON(['id', 'type', 'visible', 'lockMovementX', 
+        const currentState = fabricCanvas.toJSON(['id', 'visible', 'lockMovementX', 
             'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
             'selectable', 'evented', 'hoverCursor', 'moveCursor']); 
         canvasInstances[currentView] = new fabric.Canvas(null);
@@ -431,7 +431,7 @@ function saveCurrentCanvasState() {
 function loadCanvasState() {
     if (currentView && canvasInstances[currentView]) {
         fabricCanvas.clear();
-        const savedState = canvasInstances[currentView].toJSON(['id', 'type', 'visible', 
+        const savedState = canvasInstances[currentView].toJSON(['id', 'visible', 
             'lockMovementX', 'lockMovementY', 'lockRotation', 'lockScalingX', 
             'lockScalingY', 'selectable', 'evented', 'hoverCursor', 'moveCursor']);
         
@@ -465,6 +465,7 @@ function loadCanvasState() {
         });
     }
 }
+
 
 // 모달 외부 클릭 시 닫기 이벤트 추가
 document.addEventListener('click', function(event) {

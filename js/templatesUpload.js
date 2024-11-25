@@ -91,18 +91,15 @@ function initTemplatesUpload() {
                             loadedObject.scaleToWidth(50);  // 원하는 크기로 조정
                             
                             // 명시적으로 Group으로 변환
-                            const template = new fabric.Group([loadedObject], {
+                            const group = new fabric.Group([loadedObject], {
                                 left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2,
                                 top: fabricCanvas.height / 2 - loadedObject.height * loadedObject.scaleY / 2,
                                 selectable: true,
-                                evented: true,
-                                subTargetCheck: false,    // 내부 객체 선택 방지
-                                lockUniScaling: true,     // 비율 유지하면서 크기 조정
-                                type: 'template'          // 템플릿 타입 지정
+                                evented: true
                             });
                             
                             // Canvas에 추가
-                            fabricCanvas.add(template);
+                            fabricCanvas.add(group);
                             fabricCanvas.renderAll();
                             
                              // 부트스트랩 모달 인스턴스를 가져와서 닫기

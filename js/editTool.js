@@ -155,4 +155,96 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // 그룹화 버튼
+    document.getElementById('groupBtn').addEventListener('click', function() {
+        const activeSelection = fabricCanvas.getActiveObject();
+        if (activeSelection && activeSelection.type === 'activeSelection') {
+            // 선택된 객체들의 레이어 찾기 (z-index 순서대로)
+            const selectedLayers = layerInstances[currentView].filter(layer => 
+                activeSelection.getObjects().find(obj => obj.id === layer.fabricObject.id)
+            );
+            
+            // 선택된 객체들의 원래 레이어 이름 저장
+            const originalLayerNames = selectedLayers.map(layer => {
+                const layerNameEl = layer.element.querySelector('.layer-name');
+                return layerNameEl.textContent.split(' ')[0]; // "Template", "Text" 등의 원래 이름 저장
+            });
+
+            // 선택된 객체들을 그룹화
+            const group = activeSelection.toGroup();
+            group.set({
+                id: uuid.v4(),
+                type: 'group',
+                originalLayerNames: originalLayerNames // 원래 레이어 이름들 저장
+            });
+
+            // 먼저 모든 선택된 레이어를 layerInstances에서 제거
+            selectedLayers.forEach(layer => {
+                const index = layerInstances[currentView].indexOf(layer);
+                if (index > -1) {
+                    layerInstances[currentView].splice(index, 1);
+                    layer.element.remove();
+                }
+            });
+
+            // 새로운 그룹 레이어 생성
+            const layerContent = document.querySelector('.layer-content');
+            const groupLayer = createLayerItem(group, 1);
+            if (groupLayer && groupLayer.element) {
+                const layerNameEl = groupLayer.element.querySelector('.layer-name');
+                layerNameEl.textContent = `Group ${layerInstances[currentView].length}`;
+                layerContent.appendChild(groupLayer.element);
+            }
+            
+            fabricCanvas.renderAll();
+            updateLayerIndices();
+        }
+    });
+
+    // 그룹 해제 버튼
+    document.getElementById('ungroupBtn').addEventListener('click', function() {
+        const activeObject = fabricCanvas.getActiveObject();
+        if (activeObject && activeObject.type === 'group') {
+            const items = activeObject.getObjects();
+            const originalLayerNames = activeObject.originalLayerNames || [];
+            
+            // 그룹 해제
+            activeObject.destroy();
+            fabricCanvas.remove(activeObject);
+            
+            // 기존 그룹 레이어 찾기
+            const groupLayer = layerInstances[currentView].find(layer => 
+                layer.fabricObject.id === activeObject.id
+            );
+            
+            // 그룹 레이어 제거
+            if (groupLayer) {
+                const index = layerInstances[currentView].indexOf(groupLayer);
+                if (index > -1) {
+                    layerInstances[currentView].splice(index, 1);
+                    groupLayer.element.remove();
+                }
+            }
+            
+            // 개별 객체들을 캔버스에 추가하고 레이어 생성
+            items.forEach((item, index) => {
+                item.set('id', uuid.v4());
+                fabricCanvas.add(item);
+                
+                const layerContent = document.querySelector('.layer-content');
+                const newLayer = createLayerItem(item, layerInstances[currentView].length + 1);
+                if (newLayer && newLayer.element) {
+                    const layerNameEl = newLayer.element.querySelector('.layer-name');
+                    // 원래 레이어 이름 복원
+                    const originalName = originalLayerNames[index] || 'Layer';
+                    layerNameEl.textContent = `${originalName} ${layerInstances[currentView].length}`;
+                    layerContent.appendChild(newLayer.element);
+                }
+            });
+            
+            fabricCanvas.renderAll();
+            updateLayerIndices();
+        }
+    });
 });

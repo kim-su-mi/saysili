@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
             layerName = 'Text';
         } else if (obj instanceof fabric.Image) {
             layerName = 'Image';
-        }
+        } 
         // let layerName = 'Layer';  // 기본값
         // if (obj.type === 'template') {
         //     layerName = 'Template';
