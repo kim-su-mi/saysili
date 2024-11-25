@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
             obj.id = generateUniqueId();
             console.log(obj.id);    
             const layer = createLayerItem(obj, layerInstances[currentView].length + 1);
-            const layerContent = document.querySelector('.layer-content');
+            const layerContent = document.querySelector('#layer-content');
             layerContent.appendChild(layer.element);
         }
         
@@ -436,7 +436,7 @@ function loadCanvasState() {
             'lockScalingY', 'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']);
         
         // 레이어 패널 초기화
-        const layerContent = document.querySelector('.layer-content');
+        const layerContent = document.querySelector('#layer-content');
         layerContent.innerHTML = '';
         layerInstances[currentView] = [];
         

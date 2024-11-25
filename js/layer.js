@@ -7,7 +7,7 @@ let layerInstances = {
 
 // updateLayerIndex 함수를 전역으로 선언
 window.updateLayerIndex = function(element, index) {
-    const layerNameEl = element.querySelector('.layer-name');
+    const layerNameEl = element.querySelector('.layer_title');
     const currentName = layerNameEl.textContent.split(' ')[0]; // "Text", "Image" 등을 유지
     layerNameEl.textContent = `${currentName} ${index}`;
 };
@@ -23,7 +23,7 @@ window.updateLayerIndices = function() {
 document.addEventListener('DOMContentLoaded', function() {
     const layerPanel = document.querySelector('.layer-panel');
     const toggleBtn = layerPanel.querySelector('.toggle-btn');
-    const layerContent = layerPanel.querySelector('.layer-content');
+    const layerContent = layerPanel.querySelector('#layer-content');
     
     // 레이어 패널 접기/펼치기 토글 기능
     toggleBtn.addEventListener('click', function() {
@@ -67,13 +67,13 @@ document.addEventListener('DOMContentLoaded', function() {
         layerItem.dataset.objectId = obj.id; // fabric 객체의 ID를 HTML 요소에 데이터 속성으로 저장, 레이어와 캔버스 객체를 연결
 
         layerItem.innerHTML = `
-            <div class="layer-info">
-                <span class="layer-name">${layerName} ${index}</span>
+            <div class="layertitlediv">
+                <span class="layer_title">${layerName} ${index}</span>
             </div>
-            <div class="layer-controls">
-                <button class="visibility-btn" title="숨기기">👁</button>
-                <button class="lock-btn" title="잠금">🔓</button>
-                <button class="delete-btn" title="삭제">🗑</button>
+            <div class="layerbtndiv">
+                <button id="layer_hide" class="visibility-btn" title="숨기기">👁</button>
+                <button id="layer_lock" class="lock-btn" title="잠금">🔓</button>
+                <button id="layer_delete" class="delete-btn" title="삭제">🗑</button>
             </div>
     `   ;
 
@@ -94,8 +94,8 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     function setupLayerControls(layer, layerItem) {
         // 레이어 클릭 이벤트
-        layerItem.querySelector('.layer-info').addEventListener('click', function(e) {
-            if (!e.target.closest('.layer-controls') && !layer.fabricObject.lockMovementX) {
+        layerItem.querySelector('.layertitlediv').addEventListener('click', function(e) {
+            if (!e.target.closest('.layerbtndiv') && !layer.fabricObject.lockMovementX) {
                 fabricCanvas.discardActiveObject();
                 fabricCanvas.setActiveObject(layer.fabricObject);
                 fabricCanvas.renderAll();
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     
         // 숨기기 버튼 초기 상태 설정
-        const visibilityBtn = layerItem.querySelector('.visibility-btn');
+        const visibilityBtn = layerItem.querySelector('#layer_hide');
         visibilityBtn.textContent = layer.fabricObject.visible ? '👁' : '👁‍🗨';
     
         // 숨기기 버튼 이벤트
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     
         // 잠금 버튼 초기 상태 설정
-        const lockBtn = layerItem.querySelector('.lock-btn');
+        const lockBtn = layerItem.querySelector('#layer_lock');
         lockBtn.textContent = layer.fabricObject.lockMovementX ? '🔒' : '🔓';
     
         // 잠금 버튼 이벤트
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     
         // 삭제 버튼 이벤트는 동일
-        layerItem.querySelector('.delete-btn').addEventListener('click', function() {
+        layerItem.querySelector('#layer_delete').addEventListener('click', function() {
             if (confirm('이 레이어를 삭제하시겠습니까?')) {
                 // 캔버스에서 객체 삭제
                 fabricCanvas.remove(layer.fabricObject);
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 레이어 패널 업데이트 함수 추가
     window.updateLayerPanel = function(view) {
-        const layerContent = document.querySelector('.layer-content');
+        const layerContent = document.querySelector('#layer-content');
         // 기존 레이어 아이템들 제거
         while (layerContent.firstChild) {
             layerContent.removeChild(layerContent.firstChild);

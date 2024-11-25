@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fabricCanvas.setActiveObject(cloned);
                 
                 // 레이어 생성 및 추가
-                const layerContent = document.querySelector('.layer-content');
+                const layerContent = document.querySelector('#layer-content');
                 const newLayer = createLayerItem(cloned, layerInstances[currentView].length + 1);
                 if (newLayer && newLayer.element) {
                     layerContent.appendChild(newLayer.element);
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 선택된 객체들의 원래 레이어 이름 저장
             const originalLayerNames = selectedLayers.map(layer => {
-                const layerNameEl = layer.element.querySelector('.layer-name');
+                const layerNameEl = layer.element.querySelector('.layer_title');
                 return layerNameEl.textContent.split(' ')[0]; // "Template", "Text" 등의 원래 이름 저장
             });
 
@@ -201,10 +201,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // 새로운 그룹 레이어 생성
-            const layerContent = document.querySelector('.layer-content');
+            const layerContent = document.querySelector('#layer-content');
             const groupLayer = createLayerItem(group, 1);
             if (groupLayer && groupLayer.element) {
-                const layerNameEl = groupLayer.element.querySelector('.layer-name');
+                const layerNameEl = groupLayer.element.querySelector('.layer_title');
                 layerNameEl.textContent = `Group ${layerInstances[currentView].length}`;
                 layerContent.appendChild(groupLayer.element);
             }
@@ -244,10 +244,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.set('id', uuid.v4());
                 fabricCanvas.add(item);
                 
-                const layerContent = document.querySelector('.layer-content');
+                const layerContent = document.querySelector('#layer-content');
                 const newLayer = createLayerItem(item, layerInstances[currentView].length + 1);
                 if (newLayer && newLayer.element) {
-                    const layerNameEl = newLayer.element.querySelector('.layer-name');
+                    const layerNameEl = newLayer.element.querySelector('.layer_title');
                     // 원래 레이어 이름 복원
                     const originalName = originalLayerNames[index] || 'Layer';
                     layerNameEl.textContent = `${originalName} ${layerInstances[currentView].length}`;

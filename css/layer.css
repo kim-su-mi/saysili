@@ -35,14 +35,14 @@
     transition: transform 0.3s;
 }
 
-.layer-content {
+#layer-content {
     max-height: 300px;
     overflow-y: auto;
     padding: 8px;
     display: block; /* none에서 block으로 변경 */
 }
 
-.layer-content.show {
+#layer-content.show {
     display: block;
 }
 
@@ -99,7 +99,7 @@
 }
 
 /* 접힌 상태일 때 스타일 */
-.layer-panel.collapsed .layer-content {
+.layer-panel.collapsed #layer-content {
     display: none;
 }
 
