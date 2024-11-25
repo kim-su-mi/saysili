@@ -8,8 +8,8 @@
 </script> 
 </head> 
 
-<body> <!-- style="background-color:black">  -->
-<!-- <div style="text-align: center;width: 400px;"> 
+<body style="background-color:black">
+<div style="text-align: center;width: 400px;"> 
 	<h1 style="color: green;"> 
 	GeeksforGeeks 
 	</h1> 
@@ -19,15 +19,16 @@
 </div> 
 
 <div style="text-align: center;"> 
-	<canvas id="canvas" width="400" height="200"
-	style="border:1px solid green;"> 
-	</canvas> 
-</div>  -->
-<!-- <img src="images/bracelet-design-outer-front.svg" alt="팔찌 이미지" style="border:1px solid green;"> -->
- <img src="images/bracelet-design-outer-back.svg" alt="팔찌 이미지" style="border:1px solid green; display: block;">
+	<canvas id="canvas" width="400" height="200"style="border:1px solid green;"> </canvas> 
+</div> 
+<div>
+	<button id="align">정렬</button>
+	<button id="duplicate">복제</button>
+</div>
+ <!-- <img src="images/bracelet-design-outer-back.svg" alt="팔찌 이미지" style="border:1px solid green; display: block;">
  <img src="images/bracelet-design-outer-front.svg" alt="팔찌 이미지" style="border:1px solid green; display: block;">
  <img src="images/bracelet-design-inner-back.svg" alt="팔찌 이미지" style="border:1px solid green; display: block;">
- <img src="images/bracelet-design-inner-front.svg" alt="팔찌 이미지" style="border:1px solid green; display: block;">
+ <img src="images/bracelet-design-inner-front.svg" alt="팔찌 이미지" style="border:1px solid green; display: block;"> -->
 
 
 <script> 
@@ -56,7 +57,26 @@
 	}); 
 	canvas.add(geek); 
 	canvas.centerObject(geek); 
+
+	const alignBtn = document.getElementById('align');
+	alignBtn.addEventListener('click', function() {
+		const activeObject = canvas.getActiveObject();
+		console.log(activeObject);
+		activeObject.centerV();
+	});
+	const duplicateBtn = document.getElementById('duplicate');
+	duplicateBtn.addEventListener('click', function() {
+		const activeObject = canvas.getActiveObject();
+		console.log(activeObject);
+		activeObject.clone(function(cloned){
+			canvas.add(cloned);
+			canvas.setActiveObject(cloned);
+			canvas.renderAll();
+		});
+
+	});
 </script> 
+
 </body> 
 
 </html>

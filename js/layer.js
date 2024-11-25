@@ -50,6 +50,14 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (obj instanceof fabric.Image) {
             layerName = 'Image';
         }
+        // let layerName = 'Layer';  // 기본값
+        // if (obj.type === 'template') {
+        //     layerName = 'Template';
+        // } else if (obj instanceof fabric.IText) {
+        //     layerName = 'Text';
+        // } else if (obj instanceof fabric.Image) {
+        //     layerName = 'Image';
+        // }
         
         // 새로운 레이어 아이템 요소 생성
         const layerItem = document.createElement('div');
