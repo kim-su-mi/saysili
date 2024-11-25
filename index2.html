@@ -22,6 +22,7 @@
     <script src="js/saveCanvas.js"></script>
     <script src="js/imageUpload.js"></script>
     <script src="js/layer.js"></script>
+    <script src="js/editTool.js"></script>
    
 </head>
 <body>
@@ -248,13 +249,18 @@
     </div>
     <button type="button" id="saveButton" class="btn btn-primary">디자인 저장</button>
     <!-- 실행 취소/다시 실행 버튼 추가 -->
-    <div id="editButtons" class="btn-group" role="group">
-        <button type="button" class="btn btn-outline-secondary" id="undoBtn">
-            ↩ 실행 취소
-        </button>
-        <button type="button" class="btn btn-outline-secondary" id="redoBtn">
-            ↪ 다시 실행
-        </button>
+    <div id="editButtons" class="right_panel_div" role="group">
+        <button type="button"  id="resetBtn">처음부터</button>
+        <button type="button"  id="undoBtn">↩ 실행 취소</button>
+        <button type="button"  id="redoBtn">↪ 다시 실행</button>
+        <button type="button"  id="vertical_centerBtn">세로정렬</button>
+        <button type="button"  id="horizontal_centerBtn">가로정렬</button>
+        <button type="button"  id="horizontal_mirrorBtn">좌우반전</button>
+        <button type="button"  id="vertical_mirrorBtn">상하반전</button>
+        <button type="button"  id="removeBtn">삭제</button>
+        <button type="button"  id="groupBtn">그룹화</button>
+        <button type="button"  id="ungroupBtn">그룹화 해제</button>
+        <button type="button"  id="duplicateBtn" >복제</button>
     </div>
 </body>
 </html>

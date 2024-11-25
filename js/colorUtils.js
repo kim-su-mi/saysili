@@ -1,3 +1,10 @@
+// 전역 변수로 현재 선택된 색상 저장
+let currentSelectedColor = '#ffffff'; // 기본값 흰색
+
+function updateCurrentColor(color){
+    currentSelectedColor = color;
+}
+
 // 이미지 색상 변경 함수
 function changeImageColor(img, color) {
     // 기존 BlendColor 필터 제거
