@@ -3,7 +3,7 @@ let currentText = null;
 
 // 텍스트 추가되는 위치 변경을 위한 전역변수
 let textLeft = 50;
-let textTop = 20;
+let textTop = 10;
 
 // 폰트 옵션 로드 함수
 async function loadFontOptions() {
@@ -219,7 +219,7 @@ function initializeTextEvents() {
         });
         
         textLeft += 10;
-        textTop += 8;
+        textTop += 2;
 
     });
 

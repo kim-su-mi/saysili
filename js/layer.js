@@ -44,12 +44,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         
-        let layerName = 'Template';  // 기본값을 Template로 설정
+        let layerName = 'template';  // 기본값을 Template로 설정
         if (obj instanceof fabric.IText) {
             layerName = 'Text';
         } else if (obj instanceof fabric.Image) {
             layerName = 'Image';
-        } 
+        } else if (obj.objectType === 'group') {
+            layerName = 'Group';
+        }
         // let layerName = 'Layer';  // 기본값
         // if (obj.type === 'template') {
         //     layerName = 'Template';

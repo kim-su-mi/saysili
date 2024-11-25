@@ -95,7 +95,8 @@ function initTemplatesUpload() {
                                 left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2,
                                 top: fabricCanvas.height / 2 - loadedObject.height * loadedObject.scaleY / 2,
                                 selectable: true,
-                                evented: true
+                                evented: true,
+                                objectType: 'template'
                             });
                             
                             // Canvas에 추가

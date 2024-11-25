@@ -31,7 +31,7 @@ function updateButtonStates() {
         if (fabricCanvas.getActiveObjects().length > 1) {
             groupBtn.disabled = false;
             ungroupBtn.disabled = true;
-        } else if (activeObject.type === 'group' ) {
+        } else if (activeObject.objectType === 'group' ) {
             // 템플릿이 아닌 그룹 객체인 경우에만 그룹 해제 버튼 활성화
             groupBtn.disabled = true;
             ungroupBtn.disabled = false;
@@ -98,22 +98,34 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('removeBtn').addEventListener('click', function() {
         const activeObject = fabricCanvas.getActiveObject();
         if (activeObject && confirm('선택한 객체를 삭제하시겠습니까?')) {
+            // 그룹 객체인 경우 그룹 내의 모든 객체도 함께 처리
+            if (activeObject.objectType === 'group') {
+                // 그룹 내의 모든 객체 삭제
+                const groupObjects = activeObject.getObjects();
+                groupObjects.forEach(obj => {
+                    fabricCanvas.remove(obj);
+                });
+            }
+            
             // 캔버스에서 객체 삭제
             fabricCanvas.remove(activeObject);
             
-            // 레이어 패널에서 해당 객체의 레이어 아이템 찾기
-            const layerItem = document.querySelector(`.layer-item[data-object-id="${activeObject.id}"]`);
-            if (layerItem) {
+            // 레이어 패널에서 해당 객체의 레이어 찾기
+            const layerToRemove = layerInstances[currentView].find(layer => 
+                layer.fabricObject && layer.fabricObject.id === activeObject.id
+            );
+            
+            if (layerToRemove) {
                 // 레이어 배열에서 해당 레이어 찾기
-                const layerIndex = layerInstances[currentView].findIndex(layer => 
-                    layer.fabricObject && layer.fabricObject.id === activeObject.id
-                );
+                const layerIndex = layerInstances[currentView].indexOf(layerToRemove);
                 
                 if (layerIndex > -1) {
                     // 레이어 배열에서 제거
                     layerInstances[currentView].splice(layerIndex, 1);
                     // UI에서 레이어 아이템 제거
-                    layerItem.remove();
+                    if (layerToRemove.element) {
+                        layerToRemove.element.remove();
+                    }
                     // 레이어 인덱스 업데이트
                     updateLayerIndices();
                 }
@@ -134,8 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
             activeObject.clone(function(cloned) {
                 // 복제된 객체의 위치를 약간 이동
                 cloned.set({
-                    left: cloned.left + 10,
-                    top: cloned.top + 10,
+                    left: cloned.left + 5,
+                    top: cloned.top + 5,
                     id: uuid.v4() // 새로운 고유 ID 부여
                 });
                 
@@ -175,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const group = activeSelection.toGroup();
             group.set({
                 id: uuid.v4(),
-                type: 'group',
+                objectType: 'group',
                 originalLayerNames: originalLayerNames // 원래 레이어 이름들 저장
             });
 

@@ -419,7 +419,7 @@ function saveCurrentCanvasState() {
     if (currentView && fabricCanvas) {
         const currentState = fabricCanvas.toJSON(['id', 'visible', 'lockMovementX', 
             'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
-            'selectable', 'evented', 'hoverCursor', 'moveCursor']); 
+            'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']); 
         canvasInstances[currentView] = new fabric.Canvas(null);
         canvasInstances[currentView].loadFromJSON(currentState, function() {
             console.log(`Saved state for ${currentView}`);
@@ -433,7 +433,7 @@ function loadCanvasState() {
         fabricCanvas.clear();
         const savedState = canvasInstances[currentView].toJSON(['id', 'visible', 
             'lockMovementX', 'lockMovementY', 'lockRotation', 'lockScalingX', 
-            'lockScalingY', 'selectable', 'evented', 'hoverCursor', 'moveCursor']);
+            'lockScalingY', 'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']);
         
         // 레이어 패널 초기화
         const layerContent = document.querySelector('.layer-content');
