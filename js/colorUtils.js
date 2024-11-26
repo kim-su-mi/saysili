@@ -269,10 +269,9 @@ function getInitialColor(fabricCanvas) {
     
     // 모든 캔버스가 비어있을 때만 흰색 반환
     if (!hasAnyObjects && !currentHasObjects) {
-        return '#ffffff';
+        currentSelectedColor = '#ffffff';
     }
     
     // 하나라도 객체가 있으면 마지막으로 선택된 색상 반환
     return currentSelectedColor;
 }
-
