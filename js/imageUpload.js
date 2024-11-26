@@ -105,36 +105,33 @@ function initImageUpload() {
         document.querySelectorAll('.uploaded-image-item').forEach((item, index) => {
             item.addEventListener('click', () => {
                 const imageData = pageImages[index];
-                const imageColor = '#ffffff';
-                // Promise로 이미지 로딩 처리
+                const initialColor = getInitialColor(fabricCanvas); // 초기 색상 가져오기
                 
-                    fabric.Image.fromURL(imageData, (img) => {
-                        const scale = Math.min(100 / img.width, 100 / img.height);
-                        img.scale(scale);
-                        
-                        img.set({
-                            left: fabricCanvas.width / 2 - (img.width * scale) / 2,
-                            top: fabricCanvas.height / 2 - (img.height * scale) / 2,
-                            objectType: 'image'
-                        });
-
-                        // 이미지 색상 변경 함수 
-                        changeImageColor(img, imageColor);
-    
-                        fabricCanvas.add(img);
-                        fabricCanvas.setActiveObject(img); // 객체를 선택 상태로 만듦
-                        fabricCanvas.renderAll();
-                        
+                fabric.Image.fromURL(imageData, (img) => {
+                    const scale = Math.min(100 / img.width, 100 / img.height);
+                    img.scale(scale);
+                    
+                    img.set({
+                        left: fabricCanvas.width / 2 - (img.width * scale) / 2,
+                        top: fabricCanvas.height / 2 - (img.height * scale) / 2,
+                        objectType: 'image'
                     });
-               
-                    // 색상 버튼 생성 (img 객체 전달)
+
+                    // 이미지 색상 변경
+                    changeImageColor(img, initialColor);
+
+                    fabricCanvas.add(img);
+                    fabricCanvas.setActiveObject(img);
+                    fabricCanvas.renderAll();
+                    
+                    // 색상 버튼 생성
                     createColorButtons(img);
                     
                     // 모달 닫기
                     const imageModal = document.getElementById('imageModal');
                     const modal = bootstrap.Modal.getInstance(imageModal);
                     modal.hide();
-                
+                });
             });
         });
     }

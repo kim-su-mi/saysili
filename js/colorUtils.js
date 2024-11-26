@@ -70,18 +70,29 @@ function createColorButtons(selectedObject) {
     commonColors.basic.forEach(color => {
         const colorButton = document.createElement('button');
         colorButton.style.backgroundColor = color;
-        colorButton.style.width = '10px';
-        colorButton.style.height = '10px';
+        colorButton.style.width = '20px';
+        colorButton.style.height = '20px';
         colorButton.style.border = 'none';
         colorButton.style.cursor = 'pointer';
+        colorButton.style.margin = '2px';
+        
+        // 현재 선택된 색상이면 표시
+        if (color === currentSelectedColor) {
+            colorButton.style.border = '2px solid #000';
+        }
+        
         colorButton.addEventListener('click', () => {
-            // 객체 타입에 따라 적절한 색상 변경 함수 호출
-            if (selectedObject instanceof fabric.Image) {
-                changeImageColor(selectedObject, color);
-            } else if (selectedObject instanceof fabric.Group) {
-                changeTemplateColor(selectedObject.getObjects(), color);
-            }
-            fabricCanvas.renderAll();
+            // 모든 버튼의 테두리 초기화
+            const allButtons = colorPicker.querySelectorAll('button');
+            allButtons.forEach(btn => {
+                btn.style.border = 'none';
+            });
+            
+            // 클릭된 버튼에 테두리 추가
+            colorButton.style.border = '2px solid #000';
+            
+            // 색상 변경 함수 호출
+            changeAllObjectsColor(fabricCanvas, color);
         });
         colorPicker.appendChild(colorButton);
     });
@@ -162,5 +173,70 @@ function changeTemplateColor(objects, color) {
 
     // console.log('\nColor change completed');
     return objects;
+}
+
+// 모든 캔버스 객체의 색상을 변경하는 함수
+function changeAllObjectsColor(fabricCanvas, selectedColor) {
+    // 현재 색상 저장
+    updateCurrentColor(selectedColor);
+
+    // 현재 활성화된 canvas의 객체들 색상 변경
+    fabricCanvas.getObjects().forEach(obj => {
+        if (obj instanceof fabric.IText) {
+            obj.set('fill', selectedColor);
+        } 
+        else if (obj instanceof fabric.Image) {
+            changeImageColor(obj, selectedColor);
+        }
+        else if (obj instanceof fabric.Group) {
+            const templateObjects = obj.getObjects();
+            changeTemplateColor(templateObjects, selectedColor);
+        }
+    });
+    fabricCanvas.renderAll();
+
+    // 현재 뷰의 상태를 저장
+    if (typeof saveCurrentCanvasState === 'function') {
+        saveCurrentCanvasState();
+    }
+    
+    // 모든 뷰의 캔버스 객체들 색상 변경
+    Object.values(canvasInstances).forEach(canvas => {
+        if (canvas) {
+            canvas.getObjects().forEach(obj => {
+                if (obj instanceof fabric.IText) {
+                    obj.set('fill', selectedColor);
+                } 
+                else if (obj instanceof fabric.Image) {
+                    changeImageColor(obj, selectedColor);
+                }
+                else if (obj instanceof fabric.Group) {
+                    const templateObjects = obj.getObjects();
+                    changeTemplateColor(templateObjects, selectedColor);
+                }
+            });
+            canvas.renderAll();
+        }
+    });
+    
+}
+
+// 새로운 객체 추가 시 색상 설정 함수
+function getInitialColor(fabricCanvas) {
+    // 모든 뷰의 캔버스 객체 확인
+    const hasAnyObjects = Object.values(canvasInstances).some(canvas => {
+        return canvas && canvas.getObjects().length > 0;
+    });
+    
+    // 현재 캔버스도 확인
+    const currentHasObjects = fabricCanvas.getObjects().length > 0;
+    
+    // 모든 캔버스가 비어있을 때만 흰색 반환
+    if (!hasAnyObjects && !currentHasObjects) {
+        return '#ffffff';
+    }
+    
+    // 하나라도 객체가 있으면 마지막으로 선택된 색상 반환
+    return currentSelectedColor;
 }
 

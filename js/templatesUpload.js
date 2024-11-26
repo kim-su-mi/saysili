@@ -79,18 +79,17 @@ function initTemplatesUpload() {
                     item.onclick = () => {
                         // SVG 이미지를 Fabric Canvas에 추가
                         fabric.loadSVGFromURL(imgSrc, function(objects, options) {
+                            const initialColor = getInitialColor(fabricCanvas); // 초기 색상 가져오기
                             
                             // 템플릿 객체의 색상 변경
-                            const templateColor = '#ffffff';
-                            changeTemplateColor(objects, templateColor);
-
+                            changeTemplateColor(objects, initialColor);
 
                             const loadedObject = fabric.util.groupSVGElements(objects, options);
 
                             // 이미지 크기 조정 (필요한 경우)
                             loadedObject.scaleToWidth(50);  // 원하는 크기로 조정
                             
-                            // 명시적으로 Group으로 변환
+                            // Group으로 변환
                             const group = new fabric.Group([loadedObject], {
                                 left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2,
                                 top: fabricCanvas.height / 2 - loadedObject.height * loadedObject.scaleY / 2,
@@ -101,7 +100,7 @@ function initTemplatesUpload() {
                             
                             // Canvas에 추가
                             fabricCanvas.add(group);
-                            fabricCanvas.setActiveObject(group); // 객체를 선택 상태로 만듦
+                            fabricCanvas.setActiveObject(group);
                             fabricCanvas.renderAll();
 
                             // 색상 버튼 생성

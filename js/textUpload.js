@@ -49,7 +49,6 @@ function rgbToHex(rgb) {
 // 텍스트 색상 버튼 생성 함수
 function createTextColorButtons() {
     const colors = commonColors.basic;
-    
     const colorPicker = document.getElementById('textColorPicker');
     
     colors.forEach(color => {
@@ -58,58 +57,18 @@ function createTextColorButtons() {
         colorBtn.style.backgroundColor = color;
         colorBtn.setAttribute('data-color', color);
         
-        if (color === '#ffffff') {
+        // 현재 선택된 색상이면 표시
+        if (color === currentSelectedColor) {
             colorBtn.classList.add('selected');
         }
         
         colorBtn.addEventListener('click', function() {
-            if (currentText) {
-                document.querySelectorAll('.color-btn').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-                this.classList.add('selected');
-                
-                const selectedColor = color;
-                
-                // 현재 활성화된 canvas의 객체들 색상 변경
-                fabricCanvas.getObjects().forEach(obj => {
-                    if (obj instanceof fabric.IText) {
-                        obj.set('fill', selectedColor);
-                    } 
-                    else if (obj instanceof fabric.Image) {
-                        changeImageColor(obj, selectedColor);
-                    }
-                    else if (obj instanceof fabric.Group) {
-                        const templateObjects = obj.getObjects();
-                        changeTemplateColor(templateObjects, selectedColor);
-                    }
-                });
-                fabricCanvas.renderAll();
-                
-                // 현재 뷰의 상태를 저장
-                saveCurrentCanvasState();
-                
-                // 현재 뷰를 제외한 다른 뷰들의 canvas 객체들 색상 변경
-                Object.keys(canvasInstances).forEach(view => {
-                    if (view !== currentView && canvasInstances[view]) {  // 현재 뷰 제외
-                        const canvas = canvasInstances[view];
-                        canvas.getObjects().forEach(obj => {
-                            if (obj instanceof fabric.IText) {
-                                obj.set('fill', selectedColor);
-                            } 
-                            else if (obj instanceof fabric.Image) {
-                                changeImageColor(obj, selectedColor);
-                            }
-                            else if (obj instanceof fabric.Group) {
-                                const templateObjects = obj.getObjects();
-                                changeTemplateColor(templateObjects, selectedColor);
-                            }
-                        });
-                        // 각 뷰의 상태도 저장
-                        canvasInstances[view] = canvas;
-                    }
-                });
-            }
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            changeAllObjectsColor(fabricCanvas, color);
         });
         colorPicker.appendChild(colorBtn);
     });
@@ -189,13 +148,13 @@ function initializeTextEvents() {
     document.getElementById('text-add').addEventListener('click', () => {
         resetModalControls();
         
-        const defaultColor = '#ffffff';
+        const initialColor = getInitialColor(fabricCanvas);
         
         currentText = new fabric.IText('텍^스*트我를 \n입abc력de♥하세요', {
             left: textLeft,
             top: textTop,
             fontSize: 20,
-            fill: defaultColor,
+            fill: initialColor,
             fontFamily: 'Arial',
             editable: true,
             textAlign: 'center',
@@ -209,14 +168,13 @@ function initializeTextEvents() {
         
         document.querySelectorAll('.color-btn').forEach(btn => {
             btn.classList.remove('selected');
-            if (btn.getAttribute('data-color') === defaultColor) {
+            if (btn.getAttribute('data-color') === initialColor) {
                 btn.classList.add('selected');
             }
         });
         
         textLeft += 10;
         textTop += 2;
-
     });
 
     // 폰트 변경 이벤트

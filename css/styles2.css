@@ -432,3 +432,9 @@ body {
     object-fit: contain;
     padding: 10px;
 }
+/* 템플릿,이미지 색상 버튼 위치 */
+.template-image-color-picker{
+    position: absolute;
+    top: 0;
+    left: 45%;
+}
