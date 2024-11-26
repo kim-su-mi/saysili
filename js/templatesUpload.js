@@ -101,7 +101,11 @@ function initTemplatesUpload() {
                             
                             // Canvas에 추가
                             fabricCanvas.add(group);
+                            fabricCanvas.setActiveObject(group); // 객체를 선택 상태로 만듦
                             fabricCanvas.renderAll();
+
+                            // 색상 버튼 생성
+                            createColorButtons(group);
                             
                              // 부트스트랩 모달 인스턴스를 가져와서 닫기
                             const templateModal = document.getElementById('templateModal');

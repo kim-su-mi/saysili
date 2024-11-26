@@ -15,6 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 0,  // 초기 크기는 0으로 설정
         height: 0
     });
+    
+    // 색상 버튼 이벤트 설정
+    setupColorButtonEvents(fabricCanvas);
+    
     // 각 면의 canvas 인스턴스 초기화
     Object.keys(canvasInstances).forEach(view => {
         canvasInstances[view] = new fabric.Canvas(null);

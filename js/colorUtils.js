@@ -20,6 +20,73 @@ const commonColors = {
 // 전역 변수로 현재 선택된 색상 저장
 let currentSelectedColor = '#ffffff'; // 기본값 흰색
 
+// 색상 버튼 생성 함수
+function setupColorButtonEvents(fabricCanvas) {
+    // 객체가 선택되었을 때
+    fabricCanvas.on('selection:created', handleObjectSelection);
+
+    // 객체 선택이 변경되었을 때
+    fabricCanvas.on('selection:updated', handleObjectSelection);
+
+    // 객체 선택이 해제되었을 때
+    fabricCanvas.on('selection:cleared', function() {
+        const colorPicker = document.querySelector('.template-image-color-picker');
+        colorPicker.innerHTML = ''; // 색상 버튼 제거
+    });
+}
+
+// 객체 선택 처리 함수
+function handleObjectSelection(e) {
+    const selectedObject = e.selected[0];
+    const colorPicker = document.querySelector('.template-image-color-picker');
+    
+    if (selectedObject instanceof fabric.IText) {
+        // 텍스트 객체가 선택된 경우
+        colorPicker.innerHTML = ''; // 색상 버튼 제거
+        
+        // 텍스트 모달 표시
+        const textModal = new bootstrap.Modal(document.getElementById('textModal'));
+        textModal.show();
+        
+        // 현재 선택된 텍스트 객체를 전역 변수에 저장 (textUpload.js에서 사용)
+        window.currentText = selectedObject;
+        
+        // 모달 컨트롤 상태 업데이트
+        if (typeof updateModalControls === 'function') {
+            updateModalControls();
+        }
+    } 
+    else if (selectedObject.objectType === 'image' || selectedObject.objectType === 'template') {
+        // 이미지나 템플릿 객체가 선택된 경우
+        createColorButtons(selectedObject);
+    }
+}
+
+// 색상 버튼 생성 함수
+function createColorButtons(selectedObject) {
+    const colorPicker = document.querySelector('.template-image-color-picker');
+    colorPicker.innerHTML = ''; // 기존 버튼 제거
+
+    commonColors.basic.forEach(color => {
+        const colorButton = document.createElement('button');
+        colorButton.style.backgroundColor = color;
+        colorButton.style.width = '10px';
+        colorButton.style.height = '10px';
+        colorButton.style.border = 'none';
+        colorButton.style.cursor = 'pointer';
+        colorButton.addEventListener('click', () => {
+            // 객체 타입에 따라 적절한 색상 변경 함수 호출
+            if (selectedObject instanceof fabric.Image) {
+                changeImageColor(selectedObject, color);
+            } else if (selectedObject instanceof fabric.Group) {
+                changeTemplateColor(selectedObject.getObjects(), color);
+            }
+            fabricCanvas.renderAll();
+        });
+        colorPicker.appendChild(colorButton);
+    });
+}
+
 function updateCurrentColor(color){
     currentSelectedColor = color;
 }

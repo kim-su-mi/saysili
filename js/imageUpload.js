@@ -122,11 +122,14 @@ function initImageUpload() {
                         changeImageColor(img, imageColor);
     
                         fabricCanvas.add(img);
+                        fabricCanvas.setActiveObject(img); // 객체를 선택 상태로 만듦
                         fabricCanvas.renderAll();
                         
                     });
                
-                   
+                    // 색상 버튼 생성 (img 객체 전달)
+                    createColorButtons(img);
+                    
                     // 모달 닫기
                     const imageModal = document.getElementById('imageModal');
                     const modal = bootstrap.Modal.getInstance(imageModal);
