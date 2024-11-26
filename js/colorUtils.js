@@ -175,6 +175,8 @@ function changeTemplateColor(objects, color) {
     return objects;
 }
 
+
+
 // 모든 캔버스 객체의 색상을 변경하는 함수
 function changeAllObjectsColor(fabricCanvas, selectedColor) {
     // 현재 색상 저장
@@ -189,8 +191,14 @@ function changeAllObjectsColor(fabricCanvas, selectedColor) {
             changeImageColor(obj, selectedColor);
         }
         else if (obj instanceof fabric.Group) {
-            const templateObjects = obj.getObjects();
-            changeTemplateColor(templateObjects, selectedColor);
+            if (obj.objectType === 'template') {
+                // 템플릿인 경우
+                const templateObjects = obj.getObjects();
+                changeTemplateColor(templateObjects, selectedColor);
+            } else {
+                // 일반 그룹인 경우
+                changeGroupObjectsColor(obj, selectedColor);
+            }
         }
     });
     fabricCanvas.renderAll();
@@ -211,14 +219,42 @@ function changeAllObjectsColor(fabricCanvas, selectedColor) {
                     changeImageColor(obj, selectedColor);
                 }
                 else if (obj instanceof fabric.Group) {
-                    const templateObjects = obj.getObjects();
-                    changeTemplateColor(templateObjects, selectedColor);
+                    if (obj.objectType === 'template') {
+                        const templateObjects = obj.getObjects();
+                        changeTemplateColor(templateObjects, selectedColor);
+                    } else {
+                        changeGroupObjectsColor(obj, selectedColor);
+                    }
                 }
             });
             canvas.renderAll();
         }
     });
     
+}
+
+// 그룹 내 객체의 색상을 변경하는 함수
+function changeGroupObjectsColor(group, selectedColor) {
+    const objects = group.getObjects();
+    objects.forEach(obj => {
+        if (obj instanceof fabric.IText) {
+            obj.set('fill', selectedColor);
+        } 
+        else if (obj instanceof fabric.Image) {
+            changeImageColor(obj, selectedColor);
+        }
+        else if (obj instanceof fabric.Group) {
+            // 중첩된 그룹의 경우 재귀적으로 처리
+            changeGroupObjectsColor(obj, selectedColor);
+        }
+        else {
+            // Path나 기타 기본 객체들의 경우
+            obj.set({
+                fill: selectedColor,
+                stroke: selectedColor
+            });
+        }
+    });
 }
 
 // 새로운 객체 추가 시 색상 설정 함수
