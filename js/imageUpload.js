@@ -114,7 +114,8 @@ function initImageUpload() {
                         
                         img.set({
                             left: fabricCanvas.width / 2 - (img.width * scale) / 2,
-                            top: fabricCanvas.height / 2 - (img.height * scale) / 2
+                            top: fabricCanvas.height / 2 - (img.height * scale) / 2,
+                            objectType: 'image'
                         });
 
                         // 이미지 색상 변경 함수 

@@ -182,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const layerNameEl = layer.element.querySelector('.layer_title');
                 return layerNameEl.textContent.split(' ')[0]; // "Template", "Text" 등의 원래 이름 저장
             });
+            console.log('그룹화 전 원래 레이어 이름:', originalLayerNames); // 로그 추가
 
             // 선택된 객체들을 그룹화
             const group = activeSelection.toGroup();
@@ -220,6 +221,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (activeObject && activeObject.type === 'group') {
             const items = activeObject.getObjects();
             const originalLayerNames = activeObject.originalLayerNames || [];
+
+            console.log('그룹 해제 시 원래 레이어 이름:', originalLayerNames); // 로그 추가
             
             // 그룹 해제
             activeObject.destroy();
@@ -248,9 +251,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const newLayer = createLayerItem(item, layerInstances[currentView].length + 1);
                 if (newLayer && newLayer.element) {
                     const layerNameEl = newLayer.element.querySelector('.layer_title');
-                    // 원래 레이어 이름 복원
-                    const originalName = originalLayerNames[index] || 'Layer';
-                    layerNameEl.textContent = `${originalName} ${layerInstances[currentView].length}`;
+                    // 1. 먼저 원래 저장된 이름이 있는지 확인
+                    const originalName = originalLayerNames[index];
+                    if (originalName) {
+                        // 2. 원래 이름이 있으면 그것을 사용
+                        layerNameEl.textContent = `${originalName} ${layerInstances[currentView].length}`;
+                    } else {
+                        // 3. 원래 이름이 없으면 objectType을 사용,objectType이 없으면 'Layer' 사용
+                        const objectType = item.objectType || 'Layer';
+                        layerNameEl.textContent = `${objectType} ${layerInstances[currentView].length}`;
+                    }
                     layerContent.appendChild(newLayer.element);
                 }
             });

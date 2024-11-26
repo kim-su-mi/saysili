@@ -1,3 +1,22 @@
+// 공통으로 사용할 색상 리스트 정의
+const commonColors = {
+    basic: [
+        '#f70303','#fd4eb5','#f284c1','#f2a9c4','#ff9f2f',
+        '#feed01','#87dc29','#f9ec90','#0bc349','#01c8a9',
+        '#00b7e9','#abebd3','#2456ed','#8f4fdb','#4a236d',
+        '#d7ccee','#898989','#aa967e','#000000','#ffffff'
+    ],
+    // 야광
+    glow: [
+        '#fa9529','#fbf666','#54e669','#d6e00d','#fbc9d4',
+        '#fac79c','#c6f5b1','#b5ebd1','#1896e3','#9473c2'
+    ],
+    // 투명
+    transparent: [
+        '#ebebeb','#f6cfd2','#d7edfa','#e3f1da','#ecdff3'
+    ]
+};
+
 // 전역 변수로 현재 선택된 색상 저장
 let currentSelectedColor = '#ffffff'; // 기본값 흰색
 
@@ -77,3 +96,4 @@ function changeTemplateColor(objects, color) {
     // console.log('\nColor change completed');
     return objects;
 }
+

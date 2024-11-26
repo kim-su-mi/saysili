@@ -35,14 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             braceletImage.parentNode.replaceChild(svgDoc.documentElement, braceletImage);
 
             // 색상 선택 버튼 생성
-            const colors = ['#f70303','#fd4eb5','#f284c1','#f2a9c4','#ff9f2f',
-                            '#feed01','#87dc29','#f9ec90','#0bc349','#01c8a9',
-                            '#00b7e9','#abebd3','#2456ed','#8f4fdb','#4a236d',
-                            '#d7ccee','#898989','#aa967e','#202020','#ffffff', //기본
-                            '#fa9529','#fbf666','#54e669','#d6e00d','#fbc9d4',
-                            '#fac79c','#c6f5b1','#b5ebd1','#1896e3','#9473c2', //야광
-                            '#ebebeb','#f6cfd2','#d7edfa','#e3f1da','#ecdff3', // 투명
-            ];
+            const colors = [...commonColors.basic, ...commonColors.glow, ...commonColors.transparent]; //... =>"스프레드 연산자" : 배열이나 객체를 펼치는 데 사용
             colors.forEach(color => {
                 const colorButton = document.createElement('button');
                 colorButton.style.backgroundColor = color;

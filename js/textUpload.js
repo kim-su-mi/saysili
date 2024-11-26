@@ -48,12 +48,7 @@ function rgbToHex(rgb) {
 
 // 텍스트 색상 버튼 생성 함수
 function createTextColorButtons() {
-    const colors = [
-        '#f70303', '#fd4eb5', '#f284c1', '#f2a9c4', '#ff9f2f',
-        '#feed01', '#87dc29', '#f9ec90', '#0bc349', '#01c8a9',
-        '#00b7e9', '#abebd3', '#2456ed', '#8f4fdb', '#4a236d',
-        '#d7ccee', '#898989', '#aa967e', '#000000', '#ffffff'  
-    ];
+    const colors = commonColors.basic;
     
     const colorPicker = document.getElementById('textColorPicker');
     
@@ -205,7 +200,8 @@ function initializeTextEvents() {
             editable: true,
             textAlign: 'center',
             charSpacing: 0,
-            lineHeight: 1
+            lineHeight: 1,
+            objectType: 'text'
         });
         
         fabricCanvas.add(currentText);
