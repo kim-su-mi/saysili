@@ -66,12 +66,12 @@
     flex-grow: 1;
 }
 
-.layer-info:hover {
+.layertitlediv:hover {
     background-color: #f8f9fa;
     border-radius: 4px;
 }
 
-.visibility-btn {
+#layer_hide {
     cursor: pointer;
     opacity: 0.7;
 }
@@ -81,12 +81,12 @@
     color: #495057;
 }
 
-.layer-controls {
+.layerbtndiv {
     display: flex;
     gap: 8px;
 }
 
-.layer-controls button {
+.layerbtndiv button {
     background: none;
     border: none;
     cursor: pointer;
@@ -94,7 +94,7 @@
     padding: 2px;
 }
 
-.layer-controls button:hover {
+.layerbtndiv button:hover {
     opacity: 1;
 }
 
@@ -122,7 +122,7 @@
 }
 
 /* 선택된 레이어 스타일 */
-.layer-item.selected .layer-info {
+.layer-item.selected .layertitlediv {
     background-color: #e9ecef;
     border-radius: 4px;
 }
