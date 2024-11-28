@@ -96,43 +96,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 삭제 버튼
     document.getElementById('removeBtn').addEventListener('click', function() {
+        // canvas에 선택된 객체 가져옴
         const activeObject = fabricCanvas.getActiveObject();
+        // 선택된 객체가 있고 사용자가 예를 클릭했을 때 동작
         if (activeObject && confirm('선택한 객체를 삭제하시겠습니까?')) {
-            // activeSelection인 경우 (여러 객체가 선택된 경우)
-            if (activeObject.type === 'activeSelection') {
-                const objects = activeObject.getObjects();
-                objects.forEach(obj => {
-                    fabricCanvas.remove(obj);
-                    // 레이어 패널에서 해당 객체의 레이어 찾기
-                    const layerToRemove = layerInstances[currentView].find(layer => 
-                        layer.fabricObject && layer.fabricObject.id === obj.id
-                    );
-                    
-                    if (layerToRemove) {
-                        const layerIndex = layerInstances[currentView].indexOf(layerToRemove);
-                        if (layerIndex > -1) {
-                            layerInstances[currentView].splice(layerIndex, 1);
-                            if (layerToRemove.element) {
-                                layerToRemove.element.remove();
-                            }
-                        }
-                    }
-                });
-            } else {
-                // 기존 단일 객체 또는 그룹 삭제 로직
-                if (activeObject.objectType === 'group') {
-                    const groupObjects = activeObject.getObjects();
-                    groupObjects.forEach(obj => {
-                        fabricCanvas.remove(obj);
-                    });
-                }
-                
-                fabricCanvas.remove(activeObject);
-                
+            //여러 객체(activeSelection)가 선택된 경우: getObjects()로 선택된 모든 객체의 배열을 가져옴 / 단일 객체인 경우: 해당 객체를 배열로 감싸서 처리
+            const objectsToRemove = activeObject.type === 'activeSelection' 
+                ? activeObject.getObjects() 
+                : [activeObject];
+
+            objectsToRemove.forEach(obj => {
+                // 캔버스에서 객체 삭제
+                fabricCanvas.remove(obj);
+                // 레이어 패널에서 해당 객체의 레이어 찾기
                 const layerToRemove = layerInstances[currentView].find(layer => 
-                    layer.fabricObject && layer.fabricObject.id === activeObject.id
+                    layer.fabricObject && layer.fabricObject.id === obj.id
                 );
-                
+                // 레이어 패널에서 삭제
                 if (layerToRemove) {
                     const layerIndex = layerInstances[currentView].indexOf(layerToRemove);
                     if (layerIndex > -1) {
@@ -142,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 }
-            }
+            });
             
             // 레이어 인덱스 업데이트
             updateLayerIndices();
@@ -197,7 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const layerNameEl = layer.element.querySelector('.layer_title');
                 return layerNameEl.textContent.split(' ')[0]; // "Template", "Text" 등의 원래 이름 저장
             });
-            console.log('그룹화 전 원래 레이어 이름:', originalLayerNames); // 로그 추가
 
             // 선택된 객체들을 그룹화
             const group = activeSelection.toGroup();
