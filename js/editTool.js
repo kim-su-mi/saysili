@@ -98,39 +98,54 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('removeBtn').addEventListener('click', function() {
         const activeObject = fabricCanvas.getActiveObject();
         if (activeObject && confirm('선택한 객체를 삭제하시겠습니까?')) {
-            // 그룹 객체인 경우 그룹 내의 모든 객체도 함께 처리
-            if (activeObject.objectType === 'group') {
-                // 그룹 내의 모든 객체 삭제
-                const groupObjects = activeObject.getObjects();
-                groupObjects.forEach(obj => {
+            // activeSelection인 경우 (여러 객체가 선택된 경우)
+            if (activeObject.type === 'activeSelection') {
+                const objects = activeObject.getObjects();
+                objects.forEach(obj => {
                     fabricCanvas.remove(obj);
-                });
-            }
-            
-            // 캔버스에서 객체 삭제
-            fabricCanvas.remove(activeObject);
-            
-            // 레이어 패널에서 해당 객체의 레이어 찾기
-            const layerToRemove = layerInstances[currentView].find(layer => 
-                layer.fabricObject && layer.fabricObject.id === activeObject.id
-            );
-            
-            if (layerToRemove) {
-                // 레이어 배열에서 해당 레이어 찾기
-                const layerIndex = layerInstances[currentView].indexOf(layerToRemove);
-                
-                if (layerIndex > -1) {
-                    // 레이어 배열에서 제거
-                    layerInstances[currentView].splice(layerIndex, 1);
-                    // UI에서 레이어 아이템 제거
-                    if (layerToRemove.element) {
-                        layerToRemove.element.remove();
+                    // 레이어 패널에서 해당 객체의 레이어 찾기
+                    const layerToRemove = layerInstances[currentView].find(layer => 
+                        layer.fabricObject && layer.fabricObject.id === obj.id
+                    );
+                    
+                    if (layerToRemove) {
+                        const layerIndex = layerInstances[currentView].indexOf(layerToRemove);
+                        if (layerIndex > -1) {
+                            layerInstances[currentView].splice(layerIndex, 1);
+                            if (layerToRemove.element) {
+                                layerToRemove.element.remove();
+                            }
+                        }
                     }
-                    // 레이어 인덱스 업데이트
-                    updateLayerIndices();
+                });
+            } else {
+                // 기존 단일 객체 또는 그룹 삭제 로직
+                if (activeObject.objectType === 'group') {
+                    const groupObjects = activeObject.getObjects();
+                    groupObjects.forEach(obj => {
+                        fabricCanvas.remove(obj);
+                    });
+                }
+                
+                fabricCanvas.remove(activeObject);
+                
+                const layerToRemove = layerInstances[currentView].find(layer => 
+                    layer.fabricObject && layer.fabricObject.id === activeObject.id
+                );
+                
+                if (layerToRemove) {
+                    const layerIndex = layerInstances[currentView].indexOf(layerToRemove);
+                    if (layerIndex > -1) {
+                        layerInstances[currentView].splice(layerIndex, 1);
+                        if (layerToRemove.element) {
+                            layerToRemove.element.remove();
+                        }
+                    }
                 }
             }
             
+            // 레이어 인덱스 업데이트
+            updateLayerIndices();
             // 캔버스 다시 그리기
             fabricCanvas.renderAll();
             // 버튼 상태 업데이트
