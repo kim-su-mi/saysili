@@ -190,27 +190,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 });
-
-// // 레이어 패널 상태 동기화 함수
-// function syncLayerPanelWithCanvas() {
-//     const layerContent = document.querySelector('#layer-content');
-//     layerContent.innerHTML = ''; // 기존 레이어 패널 초기화
-//     layerInstances[currentView] = []; // 레이어 인스턴스 초기화
-
-//     // 캔버스의 모든 객체에 대해 레이어 생성
-//     fabricCanvas.getObjects().forEach((obj, index) => {
-//         const layer = window.createLayerItem(obj, index + 1);
-//         if (layer && layer.element) {
-//             // 레이어 UI 상태 업데이트
-//             const visibilityBtn = layer.element.querySelector('#layer_hide');
-//             const lockBtn = layer.element.querySelector('#layer_lock');
-            
-//             visibilityBtn.textContent = obj.visible ? '👁' : '👁‍🗨';
-//             lockBtn.textContent = obj.lockMovementX ? '🔒' : '🔓';
-            
-//             layerContent.appendChild(layer.element);
-//         }
-//     });
-
-//     updateLayerIndices();
-// }

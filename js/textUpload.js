@@ -151,35 +151,39 @@ function initializeTextEvents() {
 
     // 텍스트 추가 버튼 클릭 이벤트
     document.getElementById('text-add').addEventListener('click', () => {
-        resetModalControls();
-        
-        const initialColor = getInitialColor(fabricCanvas);
-        
-        currentText = new fabric.IText('텍^스*트我를 \n입abc력de♥하세요', {
-            left: textLeft,
-            top: textTop,
-            fontSize: 20,
-            fill: initialColor,
-            fontFamily: 'Arial',
-            editable: true,
-            textAlign: 'center',
-            charSpacing: 0,
-            lineHeight: 1,
-            objectType: 'text'
-        });
-        
-        fabricCanvas.add(currentText);
-        fabricCanvas.setActiveObject(currentText);
-        
-        document.querySelectorAll('.color-btn').forEach(btn => {
-            btn.classList.remove('selected');
-            if (btn.getAttribute('data-color') === initialColor) {
-                btn.classList.add('selected');
-            }
-        });
-        
-        textLeft += 10;
-        textTop += 2;
+        if (window.historyManager) {
+            window.historyManager.recordState(() => {
+                resetModalControls();
+                
+                const initialColor = getInitialColor(fabricCanvas);
+                
+                currentText = new fabric.IText('텍^스*트我를 \n입abc력de♥하세요', {
+                    left: textLeft,
+                    top: textTop,
+                    fontSize: 20,
+                    fill: initialColor,
+                    fontFamily: 'Arial',
+                    editable: true,
+                    textAlign: 'center',
+                    charSpacing: 0,
+                    lineHeight: 1,
+                    objectType: 'text'
+                });
+                
+                fabricCanvas.add(currentText);
+                fabricCanvas.setActiveObject(currentText);
+                
+                document.querySelectorAll('.color-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                    if (btn.getAttribute('data-color') === initialColor) {
+                        btn.classList.add('selected');
+                    }
+                });
+                
+                textLeft += 10;
+                textTop += 2;
+            });
+        }
     });
 
     // 폰트 변경 이벤트

@@ -79,37 +79,41 @@ function initTemplatesUpload() {
                     item.onclick = () => {
                         // SVG 이미지를 Fabric Canvas에 추가
                         fabric.loadSVGFromURL(imgSrc, function(objects, options) {
-                            const initialColor = getInitialColor(fabricCanvas); // 초기 색상 가져오기
-                            
-                            // 템플릿 객체의 색상 변경
-                            changeTemplateColor(objects, initialColor);
+                            if (window.historyManager) {
+                                window.historyManager.recordState(() => {
+                                    const initialColor = getInitialColor(fabricCanvas); // 초기 색상 가져오기
+                                    
+                                    // 템플릿 객체의 색상 변경
+                                    changeTemplateColor(objects, initialColor);
 
-                            const loadedObject = fabric.util.groupSVGElements(objects, options);
+                                    const loadedObject = fabric.util.groupSVGElements(objects, options);
 
-                            // 이미지 크기 조정 (필요한 경우)
-                            loadedObject.scaleToWidth(50);  // 원하는 크기로 조정
-                            
-                            // Group으로 변환
-                            const group = new fabric.Group([loadedObject], {
-                                left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2,
-                                top: fabricCanvas.height / 2 - loadedObject.height * loadedObject.scaleY / 2,
-                                selectable: true,
-                                evented: true,
-                                objectType: 'template'
-                            });
-                            
-                            // Canvas에 추가
-                            fabricCanvas.add(group);
-                            fabricCanvas.setActiveObject(group);
-                            fabricCanvas.renderAll();
+                                    // 이미지 크기 조정 (필요한 경우)
+                                    loadedObject.scaleToWidth(50);  // 원하는 크기로 조정
+                                    
+                                    // Group으로 변환
+                                    const group = new fabric.Group([loadedObject], {
+                                        left: fabricCanvas.width / 2 - loadedObject.width * loadedObject.scaleX / 2,
+                                        top: fabricCanvas.height / 2 - loadedObject.height * loadedObject.scaleY / 2,
+                                        selectable: true,
+                                        evented: true,
+                                        objectType: 'template'
+                                    });
+                                    
+                                    // Canvas에 추가
+                                    fabricCanvas.add(group);
+                                    fabricCanvas.setActiveObject(group);
+                                    fabricCanvas.renderAll();
 
-                            // 색상 버튼 생성
-                            createColorButtons(group);
-                            
-                             // 부트스트랩 모달 인스턴스를 가져와서 닫기
-                            const templateModal = document.getElementById('templateModal');
-                            const modal = bootstrap.Modal.getInstance(templateModal);
-                            modal.hide();
+                                    // 색상 버튼 생성
+                                    createColorButtons(group);
+                                    
+                                    // 부트스트랩 모달 인스턴스를 가져와서 닫기
+                                    const templateModal = document.getElementById('templateModal');
+                                    const modal = bootstrap.Modal.getInstance(templateModal);
+                                    modal.hide();
+                                });
+                            }
                         });
                     };
                     detailGrid.appendChild(item);

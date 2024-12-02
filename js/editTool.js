@@ -151,6 +151,7 @@ class HistoryManager {
                 this.executeCommand(new StateChangeCommand(this.canvas, () => {}));
             }
         });
+
     }
 
     // 버튼 이벤트 리스너 설정
@@ -207,7 +208,7 @@ class HistoryManager {
                 'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
                 'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']),
             currentView: currentView,
-            svgSrc: braceletImage.src,
+            // svgSrc: braceletImage.src,
             canvasInstances: Object.fromEntries(
                 Object.entries(canvasInstances).map(([key, canvas]) => [
                     key,
@@ -218,6 +219,7 @@ class HistoryManager {
             )
         };
     }
+    
 
     // 상태 스냅샷 로드
     loadStateSnapshot(state) {
@@ -241,8 +243,8 @@ class HistoryManager {
         // 캔버스 상태 복원
         this.canvas.loadFromJSON(state.canvasState, () => {
             this.canvas.renderAll();
-            // 레이어 패널 동기화
-            syncLayerPanelWithCanvas();
+            // // 레이어 패널 동기화
+            // rebuildLayerPanel();
         });
 
         // 다른 뷰의 캔버스 상태 복원
