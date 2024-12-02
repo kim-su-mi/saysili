@@ -63,12 +63,17 @@ function createTextColorButtons() {
         }
         
         colorBtn.addEventListener('click', function() {
-            document.querySelectorAll('.color-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            this.classList.add('selected');
-            
-            changeAllObjectsColor(fabricCanvas, color);
+            // 히스토리 매니저를 통해 상태 변경 기록
+            if (window.historyManager) {
+                window.historyManager.recordState(() => {
+                    document.querySelectorAll('.color-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    
+                    changeAllObjectsColor(fabricCanvas, color);
+                });
+            }
         });
         colorPicker.appendChild(colorBtn);
     });
@@ -179,36 +184,44 @@ function initializeTextEvents() {
 
     // 폰트 변경 이벤트
     document.getElementById('fontSelect').addEventListener('change', function() {
-        if (currentText) {
-            currentText.set('fontFamily', this.value);
-            fabricCanvas.renderAll();
+        if (currentText && window.historyManager) {
+            window.historyManager.recordState(() => {
+                currentText.set('fontFamily', this.value);
+                fabricCanvas.renderAll();
+            });
         }
     });
 
     // 볼드체 토글 이벤트
     document.getElementById('boldBtn').addEventListener('click', function() {
-        if (currentText) {
-            this.classList.toggle('active');
-            currentText.set('fontWeight', this.classList.contains('active') ? 'bold' : 'normal');
-            fabricCanvas.renderAll();
+        if (currentText && window.historyManager) {
+            window.historyManager.recordState(() => {
+                this.classList.toggle('active');
+                currentText.set('fontWeight', this.classList.contains('active') ? 'bold' : 'normal');
+                fabricCanvas.renderAll();
+            });
         }
     });
 
     // 이탤릭체 토글 이벤트
     document.getElementById('italicBtn').addEventListener('click', function() {
-        if (currentText) {
-            this.classList.toggle('active');
-            currentText.set('fontStyle', this.classList.contains('active') ? 'italic' : 'normal');
-            fabricCanvas.renderAll();
+        if (currentText && window.historyManager) {
+            window.historyManager.recordState(() => {
+                this.classList.toggle('active');
+                currentText.set('fontStyle', this.classList.contains('active') ? 'italic' : 'normal');
+                fabricCanvas.renderAll();
+            });
         }
     });
 
     // 밑줄 토글 이벤트
     document.getElementById('underlineBtn').addEventListener('click', function() {
-        if (currentText) {
-            this.classList.toggle('active');
-            currentText.set('underline', this.classList.contains('active'));
-            fabricCanvas.renderAll();
+        if (currentText && window.historyManager) {
+            window.historyManager.recordState(() => {
+                this.classList.toggle('active');
+                currentText.set('underline', this.classList.contains('active'));
+                fabricCanvas.renderAll();
+            });
         }
     });
 
@@ -216,42 +229,48 @@ function initializeTextEvents() {
     const alignButtons = ['alignLeftBtn', 'alignCenterBtn', 'alignRightBtn'];
     alignButtons.forEach(btnId => {
         document.getElementById(btnId).addEventListener('click', function() {
-            if (currentText) {
-                const alignMap = {
-                    'alignLeftBtn': 'left',
+            if (currentText && window.historyManager) {
+                window.historyManager.recordState(() => {
+                    const alignMap = {
+                        'alignLeftBtn': 'left',
                     'alignCenterBtn': 'center',
-                    'alignRightBtn': 'right'
-                };
-                
-                alignButtons.forEach(id => {
-                    document.getElementById(id).classList.remove('active');
+                        'alignRightBtn': 'right'
+                        };
+                    
+                    alignButtons.forEach(id => {
+                        document.getElementById(id).classList.remove('active');
+                    });
+                    
+                    this.classList.add('active');
+                    
+                    currentText.set({
+                        textAlign: alignMap[btnId]
+                    });
+                    fabricCanvas.renderAll();
                 });
-                
-                this.classList.add('active');
-                
-                currentText.set({
-                    textAlign: alignMap[btnId]
-                });
-                fabricCanvas.renderAll();
             }
         });
     });
 
     // 자간 조절 이벤트
     document.getElementById('charSpacing').addEventListener('input', function() {
-        if (currentText) {
-            const scaledValue = parseInt(this.value) * 10;
-            currentText.set('charSpacing', scaledValue);
-            fabricCanvas.renderAll();
+        if (currentText && window.historyManager) {
+            window.historyManager.recordState(() => {
+                const scaledValue = parseInt(this.value) * 10;
+                currentText.set('charSpacing', scaledValue);
+                fabricCanvas.renderAll();
+            });
         }
     });
 
     // 행간 조절 이벤트
     document.getElementById('lineHeight').addEventListener('input', function() {
-        if (currentText) {
-            const value = parseFloat(this.value);
-            currentText.set('lineHeight', value);
-            fabricCanvas.renderAll();
+        if (currentText && window.historyManager) {
+            window.historyManager.recordState(() => {
+                const value = parseFloat(this.value);
+                currentText.set('lineHeight', value);
+                fabricCanvas.renderAll();   
+            });
         }
     });
 

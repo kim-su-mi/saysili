@@ -62,7 +62,7 @@ function handleObjectSelection(e) {
     }
 }
 
-// 색상 버튼 생성 함수
+// 색상 버튼 생성 함수(템플릿,이미지)
 function createColorButtons(selectedObject) {
     const colorPicker = document.querySelector('.template-image-color-picker');
     colorPicker.innerHTML = ''; // 기존 버튼 제거
@@ -82,17 +82,22 @@ function createColorButtons(selectedObject) {
         }
         
         colorButton.addEventListener('click', () => {
-            // 모든 버튼의 테두리 초기화
-            const allButtons = colorPicker.querySelectorAll('button');
-            allButtons.forEach(btn => {
-                btn.style.border = 'none';
-            });
-            
-            // 클릭된 버튼에 테두리 추가
-            colorButton.style.border = '2px solid #000';
-            
-            // 색상 변경 함수 호출
-            changeAllObjectsColor(fabricCanvas, color);
+            // 히스토리 매니저를 통해 상태 변경 기록
+            if (window.historyManager) {
+                window.historyManager.recordState(() => {
+                    // 모든 버튼의 테두리 초기화
+                    const allButtons = colorPicker.querySelectorAll('button');
+                    allButtons.forEach(btn => {
+                        btn.style.border = 'none';
+                    });
+                    
+                    // 클릭된 버튼에 테두리 추가
+                    colorButton.style.border = '2px solid #000';
+                    
+                    // 색상 변경 실행
+                    changeAllObjectsColor(fabricCanvas, color);
+                });
+            }
         });
         colorPicker.appendChild(colorButton);
     });
@@ -203,10 +208,7 @@ function changeAllObjectsColor(fabricCanvas, selectedColor) {
     });
     fabricCanvas.renderAll();
 
-    // 현재 뷰의 상태를 저장
-    if (typeof saveCurrentCanvasState === 'function') {
-        saveCurrentCanvasState();
-    }
+    
     
     // 모든 뷰의 캔버스 객체들 색상 변경
     Object.values(canvasInstances).forEach(canvas => {
@@ -230,6 +232,10 @@ function changeAllObjectsColor(fabricCanvas, selectedColor) {
             canvas.renderAll();
         }
     });
+    // 현재 뷰의 상태를 저장
+    if (typeof saveCurrentCanvasState === 'function') {
+        saveCurrentCanvasState();
+    }
     
 }
 

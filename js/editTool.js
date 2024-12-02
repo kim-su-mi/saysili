@@ -1,3 +1,285 @@
+// Command 인터페이스와 공통 상태 관리
+class CanvasCommand {
+    constructor(canvas, state) {
+        this.canvas = canvas;
+        this.previousState = state;
+        // 변경 후 상태는 execute() 실행 시 저장
+        this.newState = null;
+    }
+
+    // 현재 캔버스의 전체 상태를 저장
+    saveCanvasState() {
+        return {
+            canvasState: this.canvas.toJSON(['id', 'visible', 'lockMovementX', 
+                'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
+                'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']),
+            currentView: currentView,
+            canvasInstances: Object.fromEntries(
+                Object.entries(canvasInstances).map(([key, canvas]) => [
+                    key,
+                    canvas ? canvas.toJSON(['id', 'visible', 'lockMovementX', 
+                        'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
+                        'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']) : null
+                ])
+            )
+        };
+    }
+
+    // 저장된 상태로 캔버스 복원
+    loadCanvasState(state) {
+        if (!state) return;
+
+        // 뷰 전환이 필요한 경우
+        if (currentView !== state.currentView) {
+            currentView = state.currentView;
+            // UI 뷰 버튼 상태 업데이트
+            const viewButtons = document.querySelectorAll('#viewButtons button');
+            viewButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === currentView);
+            });
+        }
+
+        // 현재 캔버스 상태 복원
+        this.canvas.loadFromJSON(state.canvasState, () => {
+            // 객체별 추가 속성 복원
+            this.canvas.getObjects().forEach(obj => {
+                if (obj.lockMovementX) {
+                    obj.set({
+                        selectable: false,
+                        evented: false,
+                        hoverCursor: 'default',
+                        moveCursor: 'default'
+                    });
+                }
+            });
+            this.canvas.renderAll();
+        });
+
+        // 다른 뷰의 캔버스 상태 복원
+        Object.entries(state.canvasInstances).forEach(([view, instanceState]) => {
+            if (instanceState) {
+                if (!canvasInstances[view]) {
+                    canvasInstances[view] = new fabric.Canvas(null);
+                }
+                canvasInstances[view].loadFromJSON(instanceState, () => {
+                    canvasInstances[view].getObjects().forEach(obj => {
+                        if (obj.lockMovementX) {
+                            obj.set({
+                                selectable: false,
+                                evented: false,
+                                hoverCursor: 'default',
+                                moveCursor: 'default'
+                            });
+                        }
+                    });
+                });
+            }
+        });
+
+        // 레이어 패널 업데이트
+        rebuildLayerPanel();
+    }
+
+    execute() {
+        throw new Error('execute method must be implemented');
+    }
+
+    undo() {
+        this.loadCanvasState(this.previousState);
+    }
+
+    redo() {
+        this.loadCanvasState(this.newState);
+    }
+}
+
+// 상태 변경 Command 클래스
+class StateChangeCommand extends CanvasCommand {
+    constructor(canvas, callback) {
+        super(canvas, null);
+        this.callback = callback;
+        this.previousState = this.saveCanvasState();
+    }
+
+    execute() {
+        this.callback();
+        this.newState = this.saveCanvasState();
+    }
+}
+
+// 히스토리 관리자 클래스
+class HistoryManager {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.undoStack = [];
+        this.redoStack = [];
+        this.isExecutingCommand = false;
+
+        // 캔버스 이벤트 리스너 설정
+        this.setupCanvasListeners();
+        // 버튼 이벤트 리스너 설정
+        this.setupButtonListeners();
+    }
+
+    // 캔버스 이벤트 리스너 설정
+    setupCanvasListeners() {
+        let initialState = null;
+
+        // 객체 수정 시작 시 초기 상태 저장
+        this.canvas.on('mouse:down', (e) => {
+            if (e.target && !this.isExecutingCommand) {
+                initialState = this.createStateSnapshot();
+            }
+        });
+
+        // 객체 수정 완료 시 Command 생성 및 실행
+        this.canvas.on('mouse:up', () => {
+            if (initialState && !this.isExecutingCommand) {
+                const finalState = this.createStateSnapshot();
+                if (this.hasStateChanged(initialState, finalState)) {
+                    this.executeCommand(new StateChangeCommand(this.canvas, () => {
+                        this.loadStateSnapshot(finalState);
+                    }));
+                }
+                initialState = null;
+            }
+        });
+
+        // 객체 속성 변경 감지
+        this.canvas.on('object:modified', (e) => {
+            if (!this.isExecutingCommand) {
+                this.executeCommand(new StateChangeCommand(this.canvas, () => {}));
+            }
+        });
+    }
+
+    // 버튼 이벤트 리스너 설정
+    setupButtonListeners() {
+        // Undo 버튼
+        document.getElementById('undoBtn').addEventListener('click', () => {
+            this.undo();
+        });
+
+        // Redo 버튼
+        document.getElementById('redoBtn').addEventListener('click', () => {
+            this.redo();
+        });
+    }
+
+    // Command 실행
+    executeCommand(command) {
+        this.isExecutingCommand = true;
+        command.execute();
+        this.undoStack.push(command);
+        this.redoStack = [];
+        this.isExecutingCommand = false;
+        this.updateButtonStates();
+    }
+
+    // Undo 실행
+    undo() {
+        if (this.undoStack.length > 0) {
+            const command = this.undoStack.pop();
+            this.isExecutingCommand = true;
+            command.undo();
+            this.redoStack.push(command);
+            this.isExecutingCommand = false;
+            this.updateButtonStates();
+        }
+    }
+
+    // Redo 실행
+    redo() {
+        if (this.redoStack.length > 0) {
+            const command = this.redoStack.pop();
+            this.isExecutingCommand = true;
+            command.redo();
+            this.undoStack.push(command);
+            this.isExecutingCommand = false;
+            this.updateButtonStates();
+        }
+    }
+
+    // 현재 상태 스냅샷 생성
+    createStateSnapshot() {
+        return {
+            canvasState: this.canvas.toJSON(['id', 'visible', 'lockMovementX', 
+                'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
+                'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']),
+            currentView: currentView,
+            svgSrc: braceletImage.src,
+            canvasInstances: Object.fromEntries(
+                Object.entries(canvasInstances).map(([key, canvas]) => [
+                    key,
+                    canvas ? canvas.toJSON(['id', 'visible', 'lockMovementX', 
+                        'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
+                        'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']) : null
+                ])
+            )
+        };
+    }
+
+    // 상태 스냅샷 로드
+    loadStateSnapshot(state) {
+        if (!state) return;
+        
+        if (currentView !== state.currentView) {
+            // 뷰 버튼 상태 업데이트
+            const viewButtons = document.querySelectorAll('#viewButtons button');
+            viewButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === state.currentView);
+            });
+
+            // SVG 이미지 업데이트
+            if (braceletImage.src !== state.svgSrc) {
+                changeSVGImage(state.svgSrc);
+            }
+
+            currentView = state.currentView;
+        }
+
+        // 캔버스 상태 복원
+        this.canvas.loadFromJSON(state.canvasState, () => {
+            this.canvas.renderAll();
+            // 레이어 패널 동기화
+            syncLayerPanelWithCanvas();
+        });
+
+        // 다른 뷰의 캔버스 상태 복원
+        Object.entries(state.canvasInstances).forEach(([view, instanceState]) => {
+            if (instanceState && canvasInstances[view]) {
+                canvasInstances[view].loadFromJSON(instanceState, () => {});
+            }
+        });
+    }
+
+    // 상태 변경 여부 확인
+    hasStateChanged(state1, state2) {
+        return JSON.stringify(state1) !== JSON.stringify(state2);
+    }
+
+    // 버튼 상태 업데이트
+    updateButtonStates() {
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+        
+        if (undoBtn) {
+            undoBtn.disabled = this.undoStack.length === 0;
+        }
+        if (redoBtn) {
+            redoBtn.disabled = this.redoStack.length === 0;
+        }
+    }
+
+    // 외부에서 상태 변경을 기록하기 위한 메서드
+    recordState(callback) {
+        if (!this.isExecutingCommand) {
+            this.executeCommand(new StateChangeCommand(this.canvas, callback));
+        }
+    }
+}
+
+
 // 버든 버튼을 비활성화하는 함수
 function disableAllButtons() {
     const buttons = document.querySelectorAll('.right_panel_div button');
@@ -49,155 +331,22 @@ function updateButtonStates() {
 const undoStack = [];
 const redoStack = [];
 
-// Save canvas state with view information
-function saveCanvasState() {
-    // 새로운 작업이 발생하면 redo 스택 초기화
-    // redoStack.length = 0;
-    
-    const state = {
-        json: fabricCanvas.toJSON(['id', 'objectType', 'originalLayerNames', 'visible', 
-            'lockMovementX', 'lockMovementY', 'lockRotation', 'lockScalingX', 
-            'lockScalingY', 'selectable', 'evented', 'hoverCursor', 'moveCursor']),
-        viewMode: currentView,
-        layers: layerInstances[currentView].map(layer => ({
-            id: layer.fabricObject.id,
-            type: layer.fabricObject.objectType || layer.fabricObject.type
-        }))
-    };
-    
-    console.log('Saving New State:');
-    console.log('New State:', state);
-    console.log('undoStack length before save:', undoStack.length);
-    
-    undoStack.push(JSON.stringify(state));
-    // updateUndoRedoButtons();
-}
 
-// Load canvas state from saved state
-function loadCanvasState(jsonState) {
-    const state = JSON.parse(jsonState);
-    console.log('Loading State:', state);
-    
-    if (currentView !== state.viewMode) {
-        currentView = state.viewMode;
-    }
-    
-    // 캔버스와 레이어 패널 초기화
-    fabricCanvas.clear();
-    const layerContent = document.querySelector('#layer-content');
-    layerContent.innerHTML = '';
-    layerInstances[currentView] = [];
-    
-    // 캔버스 상태 복원
-    fabricCanvas.loadFromJSON(state.json, () => {
-        // 모든 객체에 대해 레이어 재생성
-        const objects = fabricCanvas.getObjects();
-        console.log('Restored Objects:', objects);
-        
-        objects.forEach((obj, index) => {
-            // 객체의 모든 속성이 복원되었는지 확인
-            if (!obj.id) {
-                obj.id = uuid.v4(); // ID가 없는 경우 새로 생성
-            }
-            
-            const layer = createLayerItem(obj, index + 1);
-            if (layer && layer.element) {
-                layerContent.appendChild(layer.element);
-            }
-        });
-        
-        fabricCanvas.renderAll();
-        updateButtonStates();
-        updateLayerIndices();
-        // updateUndoRedoButtons();
-    });
-}
-
-// Update button states based on stack status
-// function updateUndoRedoButtons() {
-//     const undoBtn = document.getElementById('undoBtn');
-//     const redoBtn = document.getElementById('redoBtn');
-    
-//     // 스택 상태에 따라 버튼 활성화/비활성화
-//     if (undoBtn && redoBtn) {
-//         undoBtn.disabled = undoStack.length <= 1;
-//         redoBtn.disabled = redoStack.length === 0;
-//     }
-// }
-
-// Undo function
-function undo() {
-    if (undoStack.length <= 1) return; // 초기 상태만 남았으면 실행 취소 불가
-    
-    // 현재 상태를 redoStack에 저장하고 undoStack에서 제거
-    const currentState = undoStack.pop();
-    redoStack.push(currentState);
-    
-    console.log('Undo Operation:');
-    console.log('Current State moved to redoStack:', JSON.parse(currentState));
-    console.log('redoStack length:', redoStack.length);
-    console.log('undoStack length:', undoStack.length);
-    
-    // undoStack의 마지막 상태(이전 상태)를 로드
-    const previousState = undoStack[undoStack.length - 1];
-    if (previousState) {
-        console.log('Loading Previous State:', JSON.parse(previousState));
-        loadCanvasState(previousState);
-    }
-}
-
-// Redo function
-function redo() {
-    if (redoStack.length === 0) {
-        console.log('Redo스택 비어있음');
-        return};
-    
-    // redoStack의 마지막 상태를 가져옴
-    const nextState = redoStack.pop();
-    
-    console.log('Redo Operation:');
-    console.log('Next State from redoStack:', JSON.parse(nextState));
-    console.log('redoStack length:', redoStack.length);
-    console.log('undoStack length:', undoStack.length);
-    
-    // 현재 상태를 undoStack에 저장하고 다음 상태를 로드
-    if (nextState) {
-        undoStack.push(nextState);
-        loadCanvasState(nextState);
-    }
-}
 
 // Canvas 이벤트 리스너 설정 함수
 function setupCanvasListeners() {
     fabricCanvas.on('selection:created', updateButtonStates);
     fabricCanvas.on('selection:updated', updateButtonStates);
     fabricCanvas.on('selection:cleared', updateButtonStates);
-    
-    // 객체 수정 관련 이벤트에 상태 저장 추가
-    fabricCanvas.on('object:modified', () => {
-        saveCanvasState();
-    });
-    
-    fabricCanvas.on('object:added', () => {
-        saveCanvasState();
-    });
-    
-    fabricCanvas.on('object:removed', () => {
-        saveCanvasState();
-    });
-    
-    // 초기 상태 저장
-    saveCanvasState();
-    
-    // 실행 취소/다시실행 버튼 이벤트 리스너
-    document.getElementById('undoBtn').addEventListener('click', undo);
-    document.getElementById('redoBtn').addEventListener('click', redo);
 }
 
 
 
 // DOM이 로드된 후 초기화
 document.addEventListener('DOMContentLoaded', function() {
+    // 히스토리 매니저 초기화
+    window.historyManager = new HistoryManager(fabricCanvas);
+    
     // 초기 버튼 상태 설정
     disableAllButtons();
     
@@ -210,7 +359,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (activeObject) {
             activeObject.centerV();
             fabricCanvas.renderAll();
-            saveCanvasState(); // 추가
         }
     });
 
@@ -220,7 +368,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (activeObject) {
             activeObject.centerH();
             fabricCanvas.renderAll();
-            saveCanvasState(); // 추가
         }
     });
 
@@ -230,7 +377,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (activeObject) {
             activeObject.set('flipX', !activeObject.flipX);
             fabricCanvas.renderAll();
-            saveCanvasState(); 
         }
     });
 
@@ -240,7 +386,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (activeObject) {
             activeObject.set('flipY', !activeObject.flipY);
             fabricCanvas.renderAll();
-            saveCanvasState(); 
         }
     });
 
@@ -281,7 +426,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 버튼 상태 업데이트
             updateButtonStates();
-            saveCanvasState(); 
         }
     });
 
@@ -311,7 +455,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 캔버스 다시 그리기
                 fabricCanvas.renderAll();
-                saveCanvasState(); 
             });
         }
     });
@@ -359,7 +502,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             fabricCanvas.renderAll();
             updateLayerIndices();
-            saveCanvasState(); 
         }
     });
 
@@ -415,21 +557,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             fabricCanvas.renderAll();
             updateLayerIndices();
-            saveCanvasState(); 
         }
     });
 });
 
-// 실행 취소/다시실행 버튼 상태 업데이트
-function updateUndoRedoButtons() {
-    const undoBtn = document.getElementById('undoBtn');
-    const redoBtn = document.getElementById('redoBtn');
-    
-    // undoStack이 초기 상태만 있으면(길이가 1) 실행취소 불가능
-    undoBtn.disabled = undoStack.length <= 1;
-    // redoStack이 비어있으면 다시실행 불가능
-    redoBtn.disabled = redoStack.length === 0;
-}
 
 // 레이어 패널 재구성 함수 추가
 function rebuildLayerPanel() {

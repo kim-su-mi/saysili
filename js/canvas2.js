@@ -302,64 +302,71 @@ document.addEventListener('DOMContentLoaded', function() {
      const viewButtons = document.querySelectorAll('#viewButtons button');
      
      viewButtons.forEach(button => {
-         button.addEventListener('click', function() {
-             // 모든 버튼의 활성화 상태 제거
-             viewButtons.forEach(btn => btn.classList.remove('active'));
-             
-             // 클릭된 버튼 활성화
-             this.classList.add('active');
-             
-             // 현재 view의 상태 저장
-             saveCurrentCanvasState();
-             fabricCanvas.clear();
- 
-             // 뷰에 따른 이미지 변경
-             const newView = this.dataset.view;
-             currentView = newView;
-
-             // 레이어 패널 업데이트
-            window.updateLayerPanel(currentView);
- 
-             switch(newView) {
-                 case 'outer-front':
-                 case 'outer-back':
-                     braceletImage.src = 'images/bracelet.svg';
-                     break;
-                 case 'inner-front':
-                 case 'inner-back':
-                     braceletImage.src = 'images/braceletInner.svg';
-                     break;
-             }
-             
-             // SVG 다시 로드 및 현재 색상 유지
-             fetch(braceletImage.src)
-                 .then(response => response.text())
-                 .then(svgContent => {
-                     const parser = new DOMParser();
-                     const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
-                     const oldSvg = document.querySelector('#braceletSVG');
-                     if (oldSvg) {
-                         oldSvg.parentNode.replaceChild(svgDoc.documentElement, oldSvg);
-                         const newSvg = document.querySelector('svg');
-                         newSvg.id = 'braceletSVG';
-                         
-                         // 현재 선택된 사이즈 유지
-                         const currentSize = document.querySelector('#sizepicker button.active')?.id?.charAt(0) || 's';
-                         resizeBracelet(currentSize);
- 
-                         // 현재 선택된 색상 유지
-                         const activeColorButton = document.querySelector('#colorPicker button.active');
-                         if (activeColorButton) {
-                             const currentColor = activeColorButton.style.backgroundColor;
-                             changeBraceletColor(rgbToHex(currentColor));
-                         }
- 
-                         // 저장된 canvas 상태 복원
-                         loadCanvasState();
-                     }
-                 });
-         });
-     });
+        button.addEventListener('click', function() {
+            if (window.historyManager) {
+                window.historyManager.recordState(() => {
+                    // 뷰 전환 전 현재 상태 저장
+                    saveCurrentCanvasState();
+                    fabricCanvas.clear();
+    
+                    // 버튼 상태 업데이트
+                    viewButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+    
+                    // 새로운 뷰로 전환
+                    const newView = this.dataset.view;
+                    currentView = newView;
+    
+                    // 레이어 패널 업데이트
+                    window.updateLayerPanel(currentView);
+    
+                    // SVG 이미지 업데이트
+                    switch(newView) {
+                        case 'outer-front':
+                        case 'outer-back':
+                            changeSVGImage('images/bracelet.svg');
+                            break;
+                        case 'inner-front':
+                        case 'inner-back':
+                            changeSVGImage('images/braceletInner.svg');
+                            break;
+                    }
+                });
+            }
+        });
+    });
+    
+    // SVG 이미지 변경 및 상태 복원 함수
+    function changeSVGImage(src) {
+        braceletImage.src = src;
+        
+        fetch(src)
+            .then(response => response.text())
+            .then(svgContent => {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+                const oldSvg = document.querySelector('#braceletSVG');
+                if (oldSvg) {
+                    oldSvg.parentNode.replaceChild(svgDoc.documentElement, oldSvg);
+                    const newSvg = document.querySelector('svg');
+                    newSvg.id = 'braceletSVG';
+                    
+                    // 현재 선택된 사이즈 유지
+                    const currentSize = document.querySelector('#sizepicker button.active')?.id?.charAt(0) || 's';
+                    resizeBracelet(currentSize);
+    
+                    // 현재 선택된 색상 유지
+                    const activeColorButton = document.querySelector('#colorPicker button.active');
+                    if (activeColorButton) {
+                        const currentColor = activeColorButton.style.backgroundColor;
+                        changeBraceletColor(rgbToHex(currentColor));
+                    }
+    
+                    // 저장된 canvas 상태 복원
+                    loadCanvasState();
+                }
+            });
+    }
 
      // RGB 색상을 HEX 코드로 변환하는 헬퍼 함수
     function rgbToHex(rgb) {

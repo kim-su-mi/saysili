@@ -108,11 +108,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // 숨기기 버튼 이벤트
         visibilityBtn.addEventListener('click', function() {
-            const isVisible = layer.fabricObject.visible;
-            layer.fabricObject.set('visible', !isVisible);
-            this.textContent = isVisible ? '👁‍🗨' : '👁';
-            fabricCanvas.renderAll();
-            saveCurrentCanvasState(); // 상태 저장
+            if (window.historyManager) {
+                window.historyManager.recordState(() => {
+                    const isVisible = layer.fabricObject.visible;
+                    layer.fabricObject.set('visible', !isVisible);
+                    this.textContent = isVisible ? '👁‍🗨' : '👁';
+                    fabricCanvas.renderAll();
+                    saveCurrentCanvasState(); // 상태 저장
+                });
+            }
         });
     
         // 잠금 버튼 초기 상태 설정
@@ -121,42 +125,50 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // 잠금 버튼 이벤트
         lockBtn.addEventListener('click', function() {
-            const isLocked = layer.fabricObject.lockMovementX;
-            const newLockState = !isLocked;
-            
-            layer.fabricObject.set({
-                lockMovementX: newLockState,
-                lockMovementY: newLockState,
-                lockRotation: newLockState,
-                lockScalingX: newLockState,
-                lockScalingY: newLockState,
-                selectable: !newLockState,
-                evented: !newLockState, // 클릭 이벤트 비활성화
-                hoverCursor: newLockState ? 'default' : 'move',
-                moveCursor: newLockState ? 'default' : 'move'
-            });
-            
-            // UI 업데이트
-            this.textContent = newLockState ? '🔒' : '🔓';
-            fabricCanvas.renderAll();
-            saveCurrentCanvasState(); // 상태 저장
+            if (window.historyManager) {
+                window.historyManager.recordState(() => {
+                    const isLocked = layer.fabricObject.lockMovementX;
+                    const newLockState = !isLocked;
+                    
+                    layer.fabricObject.set({
+                        lockMovementX: newLockState,
+                        lockMovementY: newLockState,
+                        lockRotation: newLockState,
+                        lockScalingX: newLockState,
+                        lockScalingY: newLockState,
+                        selectable: !newLockState,
+                        evented: !newLockState, // 클릭 이벤트 비활성화
+                        hoverCursor: newLockState ? 'default' : 'move',
+                        moveCursor: newLockState ? 'default' : 'move'
+                    });
+                    
+                    // UI 업데이트
+                    this.textContent = newLockState ? '🔒' : '🔓';
+                    fabricCanvas.renderAll();
+                    saveCurrentCanvasState(); // 상태 저장
+                });
+            }
         });
     
         // 삭제 버튼 이벤트는 동일
         layerItem.querySelector('#layer_delete').addEventListener('click', function() {
             if (confirm('이 레이어를 삭제하시겠습니까?')) {
-                // 캔버스에서 객체 삭제
-                fabricCanvas.remove(layer.fabricObject);
-                // UI 레이어 요소 삭제
-                layerItem.remove();
-                
-                // 레이어 배열 인스턴스에서 삭제
-                const index = layerInstances[currentView].findIndex(l => l === layer);
-                if (index > -1) {
-                    layerInstances[currentView].splice(index, 1);
+                if (window.historyManager) {
+                    window.historyManager.recordState(() => {
+                        // 캔버스에서 객체 삭제
+                        fabricCanvas.remove(layer.fabricObject);
+                        // UI 레이어 요소 삭제
+                        layerItem.remove();
+                        
+                        // 레이어 배열 인스턴스에서 삭제
+                        const index = layerInstances[currentView].findIndex(l => l === layer);
+                        if (index > -1) {
+                            layerInstances[currentView].splice(index, 1);
                 }
                 // 레이어 인덱스 업데이트
-                updateLayerIndices();
+                        updateLayerIndices();
+                    });
+                }
             }
         });
     }
@@ -178,3 +190,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 });
+
+// // 레이어 패널 상태 동기화 함수
+// function syncLayerPanelWithCanvas() {
+//     const layerContent = document.querySelector('#layer-content');
+//     layerContent.innerHTML = ''; // 기존 레이어 패널 초기화
+//     layerInstances[currentView] = []; // 레이어 인스턴스 초기화
+
+//     // 캔버스의 모든 객체에 대해 레이어 생성
+//     fabricCanvas.getObjects().forEach((obj, index) => {
+//         const layer = window.createLayerItem(obj, index + 1);
+//         if (layer && layer.element) {
+//             // 레이어 UI 상태 업데이트
+//             const visibilityBtn = layer.element.querySelector('#layer_hide');
+//             const lockBtn = layer.element.querySelector('#layer_lock');
+            
+//             visibilityBtn.textContent = obj.visible ? '👁' : '👁‍🗨';
+//             lockBtn.textContent = obj.lockMovementX ? '🔒' : '🔓';
+            
+//             layerContent.appendChild(layer.element);
+//         }
+//     });
+
+//     updateLayerIndices();
+// }
