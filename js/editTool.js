@@ -1,3 +1,7 @@
+// Stack for undo/redo operations
+const undoStack = [];
+const redoStack = [];
+
 // Command 인터페이스와 공통 상태 관리
 class CanvasCommand {
     constructor(canvas, state) {
@@ -329,9 +333,7 @@ function updateButtonStates() {
         // }
     }
 }
-// Stack for undo/redo operations
-const undoStack = [];
-const redoStack = [];
+
 
 
 
@@ -569,6 +571,38 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+    // 처음부터 버튼 클릭 이벤트
+    document.getElementById('resetBtn').addEventListener('click', function() {
+        if (confirm('모든 작업 내역이 초기화되고 되돌릴 수 없습니다. 계속하시겠습니까?')) {
+            if (window.historyManager) {
+                // 스택 초기화
+                window.historyManager.undoStack = [];
+                window.historyManager.redoStack = [];
+                window.historyManager.updateButtonStates();
+     
+                // 캔버스 초기화
+                fabricCanvas.clear();
+                Object.values(canvasInstances).forEach(canvas => {
+                    if (canvas) canvas.clear();
+                });
+     
+                // 레이어 패널 초기화
+                layerInstances[currentView] = [];
+                const layerContent = document.querySelector('#layer-content');
+                layerContent.innerHTML = '';
+     
+                // 뷰 초기화
+                currentView = 'outer-front';
+                const viewButtons = document.querySelectorAll('#viewButtons button');
+                viewButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.view === 'outer-front');
+                });
+                // 초기 화면 렌더링
+                fabricCanvas.renderAll();
+                updateButtonStates();
+            }
+        }
+     });
 });
 
 
