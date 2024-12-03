@@ -141,17 +141,21 @@ class HistoryManager {
 
         // 객체 속성 변경 감지
         this.canvas.on('object:modified', (e) => {
-            console.log('객체 속성 변경 감지');
-            if (!this.isExecutingCommand) {
-                this.executeCommand(new StateChangeCommand(this.canvas, () => {}));
+            if (!this.isExecutingCommand && !this.isTextEditing && !this.textEditingTimeout) {
+                console.log('=== 객체 속성 변경 감지 ===');
+                const currentState = this.createStateSnapshot();
+                const command = new StateChangeCommand(this.canvas, () => {
+                    this.loadStateSnapshot(currentState);
+                });
+                command.previousState = this.createStateSnapshot();
+                this.executeCommand(command);
             }
         });
 
         // 텍스트 변경 감지
         // 텍스트 편집 시작
         this.canvas.on('text:editing:entered', (e) => {
-            console.log('텍스트 편집 시작');
-            isTextEditing = true;
+            this.isTextEditing = true;
             if (!this.isExecutingCommand) {
                 initialState = this.createStateSnapshot();
             }
@@ -159,17 +163,46 @@ class HistoryManager {
 
         // 텍스트 편집 완료
         this.canvas.on('text:editing:exited', (e) => {
-            console.log('텍스트 편집 완료');
-            if (!this.isExecutingCommand && initialState) {
-                const finalState = this.createStateSnapshot();
-                if (this.hasStateChanged(initialState, finalState)) {
-                    this.executeCommand(new StateChangeCommand(this.canvas, () => {
-                        this.loadStateSnapshot(finalState);
-                    }));
+            try {
+                if (!this.isExecutingCommand && initialState && e.target) {
+                    // 안전하게 편집 모드 종료
+                    if (e.target.isEditing) {
+                        try {
+                            e.target.exitEditing();
+                        } catch (error) {
+                        }
+                    }
+        
+                    const finalState = this.createStateSnapshot();
+                    
+                    if (this.hasStateChanged(initialState, finalState)) {
+                        const command = new StateChangeCommand(this.canvas, () => {
+                            this.loadStateSnapshot(finalState);
+                        });
+                        command.previousState = initialState;
+                        this.executeCommand(command);
+                    }
+                    initialState = null;
                 }
-                initialState = null;
+        
+                // 텍스트 편집 완료 후 일정 시간 동안 object:modified 이벤트 무시
+                if (this.textEditingTimeout) {
+                    clearTimeout(this.textEditingTimeout);
+                }
+                this.textEditingTimeout = setTimeout(() => {
+                    this.isTextEditing = false;
+                    this.textEditingTimeout = null;
+                }, 300);
+        
+                // 캔버스 다시 그리기
+                this.canvas.renderAll();
+            } catch (error) {
+                this.isTextEditing = false;
+                if (this.textEditingTimeout) {
+                    clearTimeout(this.textEditingTimeout);
+                    this.textEditingTimeout = null;
+                }
             }
-            isTextEditing = false;
         });
 
     }
