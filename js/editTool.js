@@ -33,10 +33,6 @@ class CanvasCommand {
     loadCanvasState(state) {
         if (!state) return;
 
-        console.log('=== loadCanvasState 시작 ===');
-        console.log('복원할 상태:', state);
-        console.log('현재 캔버스 객체들:', this.canvas.getObjects());
-
         // 뷰 전환이 필요한 경우
         if (currentView !== state.currentView) {
             currentView = state.currentView;
@@ -49,20 +45,8 @@ class CanvasCommand {
 
         // 현재 캔버스 상태 복원
         this.canvas.loadFromJSON(state.canvasState, () => {
-            console.log('=== Canvas loadFromJSON 콜백 ===');
-            console.log('복원된 객체들:', this.canvas.getObjects().map(obj => ({
-                id: obj.id,
-                type: obj.type,
-                objectType: obj.objectType
-            })));
-
             // 객체별 추가 속성 복원
             this.canvas.getObjects().forEach(obj => {
-                console.log('객체 속성 복원:', {
-                    id: obj.id,
-                    type: obj.type,
-                    objectType: obj.objectType
-                });
                 if (obj.lockMovementX) {
                     obj.set({
                         selectable: false,
@@ -77,7 +61,6 @@ class CanvasCommand {
             // 다른 뷰의 캔버스 상태 복원
             Object.entries(state.canvasInstances).forEach(([view, instanceState]) => {
                 if (instanceState) {
-                    console.log(`${view} 뷰 상태 복원`);
                     if (!canvasInstances[view]) {
                         canvasInstances[view] = new fabric.Canvas(null);
                     }
@@ -85,11 +68,8 @@ class CanvasCommand {
                 }
             });
 
-            console.log('레이어 패널 재구성 전 상태:', layerInstances[currentView]);
             // 레이어 패널 업데이트를 콜백 내부로 이동
             rebuildLayerPanel();
-            console.log('레이어 패널 재구성 후 상태:', layerInstances[currentView]);
-            console.log('=== loadCanvasState 완료 ===');
         });
     }
 
@@ -137,6 +117,7 @@ class HistoryManager {
     // 캔버스 이벤트 리스너 설정
     setupCanvasListeners() {
         let initialState = null;
+        let isTextEditing = false;  // 텍스트 편집 상태 추적
 
         // 객체 수정 시작 시 초기 상태 저장
         this.canvas.on('mouse:down', (e) => {
@@ -160,9 +141,35 @@ class HistoryManager {
 
         // 객체 속성 변경 감지
         this.canvas.on('object:modified', (e) => {
+            console.log('객체 속성 변경 감지');
             if (!this.isExecutingCommand) {
                 this.executeCommand(new StateChangeCommand(this.canvas, () => {}));
             }
+        });
+
+        // 텍스트 변경 감지
+        // 텍스트 편집 시작
+        this.canvas.on('text:editing:entered', (e) => {
+            console.log('텍스트 편집 시작');
+            isTextEditing = true;
+            if (!this.isExecutingCommand) {
+                initialState = this.createStateSnapshot();
+            }
+        });
+
+        // 텍스트 편집 완료
+        this.canvas.on('text:editing:exited', (e) => {
+            console.log('텍스트 편집 완료');
+            if (!this.isExecutingCommand && initialState) {
+                const finalState = this.createStateSnapshot();
+                if (this.hasStateChanged(initialState, finalState)) {
+                    this.executeCommand(new StateChangeCommand(this.canvas, () => {
+                        this.loadStateSnapshot(finalState);
+                    }));
+                }
+                initialState = null;
+            }
+            isTextEditing = false;
         });
 
     }
@@ -182,7 +189,6 @@ class HistoryManager {
 
     // Command 실행
     executeCommand(command) {
-        console.log('Executing command:', command);
         this.isExecutingCommand = true;
         command.execute();
         this.undoStack.push(command);
@@ -195,7 +201,6 @@ class HistoryManager {
     undo() {
         if (this.undoStack.length > 0) {
             const command = this.undoStack.pop();
-            console.log('Undoing command:', command);
             this.isExecutingCommand = true;
             command.undo();
             this.redoStack.push(command);
@@ -208,7 +213,6 @@ class HistoryManager {
     redo() {
         if (this.redoStack.length > 0) {
             const command = this.redoStack.pop();
-            console.log('Redoing command:', command);
             this.isExecutingCommand = true;
             command.redo();
             this.undoStack.push(command);
@@ -241,9 +245,6 @@ class HistoryManager {
     loadStateSnapshot(state) {
         if (!state) return;
         
-        console.log('현재 레이어 상태:', layerInstances[currentView]);
-        console.log('복원할 캔버스 상태:', state.canvasState);
-        
         if (currentView !== state.currentView) {
             // 뷰 버튼 상태 업데이트
             const viewButtons = document.querySelectorAll('#viewButtons button');
@@ -261,13 +262,10 @@ class HistoryManager {
 
         // 캔버스 상태 복원
         this.canvas.loadFromJSON(state.canvasState, () => {
-            console.log('캔버스 복원 후 객체들:', this.canvas.getObjects());
             this.canvas.renderAll();
             
             // 레이어 패널 재구성 전후 로그
-            console.log('레이어 패널 재구성 전:', layerInstances[currentView]);
             rebuildLayerPanel();
-            console.log('레이어 패널 재구성 후:', layerInstances[currentView]);
         });
 
         // 다른 뷰의 캔버스 상태 복원
@@ -299,7 +297,6 @@ class HistoryManager {
     // 외부에서 상태 변경을 기록하기 위한 메서드
     recordState(callback) {
         if (!this.isExecutingCommand) {
-            console.log('Recording state');
             this.executeCommand(new StateChangeCommand(this.canvas, callback));
         }
     }
@@ -628,35 +625,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 레이어 패널 재구성 함수 추가
 function rebuildLayerPanel() {
-    console.log('=== 레이어 패널 재구성 시작 ===');
     const layerContent = document.querySelector('#layer-content');
     layerContent.innerHTML = '';
     layerInstances[currentView] = [];
     
     const canvasObjects = fabricCanvas.getObjects();
-    console.log('캔버스의 현재 객체들:', canvasObjects.map(obj => ({
-        id: obj.id,
-        type: obj.type,
-        objectType: obj.objectType
-    })));
     
     canvasObjects.forEach((obj, index) => {
-        console.log(`객체 ${index} 레이어 생성 시도:`, {
-            id: obj.id,
-            type: obj.type,
-            objectType: obj.objectType
-        });
+     
         
         const layer = window.createLayerItem(obj, index + 1);
         if (layer && layer.element) {
-            console.log(`객체 ${index} 레이어 생성 성공`);
             layerContent.appendChild(layer.element);
         } else {
-            console.warn(`객체 ${index} 레이어 생성 실패`);
         }
     });
     
-    console.log('최종 레이어 상태:', layerInstances[currentView]);
     window.updateLayerIndices();
-    console.log('=== 레이어 패널 재구성 완료 ===');
+
 }
