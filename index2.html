@@ -34,6 +34,7 @@
             <button type="button" class="btn btn-outline-primary" data-view="inner-front">내부 앞면</button>
             <button type="button" class="btn btn-outline-primary" data-view="inner-back">내부 뒷면</button>
         </div>
+        
         <!-- 템플릿,이미지 색상 버튼 -->
         <div class="template-image-color-picker"></div>
         <!-- 팔찌 이미지 띄우기 위한 배경 캔버스 -->
@@ -45,10 +46,13 @@
             <!-- <canvas id="backgroundCanvas"> -->
             <!-- 작업 가능 영역 캔버스 -->
                 <div class="printable-area">
-                    <span>인쇄 가능 영역 - </span>
-                    <canvas id="activeCanvas"></canvas>
+                    <span class="area-text">인쇄 가능 영역 - </span>
+                    <canvas id="activeCanvas" class="canvas-border"></canvas>
                 </div>
             <!-- </canvas> -->
+        </div>
+        <div>
+            <button type="button" id="onOffBtn">테두리 on/off</button>
         </div>
     </div>
     <div class="layer-panel">

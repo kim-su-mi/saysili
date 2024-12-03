@@ -48,12 +48,11 @@ body {
     z-index: 1; /* canvas 위에 표시되도록 설정 *z-index: 요소들의 쌓임 순서(층위)를 제어, 클수록 더 위애 표시*/
 }
 /* 작업 가능 영역 캔버스 */
-#activeCanvas{
-    /* position: absolute;  */
+/* .canvas-border{
+    /* position: absolute;  
     border: 3px dashed #f10909ce;
-    left: 30px; 
-    top: 30px;
-}
+    
+} */
 
 /* 컬러피커와 사이즈피커 영역 스타일 */
 #colorPicker, #sizepicker {

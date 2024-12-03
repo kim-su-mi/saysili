@@ -25,6 +25,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     /**
+     * canvas 영역 테두리 on/off
+     */
+    // 초기 테두리 설정
+    const lowerCanvas = fabricCanvas.lowerCanvasEl;
+    lowerCanvas.style.border = '3px dashed #f10909ce';  // 초기 테두리 표시
+
+    // 테두리 on/off 버튼 이벤트
+    document.getElementById('onOffBtn').addEventListener('click', function() {
+        const areaText = document.querySelector('.area-text');
+        
+        // 테두리 토글
+        if (lowerCanvas.style.border) {
+            lowerCanvas.style.border = '';  // 테두리 제거
+        } else {
+            lowerCanvas.style.border = '3px dashed #f10909ce';  // 테두리 추가
+        }
+        
+        // 텍스트 표시/숨김 토글
+        if (areaText.style.display === 'none') {
+            areaText.style.display = '';
+        } else {
+            areaText.style.display = 'none';
+        }
+    });
+    
+
+    /**
      * 색상 변경에 대한 js
      */
     const braceletImage = document.getElementById('braceletImage');
@@ -405,16 +432,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update layer indices
         updateLayerIndices();
     });
-
-
-    // // 테스트용 원 추가 코드 수정
-    // const circle = new fabric.Circle({
-    //     radius: 20,
-    //     fill: 'red',
-    //     left: 50,
-    //     top: 20
-    // });
-    // fabricCanvas.add(circle);
 
 });
 // Canvas 상태 저장 함수

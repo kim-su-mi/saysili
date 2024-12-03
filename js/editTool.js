@@ -6,9 +6,8 @@ const redoStack = [];
 class CanvasCommand {
     constructor(canvas, state) {
         this.canvas = canvas;
-        this.previousState = state;
-        // 변경 후 상태는 execute() 실행 시 저장
-        this.newState = null;
+        this.previousState = state; // 이전 상태 저장
+        this.newState = null; // 변경 후 상태는 execute() 실행 시 저장
     }
 
     // 현재 캔버스의 전체 상태를 저장
@@ -91,12 +90,12 @@ class StateChangeCommand extends CanvasCommand {
     constructor(canvas, callback) {
         super(canvas, null);
         this.callback = callback;
-        this.previousState = this.saveCanvasState();
+        this.previousState = this.saveCanvasState(); // 초기 상태 저장
     }
 
     execute() {
-        this.callback();
-        this.newState = this.saveCanvasState();
+        this.callback(); // 상태 변경 수행
+        this.newState = this.saveCanvasState(); // 변경 후 상태 저장
     }
 }
 
@@ -117,7 +116,6 @@ class HistoryManager {
     // 캔버스 이벤트 리스너 설정
     setupCanvasListeners() {
         let initialState = null;
-        let isTextEditing = false;  // 텍스트 편집 상태 추적
 
         // 객체 수정 시작 시 초기 상태 저장
         this.canvas.on('mouse:down', (e) => {
@@ -139,8 +137,9 @@ class HistoryManager {
             }
         });
 
-        // 객체 속성 변경 감지
+        // 객체 속성 변경 감지 (이동, 크기 조절 등)
         this.canvas.on('object:modified', (e) => {
+            // 텍스트 편집 중이 아니고, Command 실행 중이 아닐 때만 처리
             if (!this.isExecutingCommand && !this.isTextEditing && !this.textEditingTimeout) {
                 console.log('=== 객체 속성 변경 감지 ===');
                 const currentState = this.createStateSnapshot();
@@ -155,7 +154,7 @@ class HistoryManager {
         // 텍스트 변경 감지
         // 텍스트 편집 시작
         this.canvas.on('text:editing:entered', (e) => {
-            this.isTextEditing = true;
+            this.isTextEditing = true; // 텍스트 편집 모드 시작
             if (!this.isExecutingCommand) {
                 initialState = this.createStateSnapshot();
             }
@@ -174,12 +173,13 @@ class HistoryManager {
                     }
         
                     const finalState = this.createStateSnapshot();
-                    
+                    // 상태가 변경되었는지 확인
                     if (this.hasStateChanged(initialState, finalState)) {
+                        // 상태 변경을 위한 Command 생성
                         const command = new StateChangeCommand(this.canvas, () => {
                             this.loadStateSnapshot(finalState);
                         });
-                        command.previousState = initialState;
+                        command.previousState = initialState; // 이전 상태 저장
                         this.executeCommand(command);
                     }
                     initialState = null;
@@ -223,11 +223,50 @@ class HistoryManager {
     // Command 실행
     executeCommand(command) {
         this.isExecutingCommand = true;
-        command.execute();
-        this.undoStack.push(command);
-        this.redoStack = [];
+        command.execute(); // 명령 실행
+
+        // 스택이 비어있지 않은 경우 마지막 상태와 비교
+        if (this.undoStack.length > 0) {
+            const lastCommand = this.undoStack[this.undoStack.length - 1];
+            
+            // 이전 상태와 현재 상태의 객체들을 비교
+            const isDifferentState = this.isStateDifferent(
+                lastCommand.newState.canvasState.objects,
+                command.newState.canvasState.objects
+            );
+
+            // 상태가 다른 경우에만 스택에 추가
+            if (isDifferentState) {
+                this.undoStack.push(command);
+                this.redoStack = []; // redo 스택 초기화
+            }
+        } else {
+            // 스택이 비어있다면 무조건 추가
+            this.undoStack.push(command);
+            this.redoStack = [];
+        }
+
         this.isExecutingCommand = false;
         this.updateButtonStates();
+            
+            
+    }
+    // 두 상태가 실제로 다른지 비교하는 메서드 추가
+    isStateDifferent(state1, state2) {
+        if (state1.length !== state2.length) return true;
+
+        return state1.some((obj1, index) => {
+            const obj2 = state2[index];
+            return (
+                obj1.left !== obj2.left ||
+                obj1.top !== obj2.top ||
+                obj1.text !== obj2.text ||
+                obj1.angle !== obj2.angle ||
+                obj1.scaleX !== obj2.scaleX ||
+                obj1.scaleY !== obj2.scaleY
+                // 필요한 다른 속성들도 여기에 추가
+            );
+        });
     }
 
     // Undo 실행
@@ -235,10 +274,41 @@ class HistoryManager {
         if (this.undoStack.length > 0) {
             const command = this.undoStack.pop();
             this.isExecutingCommand = true;
-            command.undo();
-            this.redoStack.push(command);
+            command.undo(); // 명령 취소
+            this.redoStack.push(command); // redo 스택에 추가
             this.isExecutingCommand = false;
             this.updateButtonStates();
+            
+            // 실행 취소 후 스택 상태 로깅
+            console.log('=== Undo 실행 후 스택 상태 ===');
+            console.log('Undo 스택:', this.undoStack.map(cmd => ({
+                previousState: cmd.previousState.canvasState.objects.map(obj => ({
+                    type: obj.type,
+                    text: obj.type === 'i-text' ? obj.text : null,
+                    left: obj.left,
+                    top: obj.top
+                })),
+                newState: cmd.newState.canvasState.objects.map(obj => ({
+                    type: obj.type,
+                    text: obj.type === 'i-text' ? obj.text : null,
+                    left: obj.left,
+                    top: obj.top
+                }))
+            })));
+            console.log('Redo 스택:', this.redoStack.map(cmd => ({
+                previousState: cmd.previousState.canvasState.objects.map(obj => ({
+                    type: obj.type,
+                    text: obj.type === 'i-text' ? obj.text : null,
+                    left: obj.left,
+                    top: obj.top
+                })),
+                newState: cmd.newState.canvasState.objects.map(obj => ({
+                    type: obj.type,
+                    text: obj.type === 'i-text' ? obj.text : null,
+                    left: obj.left,
+                    top: obj.top
+                }))
+            })));
         }
     }
 
@@ -247,10 +317,41 @@ class HistoryManager {
         if (this.redoStack.length > 0) {
             const command = this.redoStack.pop();
             this.isExecutingCommand = true;
-            command.redo();
-            this.undoStack.push(command);
+            command.redo(); // 명령 재실행
+            this.undoStack.push(command); // undo 스택에 추가
             this.isExecutingCommand = false;
             this.updateButtonStates();
+            
+            // 다시 실행 후 스택 상태 로깅
+            console.log('=== Redo 실행 후 스택 상태 ===');
+            console.log('Undo 스택:', this.undoStack.map(cmd => ({
+                previousState: cmd.previousState.canvasState.objects.map(obj => ({
+                    type: obj.type,
+                    text: obj.type === 'i-text' ? obj.text : null,
+                    left: obj.left,
+                    top: obj.top
+                })),
+                newState: cmd.newState.canvasState.objects.map(obj => ({
+                    type: obj.type,
+                    text: obj.type === 'i-text' ? obj.text : null,
+                    left: obj.left,
+                    top: obj.top
+                }))
+            })));
+            console.log('Redo 스택:', this.redoStack.map(cmd => ({
+                previousState: cmd.previousState.canvasState.objects.map(obj => ({
+                    type: obj.type,
+                    text: obj.type === 'i-text' ? obj.text : null,
+                    left: obj.left,
+                    top: obj.top
+                })),
+                newState: cmd.newState.canvasState.objects.map(obj => ({
+                    type: obj.type,
+                    text: obj.type === 'i-text' ? obj.text : null,
+                    left: obj.left,
+                    top: obj.top
+                }))
+            })));
         }
     }
 
@@ -623,7 +724,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     // 처음부터 버튼 클릭 이벤트
     document.getElementById('resetBtn').addEventListener('click', function() {
-        if (confirm('모든 작업 내역이 초기화되고 되돌릴 수 없습니다. 계속하시겠습니까?')) {
+        if (confirm('모든 작업 내역이 초기화되고 되���릴 수 없습니다. 계속하시겠습니까?')) {
             if (window.historyManager) {
                 // 스택 초기화
                 window.historyManager.undoStack = [];
