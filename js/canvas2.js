@@ -434,6 +434,9 @@ function saveCurrentCanvasState() {
 // Canvas 상태 로드 함수
 function loadCanvasState() {
     if (currentView && canvasInstances[currentView]) {
+        console.log('=== loadCanvasState 시작 ===');
+        console.log('현재 뷰:', currentView);
+        
         fabricCanvas.clear();
         const savedState = canvasInstances[currentView].toJSON(['id', 'visible', 
             'lockMovementX', 'lockMovementY', 'lockRotation', 'lockScalingX', 
@@ -444,10 +447,23 @@ function loadCanvasState() {
         layerContent.innerHTML = '';
         layerInstances[currentView] = [];
         
-        //저장된 상태 복원
+        // 상태 복원 후 콜백에서 레이어 생성
         fabricCanvas.loadFromJSON(savedState, function() {
+            console.log('복원된 객체들:', fabricCanvas.getObjects().map(obj => ({
+                id: obj.id,
+                type: obj.type,
+                objectType: obj.objectType
+            })));
+            
+            // 모든 객체의 레이어를 새로 생성
             fabricCanvas.getObjects().forEach((obj, index) => {
-                // 객체의 잠금 상태 복원
+                console.log(`객체 ${index} 레이어 생성:`, {
+                    id: obj.id,
+                    type: obj.type,
+                    objectType: obj.objectType
+                });
+                
+                // 잠금 상태 복원
                 if (obj.lockMovementX) {
                     obj.set({
                         selectable: false,
@@ -457,19 +473,20 @@ function loadCanvasState() {
                     });
                 }
                 
-                if (!obj.layerCreated) {
-                    const layer = createLayerItem(obj, index + 1);
+                // 무조건 새로운 레이어 생성
+                const layer = createLayerItem(obj, index + 1);
+                if (layer && layer.element) {
                     layerContent.appendChild(layer.element);
-                    obj.layerCreated = true;
+                    console.log(`레이어 생성 완료: 객체 ${index}`);
                 }
             });
             
             fabricCanvas.renderAll();
             updateLayerIndices();
+            console.log('=== loadCanvasState 완료 ===');
         });
     }
 }
-
 
 // 모달 외부 클릭 시 닫기 이벤트 추가
 document.addEventListener('click', function(event) {
