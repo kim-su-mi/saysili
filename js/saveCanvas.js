@@ -1,35 +1,46 @@
+// 지금은 클라이언트한테 저장되는 로직, 서버에 저장되는 거롤 바껴야함
+
 document.addEventListener('DOMContentLoaded', function() {
     // Canvas 상태를 SVG로 저장하는 함수
     function exportCanvasToSVG() {
-        // 각 면의 상태를 SVG로 저장
-        Object.keys(canvasInstances).forEach(view => {
-            // 현재 상태 저장을 위해 임시로 view 전환
-            const previousView = currentView;
-            currentView = view;
-            
-            // 해당 면의 캔버스 상태 로드
-            fabricCanvas.clear();
-            fabricCanvas.loadFromJSON(canvasInstances[view].toJSON(), function() {
-                // Canvas를 SVG로 변환
-                const svgData = fabricCanvas.toSVG();
-                
-                // SVG 파일로 저장
-                const blob = new Blob([svgData], {type: 'image/svg+xml'});
-                const url = URL.createObjectURL(blob);
-                
-                // 다운로드 링크 생성
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `bracelet-design-${view}.svg`;
-                link.click();
-                
-                // URL 객체 해제
-                URL.revokeObjectURL(url);
+        const views = Object.keys(canvasInstances);
+        // 현재 상태 백업
+        const originalView = currentView;
+        const originalState = JSON.stringify(canvasInstances[currentView].toJSON());
+        
+        let promise = Promise.resolve();
+
+        views.forEach(view => {
+            promise = promise.then(() => {
+                return new Promise((resolve) => {
+                    currentView = view;
+                    const viewState = canvasInstances[view].toJSON();
+                    
+                    fabricCanvas.clear();
+                    fabricCanvas.loadFromJSON(viewState, function() {
+                        const svgData = fabricCanvas.toSVG();
+                        const blob = new Blob([svgData], {type: 'image/svg+xml'});
+                        const url = URL.createObjectURL(blob);
+                        
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `bracelet-design-${view}.svg`;
+                        link.click();
+                        
+                        URL.revokeObjectURL(url);
+                        resolve();
+                    });
+                });
             });
-            
-            // 이전 view로 복원
-            currentView = previousView;
-            loadCanvasState();
+        });
+
+        // 모든 저장이 완료된 후 원래 상태로 복원
+        promise.then(() => {
+            currentView = originalView;
+            fabricCanvas.clear();
+            fabricCanvas.loadFromJSON(JSON.parse(originalState), function() {
+                fabricCanvas.renderAll();
+            });
         });
     }
 
