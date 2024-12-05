@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>기능 구현 화면</title>
-    <link rel="stylesheet" href="css/styles2.css">
+    <link rel="stylesheet" href="css/styles2 copy.css">
     <link rel="stylesheet" href="css/font.css">
     <link rel="stylesheet" href="css/layer.css">
     <!-- 부트스트랩 사용을 위한 css cdn -->
@@ -16,7 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
     <!-- 본인이 추가한 js 파일들 -->
     
-    <script src="js/canvas2.js"></script>
+    <script src="js/canvas2 copy.js"></script>
     <script src="js/colorUtils.js"></script>
     <script src="js/textUpload.js"></script>
     <script src="js/templatesUpload.js"></script>
@@ -40,17 +40,10 @@
         <div class="template-image-color-picker"></div>
         <!-- 팔찌 이미지 띄우기 위한 배경 캔버스 -->
          <div id="bracelet">
-            <!-- 방법1. canvas안쓰고 이미지에 바로 색상 변경 *이미지가 svg파일이어야함-->
-            <img id="braceletImage" src="images/bracelet.svg" alt="팔찌 이미지">
-            <!-- <object id="braceletImage" type="image/svg+xml" data="images/bracelet.svg"></object> -->
-            <!-- 방법2. canvas로 이미지 사진 변경 -->
-            <!-- <canvas id="backgroundCanvas"> -->
-            <!-- 작업 가능 영역 캔버스 -->
-                <div class="printable-area">
-                    <span class="area-text">인쇄 가능 영역 - </span>
-                    <canvas id="activeCanvas" class="canvas-border"></canvas>
-                </div>
-            <!-- </canvas> -->
+            <canvas id="activeCanvas" class="canvas-border"></canvas>
+            <div class="printable-area">
+                <span class="area-text">인쇄 가능 영역 - </span>
+            </div>
         </div>
         <div>
             <button type="button" id="onOffBtn">테두리 on/off</button>
@@ -256,20 +249,6 @@
         </div>
     </div>
     <button type="button" id="saveButton" class="btn btn-primary">디자인 저장</button>
-    <button id="changeProductBtn" class="leftpanel_btn w-button" data-bs-toggle="modal" data-bs-target="#changeProductModal">상품변경</button>
-    <div class="modal fade" id="changeProductModal" tabindex="-1" aria-labelledby="changeProductModal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              
-            </div>
-          </div>
-        </div>
-      </div>
     <!-- 실행 취소/다시 실행 버튼 추가 -->
     <div id="editButtons" class="right_panel_div" role="group">
         <button type="button"  id="resetBtn">처음부터</button>

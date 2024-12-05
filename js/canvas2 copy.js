@@ -24,6 +24,43 @@ document.addEventListener('DOMContentLoaded', function() {
         canvasInstances[view] = new fabric.Canvas(null);
     });
 
+    // 팔찌 이미지 띄우기
+    const braceletImg = new Image();
+    braceletImg.src = 'images/bracelet.svg';
+    braceletImg.onload = function() {
+        const fabricImage = new fabric.Image(braceletImg, {
+            selectable: false // 이미지 선택 불가
+        });
+
+        // 이미지 크기를 캔버스 크기에 맞춤
+        fabricImage.scaleToWidth(fabricCanvas.getWidth());
+        fabricImage.scaleToHeight(fabricCanvas.getHeight());
+
+        // 캔버스 중앙에 위치시키기
+        fabricImage.set({
+            left: (fabricCanvas.getWidth() - fabricImage.width * fabricImage.scaleX) / 2,
+            top: (fabricCanvas.getHeight() - fabricImage.height * fabricImage.scaleY) / 2
+        });
+
+        // 캔버스에 이미지 추가
+        fabricCanvas.add(fabricImage);
+        fabricCanvas.sendToBack(fabricImage); // 이미지가 다른 객체 뒤에 위치하도록 설정
+
+        // 클립 마스크 설정
+        const clipPath = new fabric.Path('M0,0 L0,100 L100,100 L100,0 Z', {
+            left: 20,
+            top: 0,
+            fill: 'transparent',
+            selectable: false
+        });
+
+        // 클립 마스크를 팔찌 이미지에 적용
+        fabricImage.clipPath = clipPath;
+
+        // 캔버스에 클립 마스크 추가
+        fabricCanvas.add(clipPath);
+        fabricCanvas.renderAll();
+    };
     /**
      * canvas 영역 테두리 on/off
      */
@@ -54,19 +91,23 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * 색상 변경에 대한 js
      */
-    const braceletImage = document.getElementById('braceletImage');
     const colorPicker = document.getElementById('colorPicker');
     
-    // SVG 내용 로드
-    fetch(braceletImage.src)
+    // SVG 직접 로드
+    fetch('images/bracelet.svg')
         .then(response => response.text())
         .then(svgContent => {
             const parser = new DOMParser();
             const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
-            braceletImage.parentNode.replaceChild(svgDoc.documentElement, braceletImage);
+            const svgElement = svgDoc.documentElement;
+            svgElement.id = 'braceletSVG';
+            
+            // SVG를 캔버스에 추가
+            const braceletDiv = document.getElementById('bracelet');
+            braceletDiv.appendChild(svgElement);
 
             // 색상 선택 버튼 생성
-            const colors = [...commonColors.basic, ...commonColors.glow, ...commonColors.transparent]; //... =>"스프레드 연산자" : 배열이나 객체를 펼치는 데 사용
+            const colors = [...commonColors.basic, ...commonColors.glow, ...commonColors.transparent];
             colors.forEach(color => {
                 const colorButton = document.createElement('button');
                 colorButton.style.backgroundColor = color;
@@ -88,14 +129,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 colorPicker.appendChild(colorButton);
             });
 
-            //SVG 요소에 ID 추가
-            const svgElement = document.querySelector('#bracelet svg');
-            svgElement.id = 'braceletSVG';
-            
             // 초기 크기를 S 사이즈로 설정
             resizeBracelet('s');
-
-            
         });
 
     // 색상 조정 helper 함수
@@ -256,31 +291,31 @@ document.addEventListener('DOMContentLoaded', function() {
             svgElement.style.height = `${newSize.height}px`;
     
             //activeCanvas 크기 조절
-            const activeCanvas = document.getElementById('activeCanvas');
-            if(activeCanvas){
-                const canvasWidth = newSize.width * 0.8;
-                const canvasHeight = newSize.height * 0.8;
+            // const activeCanvas = document.getElementById('activeCanvas');
+            // if(activeCanvas){
+            //     const canvasWidth = newSize.width * 0.8;
+            //     const canvasHeight = newSize.height * 0.8;
                 
                 
                 
-                fabricCanvas.setWidth(canvasWidth);
-                fabricCanvas.setHeight(canvasHeight);
-                fabricCanvas.setDimensions({
-                    width: canvasWidth,
-                    height: canvasHeight
-                });
+            //     fabricCanvas.setWidth(canvasWidth);
+            //     fabricCanvas.setHeight(canvasHeight);
+            //     fabricCanvas.setDimensions({
+            //         width: canvasWidth,
+            //         height: canvasHeight
+            //     });
         
               
-                fabricCanvas.renderAll();
+            //     fabricCanvas.renderAll();
                
 
         
-                const printableAreaSpan = document.querySelector('.printable-area span');
-                if (printableAreaSpan) {
-                    const existingText = printableAreaSpan.textContent.split('-')[0];
-                    printableAreaSpan.textContent = `${existingText}- ${newSize.printSize}`;
-                }    
-            }
+            //     const printableAreaSpan = document.querySelector('.printable-area span');
+            //     if (printableAreaSpan) {
+            //         const existingText = printableAreaSpan.textContent.split('-')[0];
+            //         printableAreaSpan.textContent = `${existingText}- ${newSize.printSize}`;
+            //     }    
+            // }
         }
     }
     // 사이즈 버튼 상태 업데이트 함수
@@ -433,6 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateLayerIndices();
     });
 
+    
 
 });
 // Canvas 상태 저장 함수
@@ -520,3 +556,4 @@ document.addEventListener('click', function(event) {
         }
     }
 });
+

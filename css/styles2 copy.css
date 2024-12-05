@@ -22,31 +22,34 @@ body {
 #bracelet {
     border: 2px dotted #000;
     position: relative;
-    /* margin: 20px auto; */
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;  /* 컨테이너 너비에 맞춤 */
+    height: 100%; /* 컨테이너 높이에 맞춤 */
 }
 
 #braceletImage {
-    display: block;
-    width: 603.153px;  /* 기본 크기(S 사이즈)로 설정 */
-    height: 87.732px;
+    display: none;  /* 이미지 태그 숨김 */
 }
 
 /* 작업 가능 영역을 이미지위에 띄우기위해 */
-.printable-area {
+/* .printable-area {
     position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 /* span 요소 스타일 추가 */
-.printable-area span {
-    position: absolute; /* 부모 요소(.printable-area) 기준으로 위치를 지정 */
-    top: 10px;
+/* .printable-area span {
+    position: absolute; 부모 요소(.printable-area) 기준으로 위치를 지정 */
+    /* top: 10px;
     left: 10px;
     font-size: 15px;
     color: hsl(0, 100%, 50%);
-    z-index: 1; /* canvas 위에 표시되도록 설정 *z-index: 요소들의 쌓임 순서(층위)를 제어, 클수록 더 위애 표시*/
-}
+    z-index: 2; canvas 위에 표시되도록 설정 *z-index: 요소들의 쌓임 순서(층위)를 제어, 클수록 더 위애 표시 
+} */
 /* 작업 가능 영역 캔버스 */
 /* .canvas-border{
     /* position: absolute;  
@@ -225,7 +228,7 @@ body {
 .template-page {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3열 유지 */
-    grid-template-rows: repeat(2, 1fr); /* 2행 추가 */
+    grid-template-rows: repeat(2, 1fr); /* 2�� 추가 */
     gap: 15px;
     width: 100%;
 }
@@ -433,17 +436,9 @@ body {
     top: 0;
     left: 45%;
 }
-/* 상품변경 모달 설정 */
-#changeProductModal .modal-dialog {
-    top: 50% !important ;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    margin: 0 !important;
-    max-width: none !important;
-}
 
-#changeProductModal .modal-content {
-    width: 70vw !important;
-    height: 70vh !important;
-    overflow: auto; /* 내용이 넘칠 경우 스크롤 생성 */
+/* Canvas 스타일 추가 */
+#activeCanvas {
+    width: 100%;
+    height: 100%;
 }
