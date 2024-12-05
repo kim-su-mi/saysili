@@ -1,5 +1,3 @@
-// 지금은 클라이언트한테 저장되는 로직, 서버에 저장되는 거롤 바껴야함
-
 document.addEventListener('DOMContentLoaded', function() {
     // Canvas 상태를 SVG로 저장하는 함수
     function exportCanvasToSVG() {

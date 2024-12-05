@@ -597,7 +597,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     cloned.set({
                         left: cloned.left + 5,
                         top: cloned.top + 5,
-                        id: uuid.v4() // 새로운 고유 ID 부여
+                        id: uuid.v4(), // 새로운 고유 ID 부여
+                        objectType: activeObject.objectType // 원래 객체의 타입 복사
                     });
                     
                     // 캔버스에 추가
@@ -724,7 +725,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     // 처음부터 버튼 클릭 이벤트
     document.getElementById('resetBtn').addEventListener('click', function() {
-        if (confirm('모든 작업 내역이 초기화되고 되���릴 수 없습니다. 계속하시겠습니까?')) {
+        if (confirm('모든 작업 내역이 초기화되고 되돌릴 수 없습니다. 계속하시겠습니까?')) {
             if (window.historyManager) {
                 // 스택 초기화
                 window.historyManager.undoStack = [];

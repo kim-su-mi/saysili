@@ -35,7 +35,7 @@ function setupColorButtonEvents(fabricCanvas) {
     });
 }
 
-// 객체 선택 처리 함수
+// 객체 선택 했을 때 색상 버튼 생성하는 함수
 function handleObjectSelection(e) {
     const selectedObject = e.selected[0];
     const colorPicker = document.querySelector('.template-image-color-picker');
