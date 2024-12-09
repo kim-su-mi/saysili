@@ -1,11 +1,57 @@
 // 전역 변수로 fabricCanvas 선언
-let fabricCanvas;
+fabricCanvas = null;
+// 전역 변수로 canvasInstances 선언
+let canvasInstances = {
+    'outer-front': null,
+    'outer-back': null,
+    'inner-front': null,
+    'inner-back': null
+};
+let currentView = 'outer-front';
 
 document.addEventListener('DOMContentLoaded', function() {
     // Fabric.js 캔버스 초기화
     fabricCanvas = new fabric.Canvas('activeCanvas', {
         width: 0,  // 초기 크기는 0으로 설정
         height: 0
+    });
+
+    // 캔버스 초기화 완료 이벤트 발생
+    const canvasInitEvent = new Event('canvasInitialized');
+    document.dispatchEvent(canvasInitEvent);
+
+    // 색상 버튼 이벤트 설정
+    setupColorButtonEvents(fabricCanvas);
+    
+    // 각 면의 canvas 인스턴스 초기화
+    Object.keys(canvasInstances).forEach(view => {
+        canvasInstances[view] = new fabric.Canvas(null);
+    });
+
+    /**
+     * canvas 영역 테두리 on/off
+     */
+    // 초기 테두리 설정
+    const lowerCanvas = fabricCanvas.lowerCanvasEl;
+    lowerCanvas.style.border = '3px dashed #f10909ce';  // 초기 테두리 표시
+
+    // 테두리 on/off 버튼 이벤트
+    document.getElementById('onOffBtn').addEventListener('click', function() {
+        const areaText = document.querySelector('.area-text');
+        
+        // 테두리 토글
+        if (lowerCanvas.style.border) {
+            lowerCanvas.style.border = '';  // 테두리 제거
+        } else {
+            lowerCanvas.style.border = '3px dashed #f10909ce';  // 테두리 추가
+        }
+        
+        // 텍스트 표시/숨김 토글
+        if (areaText.style.display === 'none') {
+            areaText.style.display = '';
+        } else {
+            areaText.style.display = 'none';
+        }
     });
 
     /**
@@ -16,92 +62,49 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // SVG 내용 로드
     fetch(braceletImage.src)
-        .then(response => response.text())
-        .then(svgContent => {
-            const parser = new DOMParser();
-            const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
-            braceletImage.parentNode.replaceChild(svgDoc.documentElement, braceletImage);
+    .then(response => response.text())
+    .then(svgContent => {
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+        braceletImage.parentNode.replaceChild(svgDoc.documentElement, braceletImage);
 
-            // 색상 선택 버튼 생성
-            const colors = ['#f70303',
-                '#fd4eb5',
-                '#f284c1',
-                '#f2a9c4',
-                '#ff9f2f',
-                '#feed01',
-                '#87dc29',
-                '#f9ec90',
-                '#0bc349',
-                '#01c8a9',
-                '#00b7e9',
-                '#abebd3',
-                '#2456ed',
-                '#8f4fdb',
-                '#4a236d',
-                '#d7ccee',
-                '#898989',
-                '#aa967e',
-                '#202020',
-                '#ffffff', //일반
-                '#fa9529',
-                '#fbf666',
-                '#54e669',
-                '#d6e00d',
-                '#fbc9d4',
-                '#fac79c',
-                '#c6f5b1',
-                '#b5ebd1',
-                '#1896e3',
-                '#9473c2', //야광
-                '#ebebeb',
-                '#f6cfd2',
-                '#d7edfa',
-                '#e3f1da',
-                '#ecdff3', // 투명
-            ];
-
-            // 색상 배열을 카테고리별로 분리
-            const colorCategories = {
-                normal: colors.slice(0, 20),    // 일반 컬러
-                glow: colors.slice(20, 30),     // 야광 컬러
-                transparent: colors.slice(30)    // 투명 컬러
-            };
-
-            // 각 카테고리별 컬러 버튼 생성
-            Object.entries(colorCategories).forEach(([category, categoryColors]) => {
-                const container = document.querySelector(`.color-grid.${category}`);
-                if (container) {
-                    categoryColors.forEach((color, index) => {
-                        const colorButton = document.createElement('button');
-                        colorButton.className = 'color_selection_btn w-button';
-                        colorButton.style.backgroundColor = color;
-                        
-                        const prefix = {
-                            normal: 'col_',
-                            glow: 'lum_',
-                            transparent: 'tp_'
-                        }[category];
-                        colorButton.id = `${prefix}${index + 1}`;
-                        
-                        // 초기 선택된 색상(#00b7e9)에 active 클래스 추가
-                        if (color === '#00b7e9') {
-                            colorButton.classList.add('active');
-                        }
-                        
-                        colorButton.addEventListener('click', () => {
-                            // 모든 카테고리의 버튼에서 active 클래스 제거
-                            document.querySelectorAll('.color-grid button').forEach(btn => {
-                                btn.classList.remove('active');
-                            });
-                            // 클릭된 버튼에 active 클래스 추가
-                            colorButton.classList.add('active');
-                            changeBraceletColor(color);
+        // commonColors를 사용하여 색상 버튼 생성
+        Object.entries({
+            normal: commonColors.basic,
+            glow: commonColors.glow,
+            transparent: commonColors.transparent
+        }).forEach(([category, categoryColors]) => {
+            const container = document.querySelector(`.color-grid.${category}`);
+            if (container) {
+                categoryColors.forEach((color, index) => {
+                    const colorButton = document.createElement('button');
+                    colorButton.className = 'color_selection_btn w-button';
+                    colorButton.style.backgroundColor = color;
+                    
+                    const prefix = {
+                        normal: 'col_',
+                        glow: 'lum_',
+                        transparent: 'tp_'
+                    }[category];
+                    colorButton.id = `${prefix}${index + 1}`;
+                    
+                    // 초기 선택된 색상(#00b7e9)에 active 클래스 추가
+                    if (color === '#00b7e9') {
+                        colorButton.classList.add('active');
+                    }
+                    
+                    colorButton.addEventListener('click', () => {
+                        document.querySelectorAll('.color-grid button').forEach(btn => {
+                            btn.classList.remove('active');
                         });
-                        
-                        container.appendChild(colorButton);
+                        colorButton.classList.add('active');
+                        changeBraceletColor(color);
                     });
-                }
-            });
+                    
+                    container.appendChild(colorButton);
+                });
+            }
+        });
 
             //SVG 요소에 ID 추가
             const svgElement = document.querySelector('#bracelet svg');
@@ -275,9 +278,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if(activeCanvas){
                 const canvasWidth = newSize.width * 0.8;
                 const canvasHeight = newSize.height * 0.8;
-            
-                activeCanvas.width = canvasWidth;
-                activeCanvas.height = canvasHeight;
+                
+                
                 
                 fabricCanvas.setWidth(canvasWidth);
                 fabricCanvas.setHeight(canvasHeight);
@@ -285,9 +287,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     width: canvasWidth,
                     height: canvasHeight
                 });
-    
+        
+              
                 fabricCanvas.renderAll();
-    
+               
+
+        
                 const printableAreaSpan = document.querySelector('.printable-area span');
                 if (printableAreaSpan) {
                     const existingText = printableAreaSpan.textContent.split('-')[0];
@@ -322,19 +327,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     
-    /*
-    *테스트를 위한 도형 추가
-    */
-    fabricCanvas.add(new fabric.Circle({
-        radius: 20,
-        fill: 'red',
-        left: 50,
-        top: 20
-    }));
+    // /*
+    // *테스트를 위한 도형 추가
+    // */
+    // fabricCanvas.add(new fabric.Circle({
+    //     radius: 20,
+    //     fill: 'red',
+    //     left: 50,
+    //     top: 20
+    // }));
 
     
-    // fabricCanvas.add(text);
-    fabricCanvas.renderAll();
+    // // fabricCanvas.add(text);
+    // fabricCanvas.renderAll();
 
      /**
      * 팔찌 뷰 전환에 대한 js
@@ -342,52 +347,70 @@ document.addEventListener('DOMContentLoaded', function() {
      const viewButtons = document.querySelectorAll('#viewButtons button');
      
      viewButtons.forEach(button => {
-         button.addEventListener('click', function() {
-             // 모든 버튼의 활성화 상태 제거
-             viewButtons.forEach(btn => btn.classList.remove('active'));
-             
-             // 클릭된 버튼 활성화
-             this.classList.add('active');
-             
-             // 뷰에 따른 이미지 변경
-             const view = this.dataset.view;
-             switch(view) {
-                 case 'outer-front':
-                 case 'outer-back':
-                     braceletImage.src = 'images/bracelet.svg';
-                     break;
-                 case 'inner-front':
-                 case 'inner-back':
-                     braceletImage.src = 'images/braceletInner.svg';
-                     break;
-             }
-             
-             // SVG 다시 로드 및 현재 색상 유지
-             fetch(braceletImage.src)
-                 .then(response => response.text())
-                 .then(svgContent => {
-                     const parser = new DOMParser();
-                     const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
-                     const oldSvg = document.querySelector('#braceletSVG');
-                     if (oldSvg) {
-                         oldSvg.parentNode.replaceChild(svgDoc.documentElement, oldSvg);
-                         const newSvg = document.querySelector('svg');
-                         newSvg.id = 'braceletSVG';
-                         
-                         // 현재 선택된 사이즈 유지
-                         const currentSize = document.querySelector('#sizepicker button.active')?.id?.charAt(0) || 's';
-                         resizeBracelet(currentSize);
-
-                         // 현재 선택된 색상 유지
-                        const activeColorButton = document.querySelector('#colorPicker button.active');
-                        if (activeColorButton) {
-                            const currentColor = activeColorButton.style.backgroundColor;
+        button.addEventListener('click', function() {
+            if (window.historyManager) {
+                window.historyManager.recordState(() => {
+                    // 뷰 전환 전 현재 상태 저장
+                    saveCurrentCanvasState();
+                    fabricCanvas.clear();
+    
+                    // 버튼 상태 업데이트
+                    viewButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+    
+                    // 새로운 뷰로 전환
+                    const newView = this.dataset.view;
+                    currentView = newView;
+    
+                    // 레이어 패널 업데이트
+                    updateLayerPanel(currentView);
+    
+                    // SVG 이미지 업데이트
+                    switch(newView) {
+                        case 'outer-front':
+                        case 'outer-back':
+                            changeSVGImage('images/bracelet.svg');
+                            break;
+                        case 'inner-front':
+                        case 'inner-back':
+                            changeSVGImage('images/braceletInner.svg');
+                            break;
+                    }
+                });
+            }
+        });
+    });
+    // SVG 이미지 변경 및 상태 복원 함수
+    function changeSVGImage(src) {
+        braceletImage.src = src;
+        
+        fetch(src)
+            .then(response => response.text())
+            .then(svgContent => {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+                const oldSvg = document.querySelector('#braceletSVG');
+                if (oldSvg) {
+                    oldSvg.parentNode.replaceChild(svgDoc.documentElement, oldSvg);
+                    const newSvg = document.querySelector('svg');
+                    newSvg.id = 'braceletSVG';
+                    
+                    // 현재 선택된 사이즈 유지
+                    const currentSize = document.querySelector('#sizepicker button.active')?.id?.charAt(0) || 's';
+                    resizeBracelet(currentSize);
+    
+                    // 현재 선택된 색상 유지
+                    const activeColorButton = document.querySelector('#colorPicker button.active');
+                    if (activeColorButton) {
+                        const currentColor = activeColorButton.style.backgroundColor;
                         changeBraceletColor(rgbToHex(currentColor));
                     }
-                     }
-                 });
-         });
-     });
+    
+                    // 저장된 canvas 상태 복원
+                    loadCanvasState();
+                }
+            });
+    }
 
      // RGB 색상을 HEX 코드로 변환하는 헬퍼 함수
     function rgbToHex(rgb) {
@@ -404,11 +427,85 @@ document.addEventListener('DOMContentLoaded', function() {
             g.toString(16).padStart(2, '0') + 
             b.toString(16).padStart(2, '0');
     }
+    
+    // 캔버스에 추가되는 객체에 고유 ID 생성
+    function generateUniqueId() {
+        // uuid 모듈을 사용하여 고유 ID 생성
+        return uuid.v4();
+    }
 
+    // 객체가 캔버스에 추가될 때마다 실행 
+    window.fabricCanvas.on('object:added', function(e) {
+        const obj = e.target; // e.target = 캔버스에 새로 추가된 객체
+        
+        // 객체에 고유 ID가 없는 경우에만 새 레이어 생성
+        if (!obj.id) {
+            obj.id = generateUniqueId();  
+            const layer = createLayerItem(obj, layerInstances[currentView].length + 1);
+            const layerContent = document.querySelector('#layer-content');
+            layerContent.appendChild(layer.element);
+        }
+        
+        // Update layer indices
+        updateLayerIndices();
+    });
 
-   
 
 });
+// Canvas 상태 저장 함수
+function saveCurrentCanvasState() {
+    if (currentView && fabricCanvas) {
+        const currentState = fabricCanvas.toJSON(['id', 'visible', 'lockMovementX', 
+            'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
+            'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']); 
+        canvasInstances[currentView] = new fabric.Canvas(null);
+        canvasInstances[currentView].loadFromJSON(currentState, function() {
+        });
+    }
+}
+
+// Canvas 상태 로드 함수
+function loadCanvasState() {
+    if (currentView && canvasInstances[currentView]) {
+        
+        fabricCanvas.clear();
+        const savedState = canvasInstances[currentView].toJSON(['id', 'visible', 
+            'lockMovementX', 'lockMovementY', 'lockRotation', 'lockScalingX', 
+            'lockScalingY', 'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']);
+        
+        // 레이어 패널 초기화
+        const layerContent = document.querySelector('#layer-content');
+        layerContent.innerHTML = '';
+        layerInstances[currentView] = [];
+        
+        // 상태 복원 후 콜백에서 레이어 생성
+        fabricCanvas.loadFromJSON(savedState, function() {
+            
+            // 모든 객체의 레이어를 새로 생성
+            fabricCanvas.getObjects().forEach((obj, index) => {
+                
+                // 잠금 상태 복원
+                if (obj.lockMovementX) {
+                    obj.set({
+                        selectable: false,
+                        evented: false,
+                        hoverCursor: 'default',
+                        moveCursor: 'default'
+                    });
+                }
+                
+                // 무조건 새로운 레이어 생성
+                const layer = createLayerItem(obj, index + 1);
+                if (layer && layer.element) {
+                    layerContent.appendChild(layer.element);
+                }
+            });
+            
+            fabricCanvas.renderAll();
+            updateLayerIndices();
+        });
+    }
+}
 
 // 모달 외부 클릭 시 닫기 이벤트 추가
 document.addEventListener('click', function(event) {

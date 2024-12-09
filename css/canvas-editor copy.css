@@ -253,10 +253,9 @@
 }
 
 .btmpanel_btn {
-  color: #919191;
-  background-color: #fff;
-  border-style: none;
+  color: #fff;
   text-align: center;
+  background-color: #3756b2;
   border: 1px solid #d5d2d2;
   border-radius: 20px;
   justify-content: center;
@@ -281,10 +280,10 @@
   border-bottom-left-radius: 10px;
 }
 
-.btmpanel_btn.active {
-  color: #ffffff;
-  background-color: #3756b2;
-  border: 1px solid #d5d2d2;
+.btmpanel_btn.non {
+  color: #919191;
+  background-color: #fff;
+  border-style: none;
 }
 
 .heading {
