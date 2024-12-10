@@ -207,8 +207,13 @@
   width: 100%;
   max-width: 50px;
   height: 40px;
-  padding-left: 15px;
+  padding: 5px; /* 패딩 값 수정 */
   display: flex;
+  font-size: 0.6rem; /* 글자 크기 축소 */
+  line-height: 1; /* 줄 높이 조정 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트 ... 처리 */
 }
 
 .rightpanel_btn.top {
@@ -1071,6 +1076,8 @@
   .rightpanel_btn, .rightpanel_btn.top {
     max-width: 40px;
     height: 30px;
+    font-size: 0.5rem; /* 더 작은 화면에서는 글자 크기를 더 줄임 */
+    padding: 3px;
   }
 
   .topright_panel {
@@ -1446,7 +1453,7 @@
     max-width: 22px;
     height: 18px;
     padding: 5px 8px;
-    font-size: .5rem;
+    font-size: .4rem;
     line-height: .5rem;
   }
 
