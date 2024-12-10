@@ -1,5 +1,5 @@
 // 전역 변수로 fabricCanvas 선언
-fabricCanvas = null;
+let fabricCanvas;
 // 전역 변수로 canvasInstances 선언
 let canvasInstances = {
     'outer-front': null,
@@ -15,10 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 0,  // 초기 크기는 0으로 설정
         height: 0
     });
-
-    // 캔버스 초기화 완료 이벤트 발생
-    const canvasInitEvent = new Event('canvasInitialized');
-    document.dispatchEvent(canvasInitEvent);
 
     // 색상 버튼 이벤트 설정
     setupColorButtonEvents(fabricCanvas);
@@ -76,10 +72,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }).forEach(([category, categoryColors]) => {
             const container = document.querySelector(`.color-grid.${category}`);
             if (container) {
-                categoryColors.forEach((color, index) => {
+                categoryColors.forEach((colorObj, index) => {
                     const colorButton = document.createElement('button');
                     colorButton.className = 'color_selection_btn w-button';
-                    colorButton.style.backgroundColor = color;
+                    colorButton.style.backgroundColor = colorObj.color;
+                    
+                    // 툴팁 추가
+                    colorButton.title = colorObj.name;
                     
                     const prefix = {
                         normal: 'col_',
@@ -89,8 +88,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     colorButton.id = `${prefix}${index + 1}`;
                     
                     // 초기 선택된 색상(#00b7e9)에 active 클래스 추가
-                    if (color === '#00b7e9') {
+                    if (colorObj.color === '#00b7e9') {
                         colorButton.classList.add('active');
+                        // 초기 색상 이름 설정
+                        document.getElementById('selectedColor').textContent = colorObj.name;
+                        document.getElementById('sum_selectedColor').textContent = colorObj.name;
                     }
                     
                     colorButton.addEventListener('click', () => {
@@ -98,7 +100,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             btn.classList.remove('active');
                         });
                         colorButton.classList.add('active');
-                        changeBraceletColor(color);
+                        changeBraceletColor(colorObj.color);
+                        
+                        // 색상 이름 업데이트
+                        document.getElementById('selectedColor').textContent = colorObj.name;
+                        document.getElementById('sum_selectedColor').textContent = colorObj.name;
                     });
                     
                     container.appendChild(colorButton);
@@ -307,10 +313,18 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById(id).classList.remove('active');
         });
         document.getElementById(activeId).classList.add('active');
+        
+        // 사이즈 텍스트 업데이트
+        const sizeText = document.getElementById('sum_selectedSize');
+        const selectedSize = activeId.split('_')[1]; // 'size_S' -> 'S'
+        if (sizeText) {
+            sizeText.textContent = `${selectedSize}사이즈`;
+        }
     }
     
-    // 초기 S 사이즈 버튼에 active 클래스 추가
+    // 초기 S 사이즈 버튼에 active 클래스 추가 및 텍스트 설정
     document.getElementById('size_S').classList.add('active');
+    document.getElementById('sum_selectedSize').textContent = 'S사이즈';
 
     // 크기 변경 버튼 이벤트 리스너 추가
     document.getElementById('size_S').addEventListener('click', () => {
@@ -435,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 객체가 캔버스에 추가될 때마다 실행 
-    window.fabricCanvas.on('object:added', function(e) {
+    fabricCanvas.on('object:added', function(e) {
         const obj = e.target; // e.target = 캔버스에 새로 추가된 객체
         
         // 객체에 고유 ID가 없는 경우에만 새 레이어 생성

@@ -1,19 +1,47 @@
 // 공통으로 사용할 색상 리스트 정의
 const commonColors = {
     basic: [
-        '#f70303','#fd4eb5','#f284c1','#f2a9c4','#ff9f2f',
-        '#feed01','#87dc29','#f9ec90','#0bc349','#01c8a9',
-        '#00b7e9','#abebd3','#2456ed','#8f4fdb','#4a236d',
-        '#d7ccee','#898989','#aa967e','#000000','#ffffff'
+        { color: '#f70303', name: '레드' },
+        { color: '#fd4eb5', name: '형광핑크' },
+        { color: '#f284c1', name: '핑크' },
+        { color: '#f2a9c4', name: '파스텔핑크' },
+        { color: '#ff9f2f', name: '오렌지' },
+        { color: '#feed01', name: '옐로우' },
+        { color: '#87dc29', name: '스프링그린' },
+        { color: '#f9ec90', name: '레몬' },
+        { color: '#0bc349', name: '그린' },
+        { color: '#01c8a9', name: '에메랄드' },
+        { color: '#00b7e9', name: '스카이' },
+        { color: '#abebd3', name: '민트' },
+        { color: '#2456ed', name: '다크블루' },
+        { color: '#8f4fdb', name: '퍼플' },
+        { color: '#4a236d', name: '다크퍼플' },
+        { color: '#d7ccee', name: '라벤더' },
+        { color: '#898989', name: '쿨그레이' },
+        { color: '#aa967e', name: '베이지' },
+        { color: '#000000', name: '블랙' },
+        { color: '#ffffff', name: '화이트' }
     ],
     // 야광
     glow: [
-        '#fa9529','#fbf666','#54e669','#d6e00d','#fbc9d4',
-        '#fac79c','#c6f5b1','#b5ebd1','#1896e3','#9473c2'
+        { color: '#fa9529', name: '야광오렌지' },
+        { color: '#fbf666', name: '야광옐로우' },
+        { color: '#54e669', name: '야광그린' },
+        { color: '#d6e00d', name: '야광라임' },
+        { color: '#fbc9d4', name: '야광핑크' },
+        { color: '#fac79c', name: '야광살구' },
+        { color: '#c6f5b1', name: '야광메론' },
+        { color: '#b5ebd1', name: '야광민트' },
+        { color: '#1896e3', name: '야광블루' },
+        { color: '#9473c2', name: '야광퍼플' }
     ],
     // 투명
     transparent: [
-        '#ebebeb','#f6cfd2','#d7edfa','#e3f1da','#ecdff3'
+        { color: '#ebebeb', name: '투명화이트' },
+        { color: '#f6cfd2', name: '투명핑크' },
+        { color: '#d7edfa', name: '투명스카이' },
+        { color: '#e3f1da', name: '투명그린' },
+        { color: '#ecdff3', name: '투명퍼플' }
     ]
 };
 
@@ -67,17 +95,16 @@ function createColorButtons(selectedObject) {
     const colorPicker = document.querySelector('.template-image-color-picker');
     colorPicker.innerHTML = ''; // 기존 버튼 제거
 
-    commonColors.basic.forEach(color => {
+    commonColors.basic.forEach(colorObj => {
         const colorButton = document.createElement('button');
-        colorButton.style.backgroundColor = color;
+        colorButton.style.backgroundColor = colorObj.color;
         colorButton.style.width = '20px';
         colorButton.style.height = '20px';
         colorButton.style.border = 'none';
         colorButton.style.cursor = 'pointer';
         colorButton.style.margin = '2px';
         
-        // 현재 선택된 색상이면 표시
-        if (color === currentSelectedColor) {
+        if (colorObj.color === currentSelectedColor) {
             colorButton.style.border = '2px solid #000';
         }
         
@@ -95,7 +122,7 @@ function createColorButtons(selectedObject) {
                     colorButton.style.border = '2px solid #000';
                     
                     // 색상 변경 실행
-                    changeAllObjectsColor(fabricCanvas, color);
+                    changeAllObjectsColor(fabricCanvas, colorObj.color);
                 });
             }
         });
