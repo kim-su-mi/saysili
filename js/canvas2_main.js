@@ -410,7 +410,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     newSvg.id = 'braceletSVG';
                     
                     // 현재 선택된 사이즈 유지
-                    const currentSize = document.querySelector('#sizepicker button.active')?.id?.charAt(0) || 's';
+                    const activeButton = document.querySelector('#sizepicker button.active');
+                    const currentSize = activeButton ? activeButton.id.split('_')[1].toLowerCase() : 's';
                     resizeBracelet(currentSize);
     
                     // 현재 선택된 색상 유지
