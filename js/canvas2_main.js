@@ -32,21 +32,17 @@ document.addEventListener('DOMContentLoaded', function() {
     lowerCanvas.style.border = '3px dashed #f10909ce';  // 초기 테두리 표시
 
     // 테두리 on/off 버튼 이벤트
-    document.getElementById('onOffBtn').addEventListener('click', function() {
+    document.getElementById('onOffBtn').addEventListener('change', function() {
         const areaText = document.querySelector('.area-text');
+        const lowerCanvas = fabricCanvas.lowerCanvasEl;
         
-        // 테두리 토글
-        if (lowerCanvas.style.border) {
+        // 체크박스 상태에 따라 테두리 토글
+        if (!this.checked) {
             lowerCanvas.style.border = '';  // 테두리 제거
+            areaText.style.display = 'none';
         } else {
             lowerCanvas.style.border = '3px dashed #f10909ce';  // 테두리 추가
-        }
-        
-        // 텍스트 표시/숨김 토글
-        if (areaText.style.display === 'none') {
             areaText.style.display = '';
-        } else {
-            areaText.style.display = 'none';
         }
     });
 

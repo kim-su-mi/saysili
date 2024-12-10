@@ -468,3 +468,80 @@ body {
     height: 70vh !important;
     overflow: auto; /* 내용이 넘칠 경우 스크롤 생성 */
 }
+/* 인쇄가능 영역 on/off */
+.toggle-switch-wrapper {
+    margin: 10px 0;
+    text-align: center;
+  }
+  
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 40px;
+  }
+  
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #919191;
+    border-radius: 20px;
+    transition: 0.4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 32px;
+    width: 32px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+  }
+  
+  .slider .on,
+  .slider .off {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .slider .on {
+    left: 10px;
+    opacity: 0;
+  }
+  
+  .slider .off {
+    right: 10px;
+  }
+  
+  input:checked + .slider {
+    background-color: #3756b2;
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(60px);
+  }
+  
+  input:checked + .slider .on {
+    opacity: 1;
+  }
+  
+  input:checked + .slider .off {
+    opacity: 0;
+  }
