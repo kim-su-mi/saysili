@@ -21,7 +21,7 @@ window.updateLayerIndices = function() {
 
 // DOM이 완전히 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
-    const layerPanel = document.querySelector('.topright_panel_div');
+    const layerPanel = document.querySelector('.layer-panel');
     const toggleBtn = layerPanel.querySelector('.toggle-btn');
     const layerContent = layerPanel.querySelector('#layer-content');
     
