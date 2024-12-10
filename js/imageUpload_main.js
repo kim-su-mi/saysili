@@ -104,16 +104,8 @@ function initImageUpload() {
         // 3. 각 이미지에 클릭 이벤트 추가
         document.querySelectorAll('.uploaded-image-item').forEach((item, index) => {
             item.addEventListener('click', () => {
-                console.log('이미지 아이템 클릭됨');
-                
-                if (!window.fabricCanvas) {
-                    console.error('fabricCanvas가 정의되지 않았습니다');
-                    return;
-                }
-
                 const imageData = pageImages[index];
-                const initialColor = getInitialColor(fabricCanvas);
-                console.log('초기 색상:', initialColor);
+                const initialColor = getInitialColor(fabricCanvas); // 초기 색상 가져오기
                 
                 fabric.Image.fromURL(imageData, (img) => {
                     if (window.historyManager) {

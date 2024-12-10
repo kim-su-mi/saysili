@@ -79,8 +79,8 @@ function initTemplatesUpload() {
                     item.onclick = () => {
                         // SVG 이미지를 Fabric Canvas에 추가
                         fabric.loadSVGFromURL(imgSrc, function(objects, options) {
-                            // if (window.historyManager) {
-                            //     window.historyManager.recordState(() => {
+                            if (window.historyManager) {
+                                window.historyManager.recordState(() => {
                                     const initialColor = getInitialColor(fabricCanvas); // 초기 색상 가져오기
                                     
                                     // 템플릿 객체의 색상 변경
@@ -112,8 +112,8 @@ function initTemplatesUpload() {
                                     const templateModal = document.getElementById('templateModal');
                                     const modal = bootstrap.Modal.getInstance(templateModal);
                                     modal.hide();
-                            //     });
-                            // }
+                                });
+                            }
                         });
                     };
                     detailGrid.appendChild(item);

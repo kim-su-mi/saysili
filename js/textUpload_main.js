@@ -48,17 +48,16 @@ function rgbToHex(rgb) {
 
 // 텍스트 색상 버튼 생성 함수
 function createTextColorButtons() {
-    const colors = commonColors.basic;
     const colorPicker = document.getElementById('textColorPicker');
     
-    colors.forEach(color => {
+    commonColors.basic.forEach(colorObj => {
         const colorBtn = document.createElement('button');
         colorBtn.className = 'color-btn';
-        colorBtn.style.backgroundColor = color;
-        colorBtn.setAttribute('data-color', color);
+        colorBtn.style.backgroundColor = colorObj.color;
+        colorBtn.setAttribute('data-color', colorObj.color);
         
         // 현재 선택된 색상이면 표시
-        if (color === currentSelectedColor) {
+        if (colorObj.color === currentSelectedColor) {
             colorBtn.classList.add('selected');
         }
         
@@ -71,7 +70,7 @@ function createTextColorButtons() {
                     });
                     this.classList.add('selected');
                     
-                    changeAllObjectsColor(fabricCanvas, color);
+                    changeAllObjectsColor(fabricCanvas, colorObj.color);
                 });
             }
         });
@@ -106,9 +105,10 @@ function updateModalControls() {
             document.getElementById(alignBtnMap[currentText.textAlign]).classList.add('active');
         }
         
+        // 색상 버튼 업데이트
         document.querySelectorAll('.color-btn').forEach(btn => {
             btn.classList.remove('selected');
-            const btnColor = rgbToHex(btn.style.backgroundColor);
+            const btnColor = btn.getAttribute('data-color');
             const textColor = currentText.fill.toLowerCase();
             
             if (btnColor.toLowerCase() === textColor) {
@@ -173,6 +173,7 @@ function initializeTextEvents() {
                 fabricCanvas.add(currentText);
                 fabricCanvas.setActiveObject(currentText);
                 
+                // 색상 버튼 선택 상태 업데이트
                 document.querySelectorAll('.color-btn').forEach(btn => {
                     btn.classList.remove('selected');
                     if (btn.getAttribute('data-color') === initialColor) {
