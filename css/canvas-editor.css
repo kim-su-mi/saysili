@@ -37,6 +37,7 @@
   position: absolute;
   inset: 5% 6% 0% auto;
   box-shadow: 3px 4px 5px #00000024;
+  flex-direction: column; /* 세로 방향 정렬 */
 }
 
 .left_panel_div {
@@ -69,7 +70,7 @@
   height: auto;
   display: grid;
   position: absolute;
-  inset: 18% 0.5% auto auto;
+  inset: 18% -2% auto auto;
   box-shadow: 3px 3px 5px 1px #0000001a;
 }
 
@@ -117,8 +118,9 @@
 .mainpanel_div {
   background-color: #fff;
   border-radius: 20px;
-  width: 100%;
+  width: 90%;
   height: 100%;
+  margin-left: auto; /* 오른쪽 정렬을 제거하고 왼쪽에 여백 생성 */
   padding-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
@@ -242,6 +244,9 @@
   flex-flow: row;
   justify-content: space-between;
   padding-left: 10px;
+  flex-flow: column; /* 세로 방향으로 변경 */
+  overflow-y: auto; /* 내용이 많을 경우 스크롤*/
+  max-height: 300px; /* 최대 높이 설정 */
 }
 
 .btm_panel_btn {
