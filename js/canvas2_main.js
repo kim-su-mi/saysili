@@ -529,7 +529,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </tr>
                     <tr class="packaging">
                         <td>포장단가</td>
-                        <td class="price" colspan="10">벌크포장(기본)<span>+100</span>개별OPP()<span>+100</span>개별OPP+스티커<span>+250</span>개별OPP+내지<span>+200</span></td>
+                        <td class="price" colspan="10">벌크포장(기본)<span>+100</span>개별포장(OPP)<span>+100</span>개별OPP+스티커<span>+250</span>개별OPP+내지<span>+200</span></td>
                     </tr>
                 </tbody>
             </table>

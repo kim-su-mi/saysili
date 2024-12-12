@@ -555,7 +555,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.15);
     padding: 15px;
-    max-width: 60vw;  /* 최소 가로 길이 설정 */
+    width: 40vw;  /* 최소 가로 길이 설정 */
     animation: fadeIn 0.2s ease-in-out;
 }
 
@@ -566,9 +566,11 @@ body {
 
 .custom-tooltip table {
     width: 100%;
-    table-layout: auto;  /* 테이블 셀 크기 고정 */
+    table-layout: auto;  /* 테이블 셀 크기 내용에 맞게 조정 */
     border-collapse: collapse;
     margin-bottom: 10px;  /* 마진 축소 */
+    transform: scale(1);  /* 기본 스케일 */
+    transform-origin: top left;  /* 변환 기준점 */
 }
 
 .custom-tooltip caption {
@@ -603,7 +605,7 @@ body {
 
 .custom-tooltip .packaging span {
     color: #3756b2;
-    margin: 0 5px;
+    margin: 0 10px 0 0;
 }
 
 .custom-tooltip .notes {
@@ -623,4 +625,161 @@ body {
     margin-bottom: 3px;
     line-height: 1.2;  /* 줄간격 축소 */
     flex: 1 1 auto;  /* 균등하게 공간 분배 */
+}
+@media screen and (max-width: 1390px) {
+    .custom-tooltip {
+        width: 45vw;
+        padding: 14px;
+    }
+    .custom-tooltip table {
+        font-size: 12px;
+        transform: scale(0.95);
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 5px;
+    }
+
+    .custom-tooltip caption {
+        font-size: 13px;
+    }
+
+    .custom-tooltip .packaging td {
+        font-size: 11px;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 11px;
+    }
+}
+
+/* 1100px 이하 */
+@media screen and (max-width: 1100px) {
+    .custom-tooltip {
+        width: 50vw;
+        padding: 13px;
+    }
+    .custom-tooltip table {
+        font-size: 11.5px;
+        transform: scale(0.92);
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 5px;
+    }
+
+    .custom-tooltip caption {
+        font-size: 12.5px;
+    }
+
+    .custom-tooltip .packaging td {
+        font-size: 10.5px;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 10.5px;
+    }
+}
+@media screen and (max-width: 1024px) {
+    .custom-tooltip {
+        width: 55vw;
+        padding: 12px;
+        font-size: 1.2vw;
+    }
+    .custom-tooltip table {
+        font-size: 11px;
+        transform: scale(0.9);
+    }
+
+    .custom-tooltip caption {
+        font-size: 1.4vw;
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 0.5vw;
+        font-size: 1.2vw;
+    }
+
+    .custom-tooltip .packaging td {
+        font-size: 1.1vw;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 1.1vw;
+    }
+}
+
+/* 작은 화면 (768px 이하) */
+@media screen and (max-width: 768px) {
+    .custom-tooltip {
+        width: 60vw;
+        padding: 10px;
+        font-size: 1.4vw;
+    }
+    .custom-tooltip table {
+        font-size: 10px;
+        transform: scale(0.8);
+    }
+
+    .custom-tooltip caption {
+        font-size: 1.6vw;
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 0.4vw;
+        font-size: 1.4vw;
+    }
+
+    .custom-tooltip .packaging td {
+        font-size: 1.3vw;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 1.3vw;
+    }
+
+    .custom-tooltip .notes ul {
+        gap: 0.6vw;
+    }
+}
+
+/* 매우 작은 화면 (480px 이하) */
+@media screen and (max-width: 480px) {
+    .custom-tooltip {
+        width: 70vw;
+        padding: 8px;
+        font-size: 2vw;
+    }
+    .custom-tooltip table {
+        font-size: 9px;
+        transform: scale(0.7);
+    }
+
+    .custom-tooltip caption {
+        font-size: 2.2vw;
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 0.3vw;
+        font-size: 2vw;
+        white-space: normal;  /* 작은 화면에서는 줄바꿈 허용 */
+    }
+
+
+    .custom-tooltip .packaging td {
+        font-size: 1.8vw;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 1.8vw;
+    }
+
+    .custom-tooltip .notes ul {
+        gap: 0.4vw;
+    }
 }
