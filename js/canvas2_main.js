@@ -60,6 +60,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
         braceletImage.parentNode.replaceChild(svgDoc.documentElement, braceletImage);
 
+        // SVG 요소에 ID 추가
+        const svgElement = document.querySelector('#bracelet svg');
+        svgElement.id = 'braceletSVG';
+        
+        // 초기 크기를 S 사이즈로 설정
+        resizeBracelet('s');
+
+        // 초기 색상 (#00b7e9) 적용
+        changeBraceletColor('#00b7e9');
+
         // commonColors를 사용하여 색상 버튼 생성
         Object.entries({
             normal: commonColors.basic,
@@ -107,16 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
-
-            //SVG 요소에 ID 추가
-            const svgElement = document.querySelector('#bracelet svg');
-            svgElement.id = 'braceletSVG';
-            
-            // 초기 크기를 S 사이즈로 설정
-            resizeBracelet('s');
-
-            
-        });
+    });
 
     // 색상 조정 helper 함수
     function adjustColor(color, amount) {
