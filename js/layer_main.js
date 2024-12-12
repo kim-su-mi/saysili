@@ -96,6 +96,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // 레이어 클릭 이벤트
         layerItem.querySelector('.layertitlediv').addEventListener('click', function(e) {
             if (!e.target.closest('.layerbtndiv') && !layer.fabricObject.lockMovementX) {
+                // 모든 레이어 아이템에서 selected 클래스 제거
+                document.querySelectorAll('.layer-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                // 클릭된 레이어 아이템에 selected 클래스 추가
+                layerItem.classList.add('selected');
+                
+                // 캔버스에서 해당 객체 선택
                 fabricCanvas.discardActiveObject();
                 fabricCanvas.setActiveObject(layer.fabricObject);
                 fabricCanvas.renderAll();
@@ -189,4 +198,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     };
+
+    // fabricCanvas의 selection:created 이벤트 리스너 추가
+    fabricCanvas.on('selection:created', function(e) {
+        // 모든 레이어 아이템에서 selected 클래스 제거
+        document.querySelectorAll('.layer-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        
+        // 선택된 객체의 ID와 일치하는 레이어 찾기
+        const selectedObject = e.selected[0];
+        const layerItem = document.querySelector(`.layer-item[data-object-id="${selectedObject.id}"]`);
+        if (layerItem) {
+            layerItem.classList.add('selected');
+        }
+    });
+
+    // selection:cleared 이벤트 리스너 추가
+    fabricCanvas.on('selection:cleared', function() {
+        // 모든 레이어 아이템에서 selected 클래스 제거
+        document.querySelectorAll('.layer-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+    });
 });

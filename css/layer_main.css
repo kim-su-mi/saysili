@@ -90,9 +90,8 @@
     padding: 4px;
 }
 
-.layertitlediv:hover {
-    background-color: #f8f9fa;
-    border-radius: 4px;
+.layertitlediv {
+    cursor: pointer;
 }
 
 #layer_hide {
@@ -133,21 +132,29 @@
 }
 
 /* 펼쳐진 상태일 때 스타일 */
-.layer-panel:not(.collapsed) .toggle-btn {
+/* .layer-panel:not(.collapsed) .toggle-btn {
     transform: rotate(45deg);
-}
+} */
 /* 접힌 상태일 때 버튼 스타일 */
 .layer-panel.collapsed .toggle-btn::after {
-    content: '+';
+    content: '▽';
 }
 
 /* 펼쳐진 상태일 때 버튼 스타일 */
 .layer-panel:not(.collapsed) .toggle-btn::after {
-    content: '-';  /* 마이너스 기호로 변경 */
+    content: '△';  /* 마이너스 기호로 변경 */
 }
 
 /* 선택된 레이어 스타일 */
 .layer-item.selected .layertitlediv {
     background-color: #e9ecef;
     border-radius: 4px;
+}
+.layer-item.selected {
+    background-color: #e9ecef;
+    /* border: 3px solid #0d6efd; */
+}
+
+.toggle-btn{
+    background-color: #f8f9fa;
 }
