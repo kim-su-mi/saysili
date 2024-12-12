@@ -461,6 +461,136 @@ document.addEventListener('DOMContentLoaded', function() {
         updateLayerIndices();
     });
 
+    // 할인가격표 툴팁
+    // const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    // const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    //     return new bootstrap.Popover(popoverTriggerEl, {
+    //     container: 'body'
+    //     })
+    // })
+    const tooltipContent = `
+        <div class="price-tooltip-table">
+            <table>
+                <caption>할인가격표</caption>
+                <thead>
+                    <tr>
+                        <th>주문 수량(개)</th>
+                        <th>50</th>
+                        <th>100</th>
+                        <th>150</th>
+                        <th>200</th>
+                        <th>250</th>
+                        <th>300</th>
+                        <th>400</th>
+                        <th>500</th>
+                        <th>700</th>
+                        <th>1,000</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>실크인쇄 외부단면</td>
+                        <td>1,300</td>
+                        <td>990</td>
+                        <td>990</td>
+                        <td>880</td>
+                        <td>880</td>
+                        <td>770</td>
+                        <td>680</td>
+                        <td>590</td>
+                        <td>570</td>
+                        <td>530</td>
+                    </tr>
+                    <tr>
+                        <td>실크인쇄 외부양면</td>
+                        <td>1,400</td>
+                        <td>1,090</td>
+                        <td>1,090</td>
+                        <td>980</td>
+                        <td>980</td>
+                        <td>870</td>
+                        <td>780</td>
+                        <td>690</td>
+                        <td>670</td>
+                        <td>630</td>
+                    </tr>
+                    <tr>
+                        <td>음각인쇄</td>
+                        <td>1,500</td>
+                        <td>1,200</td>
+                        <td>1,200</td>
+                        <td>1,100</td>
+                        <td>1,000</td>
+                        <td>900</td>
+                        <td>800</td>
+                        <td>750</td>
+                        <td>700</td>
+                        <td>650</td>
+                    </tr>
+                    <tr class="packaging">
+                        <td>포장단가</td>
+                        <td class="price" colspan="10">벌크포장(기본)<span>+100</span>개별OPP()<span>+100</span>개별OPP+스티커<span>+250</span>개별OPP+내지<span>+200</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="notes">
+                <ul>
+                    <li>외내부인쇄를 원하시는 경우 고객센터로 문의 부탁드립니다.</li>
+                    <li>모든 상품 가격은 부가세 별도 금액입니다.</li>
+                    <li>주문 후 세금계산서 발행 및 현금영수증 가능합니다.</li>
+                    <li>관공서의 경우 선출고 후입금 진행 가능합니다.</li>
+                    <li>문의는 고객센터 032)678-0522 또는 카카오톡 채널 세이실리로 상담해 주세요.</li>
+                </ul>
+            </div>
+        </div>
+    `;
+    
+    const priceButton = document.querySelector('[data-bs-price-tooltip="true"]');
+    const tooltip = document.createElement('div');
+    tooltip.className = 'custom-tooltip';
+    tooltip.innerHTML = tooltipContent;
+    document.body.appendChild(tooltip);
+
+    priceButton.addEventListener('mouseenter', function(e) {
+        const buttonRect = this.getBoundingClientRect();
+        tooltip.style.display = 'block';
+        
+        // 툴팁 위치 설정
+        let left = buttonRect.left + window.scrollX;
+        let top = buttonRect.top + window.scrollY - tooltip.offsetHeight - 10;
+
+        // 화면 왼쪽 경계 체크
+        if (left < 0) {
+            left = 0;
+        }
+        // 화면 오른쪽 경계 체크
+        if (left + tooltip.offsetWidth > window.innerWidth) {
+            left = window.innerWidth - tooltip.offsetWidth;
+        }
+        // 화면 위쪽 경계 체크 (위에 공간이 없으면 버튼 아래에 표시)
+        if (top < 0) {
+            top = buttonRect.bottom + window.scrollY + 10;
+        }
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+    });
+
+    priceButton.addEventListener('mouseleave', function(e) {
+        const tooltip = document.querySelector('.custom-tooltip');
+        if (!tooltip.contains(e.relatedTarget)) {
+            tooltip.style.display = 'none';
+        }
+    });
+
+    // 툴팁 외부 클릭시 닫기
+    document.addEventListener('click', function(e) {
+        if (!priceButton.contains(e.target) && !tooltip.contains(e.target)) {
+            tooltip.style.display = 'none';
+        }
+    });
+
+
 
 });
 // Canvas 상태 저장 함수

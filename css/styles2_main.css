@@ -545,3 +545,82 @@ body {
   input:checked + .slider .off {
     opacity: 0;
   }
+
+  /* 가격표 툴팁 스타일 */
+  .custom-tooltip {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    padding: 15px;
+    max-width: 60vw;  /* 최소 가로 길이 설정 */
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.custom-tooltip table {
+    width: 100%;
+    table-layout: auto;  /* 테이블 셀 크기 고정 */
+    border-collapse: collapse;
+    margin-bottom: 10px;  /* 마진 축소 */
+}
+
+.custom-tooltip caption {
+    caption-side: top;  /* 캡션을 상단에 표시 */
+    font-weight: bold;
+    margin-bottom: 8px;  /* 마진 축소 */
+    font-size: 14px;  /* 글자 크기 축소 */
+    color: #3756b2;
+}
+
+.custom-tooltip th,
+.custom-tooltip td {
+    border: 1px solid #ddd;
+    padding: 6px;  /* 패딩 축소 */
+    text-align: center;
+    font-size: 12px;  /* 글자 크기 축소 */
+    white-space: nowrap;  /* 텍스트 줄바꿈 방지 */
+}
+
+.custom-tooltip th {
+    background: #f5f5f5;
+}
+
+.custom-tooltip .packaging td {
+    text-align: cneter;
+    font-size: 11px;  /* 포장단가 글자 크기 더 축소 */
+}
+.custom-tooltip .packaging td.price {
+    font-weight: bold;  /* 볼드 효과 추가 */
+    text-align: center;
+}
+
+.custom-tooltip .packaging span {
+    color: #3756b2;
+    margin: 0 5px;
+}
+
+.custom-tooltip .notes {
+    font-size: 11px;  /* 노트 글자 크기 축소 */
+    color: #666;
+    margin-top: 10px;  /* 마진 축소 */
+}
+
+.custom-tooltip .notes ul {
+    padding-left: 6px;  /* 테이블 셀의 패딩과 동일하게 설정 */
+    margin: 0 6px;      /* 좌우 마진도 동일하게 설정 */
+    flex-wrap: wrap;  /* 필요시 줄바꿈 */
+    gap: 10px;  /* 항목 간 간격 */
+}
+
+.custom-tooltip .notes li {
+    margin-bottom: 3px;
+    line-height: 1.2;  /* 줄간격 축소 */
+    flex: 1 1 auto;  /* 균등하게 공간 분배 */
+}
