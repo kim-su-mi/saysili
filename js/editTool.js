@@ -29,58 +29,65 @@ class CanvasCommand {
     }
 
     // 저장된 상태로 캔버스 복원
-    loadCanvasState(state) {
+    async loadCanvasState(state) {
         if (!state) return;
-
-        // 뷰 전환이 필요한 경우
-        if (currentView !== state.currentView) {
-            currentView = state.currentView;
-            // UI 뷰 버튼 상태 업데이트
-            const viewButtons = document.querySelectorAll('#viewButtons button');
-            viewButtons.forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.view === currentView);
-            });
-            // SVG 이미지 업데이트
-            // switch(state.currentView) {
-            //     case 'outer-front':
-            //     case 'outer-back':
-            //         changeSVGImage('images/bracelet.svg');
-            //         break;
-            //     case 'inner-front':
-            //     case 'inner-back':
-            //         changeSVGImage('images/braceletInner.svg');
-            //         break;
-            // }
-        }
-
-        // 현재 캔버스 상태 복원
-        this.canvas.loadFromJSON(state.canvasState, () => {
-            // 객체별 추가 속성 복원
-            this.canvas.getObjects().forEach(obj => {
-                if (obj.lockMovementX) {
-                    obj.set({
-                        selectable: false,
-                        evented: false,
-                        hoverCursor: 'default',
-                        moveCursor: 'default'
+    
+        try {
+            // 뷰 전환이 필요한 경우
+            if (currentView !== state.currentView) {
+                currentView = state.currentView;
+                // UI 뷰 버튼 상태 업데이트
+                const viewButtons = document.querySelectorAll('#viewButtons button');
+                viewButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.view === currentView);
+                });
+                
+                // SVG 이미지 업데이트 - await로 완료 대기
+                switch(state.currentView) {
+                    case 'outer-front':
+                    case 'outer-back':
+                        await changeSVGImage('images/bracelet.svg');
+                        break;
+                    case 'inner-front':
+                    case 'inner-back':
+                        await changeSVGImage('images/braceletInner.svg');
+                        break;
+                }
+            }
+    
+            // SVG 로드가 완료된 후 캔버스 상태 복원
+            return new Promise((resolve) => {
+                this.canvas.loadFromJSON(state.canvasState, () => {
+                    // 객체별 추가 속성 복원
+                    this.canvas.getObjects().forEach(obj => {
+                        if (obj.lockMovementX) {
+                            obj.set({
+                                selectable: false,
+                                evented: false,
+                                hoverCursor: 'default',
+                                moveCursor: 'default'
+                            });
+                        }
                     });
-                }
+                    this.canvas.renderAll();
+    
+                    // 다른 뷰의 캔버스 상태 복원
+                    Object.entries(state.canvasInstances).forEach(([view, instanceState]) => {
+                        if (instanceState) {
+                            if (!canvasInstances[view]) {
+                                canvasInstances[view] = new fabric.Canvas(null);
+                            }
+                            canvasInstances[view].loadFromJSON(instanceState);
+                        }
+                    });
+    
+                    rebuildLayerPanel();
+                    resolve();
+                });
             });
-            this.canvas.renderAll();
-
-            // 다른 뷰의 캔버스 상태 복원
-            Object.entries(state.canvasInstances).forEach(([view, instanceState]) => {
-                if (instanceState) {
-                    if (!canvasInstances[view]) {
-                        canvasInstances[view] = new fabric.Canvas(null);
-                    }
-                    canvasInstances[view].loadFromJSON(instanceState);
-                }
-            });
-
-            // 레이어 패널 업데이트를 콜백 내부로 이동
-            rebuildLayerPanel();
-        });
+        } catch (error) {
+            console.error('Error loading canvas state:', error);
+        }
     }
 
     execute() {
