@@ -40,6 +40,17 @@ class CanvasCommand {
             viewButtons.forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.view === currentView);
             });
+            // SVG 이미지 업데이트
+            // switch(state.currentView) {
+            //     case 'outer-front':
+            //     case 'outer-back':
+            //         changeSVGImage('images/bracelet.svg');
+            //         break;
+            //     case 'inner-front':
+            //     case 'inner-back':
+            //         changeSVGImage('images/braceletInner.svg');
+            //         break;
+            // }
         }
 
         // 현재 캔버스 상태 복원
@@ -270,88 +281,93 @@ class HistoryManager {
     }
 
     // Undo 실행
-    undo() {
+    async undo() {
         if (this.undoStack.length > 0) {
+            console.log('=== Undo 실행 시작 ===');
             const command = this.undoStack.pop();
             this.isExecutingCommand = true;
-            command.undo(); // 명령 취소
-            this.redoStack.push(command); // redo 스택에 추가
+            console.log('이전 상태로 되돌리기');
+            await command.undo(); // Promise가 완료될 때까지 대기
+            this.redoStack.push(command);
             this.isExecutingCommand = false;
             this.updateButtonStates();
-            
+            console.log('=== Undo 실행 완료 ===');
             // 실행 취소 후 스택 상태 로깅
-            console.log('=== Undo 실행 후 스택 상태 ===');
-            console.log('Undo 스택:', this.undoStack.map(cmd => ({
-                previousState: cmd.previousState.canvasState.objects.map(obj => ({
-                    type: obj.type,
-                    text: obj.type === 'i-text' ? obj.text : null,
-                    left: obj.left,
-                    top: obj.top
-                })),
-                newState: cmd.newState.canvasState.objects.map(obj => ({
-                    type: obj.type,
-                    text: obj.type === 'i-text' ? obj.text : null,
-                    left: obj.left,
-                    top: obj.top
-                }))
-            })));
-            console.log('Redo 스택:', this.redoStack.map(cmd => ({
-                previousState: cmd.previousState.canvasState.objects.map(obj => ({
-                    type: obj.type,
-                    text: obj.type === 'i-text' ? obj.text : null,
-                    left: obj.left,
-                    top: obj.top
-                })),
-                newState: cmd.newState.canvasState.objects.map(obj => ({
-                    type: obj.type,
-                    text: obj.type === 'i-text' ? obj.text : null,
-                    left: obj.left,
-                    top: obj.top
-                }))
-            })));
+            // console.log('=== Undo 실행 후 스택 상태 ===');
+            // console.log('Undo 스택:', this.undoStack.map(cmd => ({
+            //     previousState: cmd.previousState.canvasState.objects.map(obj => ({
+            //         type: obj.type,
+            //         text: obj.type === 'i-text' ? obj.text : null,
+            //         left: obj.left,
+            //         top: obj.top
+            //     })),
+            //     newState: cmd.newState.canvasState.objects.map(obj => ({
+            //         type: obj.type,
+            //         text: obj.type === 'i-text' ? obj.text : null,
+            //         left: obj.left,
+            //         top: obj.top
+            //     }))
+            // })));
+            // console.log('Redo 스택:', this.redoStack.map(cmd => ({
+            //     previousState: cmd.previousState.canvasState.objects.map(obj => ({
+            //         type: obj.type,
+            //         text: obj.type === 'i-text' ? obj.text : null,
+            //         left: obj.left,
+            //         top: obj.top
+            //     })),
+            //     newState: cmd.newState.canvasState.objects.map(obj => ({
+            //         type: obj.type,
+            //         text: obj.type === 'i-text' ? obj.text : null,
+            //         left: obj.left,
+            //         top: obj.top
+            //     }))
+            // })));
         }
     }
 
     // Redo 실행
-    redo() {
+    async redo() {
         if (this.redoStack.length > 0) {
+            console.log('=== Redo 실행 시작 ===');
             const command = this.redoStack.pop();
             this.isExecutingCommand = true;
-            command.redo(); // 명령 재실행
-            this.undoStack.push(command); // undo 스택에 추가
+            console.log('다음 상태로 진행');
+            await command.redo(); // Promise가 완료될 때까지 대기
+            this.undoStack.push(command);
             this.isExecutingCommand = false;
             this.updateButtonStates();
+            console.log('=== Redo 실행 완료 ===');
             
             // 다시 실행 후 스택 상태 로깅
-            console.log('=== Redo 실행 후 스택 상태 ===');
-            console.log('Undo 스택:', this.undoStack.map(cmd => ({
-                previousState: cmd.previousState.canvasState.objects.map(obj => ({
-                    type: obj.type,
-                    text: obj.type === 'i-text' ? obj.text : null,
-                    left: obj.left,
-                    top: obj.top
-                })),
-                newState: cmd.newState.canvasState.objects.map(obj => ({
-                    type: obj.type,
-                    text: obj.type === 'i-text' ? obj.text : null,
-                    left: obj.left,
-                    top: obj.top
-                }))
-            })));
-            console.log('Redo 스택:', this.redoStack.map(cmd => ({
-                previousState: cmd.previousState.canvasState.objects.map(obj => ({
-                    type: obj.type,
-                    text: obj.type === 'i-text' ? obj.text : null,
-                    left: obj.left,
-                    top: obj.top
-                })),
-                newState: cmd.newState.canvasState.objects.map(obj => ({
-                    type: obj.type,
-                    text: obj.type === 'i-text' ? obj.text : null,
-                    left: obj.left,
-                    top: obj.top
-                }))
-            })));
+            // console.log('=== Redo 실행 후 스택 상태 ===');
+            // console.log('Undo 스택:', this.undoStack.map(cmd => ({
+            //     previousState: cmd.previousState.canvasState.objects.map(obj => ({
+            //         type: obj.type,
+            //         text: obj.type === 'i-text' ? obj.text : null,
+            //         left: obj.left,
+            //         top: obj.top
+            //     })),
+            //     newState: cmd.newState.canvasState.objects.map(obj => ({
+            //         type: obj.type,
+            //         text: obj.type === 'i-text' ? obj.text : null,
+            //         left: obj.left,
+            //         top: obj.top
+            //     }))
+            // })));
+            // console.log('Redo 스택:', this.redoStack.map(cmd => ({
+            //     previousState: cmd.previousState.canvasState.objects.map(obj => ({
+            //         type: obj.type,
+            //         text: obj.type === 'i-text' ? obj.text : null,
+            //         left: obj.left,
+            //         top: obj.top
+            //     })),
+            //     newState: cmd.newState.canvasState.objects.map(obj => ({
+            //         type: obj.type,
+            //         text: obj.type === 'i-text' ? obj.text : null,
+            //         left: obj.left,
+            //         top: obj.top
+            //     }))
+            // })));
         }
     }
 
@@ -428,11 +444,44 @@ class HistoryManager {
         }
     }
 
-    // 외부에서 상태 변경을 기록하기 위한 메서드
-    recordState(callback) {
-        if (!this.isExecutingCommand) {
-            this.executeCommand(new StateChangeCommand(this.canvas, callback));
+    // 상태 기록 함수 수정
+    recordState(action, type = 'canvasChange', metadata = {}) {
+        // console.log('=== recordState 호출 ===');
+        // console.log('액션 타입:', type);
+        // console.log('메타데이터:', metadata);
+
+        if (this.isExecutingCommand) {
+            // console.log('명령 실행 중, 기록 건너뜀');
+            return;
         }
+
+        const command = new StateChangeCommand(this.canvas, () => {
+            // console.log('상태 변경 실행');
+            action();
+            
+            if (type === 'viewChange') {
+                // 뷰 변경 관련 상태도 저장
+                command.metadata = {
+                    type: 'viewChange',
+                    previousView: metadata.previousView,
+                    newView: metadata.newView
+                };
+            }
+        });
+
+        // console.log('명령 실행 전 Undo 스택 길이:', this.undoStack.length);
+        
+        // 명령 실행
+        command.execute();
+        
+        // 스택에 추가
+        this.undoStack.push(command);
+        this.redoStack = []; // redo 스택 초기화
+        
+        // console.log('명령 실행 후 Undo 스택 길이:', this.undoStack.length);
+        // console.log('마지막 추가된 명령:', command);
+
+        this.updateButtonStates();
     }
 }
 

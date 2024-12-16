@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * 색상 변경에 대한 js
      */
-    const braceletImage = document.getElementById('braceletImage');
+    window.braceletImage = document.getElementById('braceletImage');
     const colorPicker = document.getElementById('colorPicker');
     
     // SVG 내용 로드
@@ -360,22 +360,25 @@ document.addEventListener('DOMContentLoaded', function() {
      viewButtons.forEach(button => {
         button.addEventListener('click', function() {
             if (window.historyManager) {
+                const previousView = currentView;
+                const newView = this.dataset.view;
+
+                console.log('=== 뷰 변경 시작 ===');
+                console.log('이전 뷰:', previousView);
+                console.log('새로운 뷰:', newView);
+
+                // 현재 상태를 저장하고 뷰 변경을 실행
                 window.historyManager.recordState(() => {
-                    // 뷰 전환 전 현재 상태 저장
+                    // 현재 상태 저장
                     saveCurrentCanvasState();
+                    
+                    // 뷰 변경 실행
                     fabricCanvas.clear();
-    
-                    // 버튼 상태 업데이트
                     viewButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-    
-                    // 새로운 뷰로 전환
-                    const newView = this.dataset.view;
+                    button.classList.add('active');
                     currentView = newView;
-    
-                    // 레이어 패널 업데이트
                     updateLayerPanel(currentView);
-    
+
                     // SVG 이미지 업데이트
                     switch(newView) {
                         case 'outer-front':
@@ -387,12 +390,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             changeSVGImage('images/braceletInner.svg');
                             break;
                     }
-                });
+
+                    console.log('뷰 변경 작업 완료');
+                }, 'viewChange', { previousView, newView });
+
+                console.log('=== 뷰 변경 완료 ===');
+                console.log('Undo 스택:', window.historyManager.undoStack);
+                console.log('Redo 스택:', window.historyManager.redoStack);
             }
         });
     });
     // SVG 이미지 변경 및 상태 복원 함수
-    function changeSVGImage(src) {
+    window.changeSVGImage = function(src) {
         braceletImage.src = src;
         
         fetch(src)
