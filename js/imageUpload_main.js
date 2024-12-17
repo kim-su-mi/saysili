@@ -194,6 +194,72 @@ function initImageUpload() {
             title: tooltipContent
         });
     });
+
+    const silkTooltip = document.querySelectorAll('[data-bs-silk-tooltip="true"]');
+    silkTooltip.forEach(el => {
+        new bootstrap.Tooltip(el, {
+            trigger: 'hover', // hover시에만 툴팁 표시
+            placement: 'bottom', // 오른쪽에 표시
+            container: 'body',
+            html: true,
+            title: '실크인쇄'
+        });
+    });
+
+    const engravingTooltip = document.querySelectorAll('[data-bs-engraving-tooltip="true"]');
+    engravingTooltip.forEach(el => {
+        new bootstrap.Tooltip(el, {
+            trigger: 'hover', // hover시에만 툴팁 표시
+            placement: 'bottom', // 오른쪽에 표시
+            container: 'body',
+            html: true,
+            title: '음각인쇄'
+        });
+    });
+
+    const bulkTooltip = document.querySelectorAll('[data-bs-bulk-tooltip="true"]');
+    bulkTooltip.forEach(el => {
+        new bootstrap.Tooltip(el, {
+            trigger: 'hover', // hover시에만 툴팁 표시
+            placement: 'bottom', // 오른쪽에 표시
+            container: 'body',
+            html: true,
+            title: '벌크포장'
+        });
+    });
+
+    const oppTooltip = document.querySelectorAll('[data-bs-opp-tooltip="true"]');
+    oppTooltip.forEach(el => {
+        new bootstrap.Tooltip(el, {
+            trigger: 'hover', // hover시에만 툴팁 표시
+            placement: 'bottom', // 오른쪽에 표시
+            container: 'body',
+            html: true,
+            title: '개별 OPP'
+        });
+    });
+
+    const paperTooltip = document.querySelectorAll('[data-bs-paper-tooltip="true"]');
+    paperTooltip.forEach(el => {
+        new bootstrap.Tooltip(el, {
+            trigger: 'hover', // hover시에만 툴팁 표시
+            placement: 'bottom', // 오른쪽에 표시
+            container: 'body',
+            html: true,
+            title: 'OPP+내지'
+        });
+    });
+
+    const stickerTooltip = document.querySelectorAll('[data-bs-sticker-tooltip="true"]');
+    stickerTooltip.forEach(el => {
+        new bootstrap.Tooltip(el, {
+            trigger: 'hover', // hover시에만 툴팁 표시
+            placement: 'bottom', // 오른쪽에 표시
+            container: 'body',
+            html: true,
+            title: 'OPP+스티커'
+        });
+    });
 }
 
 // DOM이 로드된 후 초기화

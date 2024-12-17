@@ -83,7 +83,6 @@ body {
     border-radius: 5px;
     /* background-color: white; */
     max-width: 600px;  /* 전체 너비 제한 */
-    justify-content: center;  /* 버튼들을 중앙 정렬 */
 }
 
 #colorPicker button {
