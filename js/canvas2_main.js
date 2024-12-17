@@ -535,11 +535,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     <tr>
                         <td>실크인쇄 외부단면</td>
                         <td>1,300</td>
-                        <td>990</td>
-                        <td>990</td>
+                        <td>980</td>
+                        <td>950</td>
                         <td>880</td>
-                        <td>880</td>
-                        <td>770</td>
+                        <td>850</td>
+                        <td>780</td>
                         <td>680</td>
                         <td>590</td>
                         <td>570</td>
@@ -547,26 +547,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     </tr>
                     <tr>
                         <td>실크인쇄 외부양면</td>
-                        <td>1,400</td>
-                        <td>1,090</td>
-                        <td>1,090</td>
-                        <td>980</td>
-                        <td>980</td>
+                        <td>1,450</td>
+                        <td>1,230</td>
+                        <td>1,200</td>
+                        <td>1,110</td>
+                        <td>1,080</td>
+                        <td>990</td>
                         <td>870</td>
-                        <td>780</td>
-                        <td>690</td>
-                        <td>670</td>
-                        <td>630</td>
+                        <td>750</td>
+                        <td>730</td>
+                        <td>680</td>
                     </tr>
                     <tr>
                         <td>음각인쇄</td>
-                        <td>1,500</td>
-                        <td>1,200</td>
+                        <td>1,550</td>
+                        <td>1,250</td>
                         <td>1,200</td>
                         <td>1,100</td>
                         <td>1,000</td>
-                        <td>900</td>
-                        <td>800</td>
+                        <td>950</td>
+                        <td>850</td>
                         <td>750</td>
                         <td>700</td>
                         <td>650</td>
