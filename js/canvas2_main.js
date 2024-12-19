@@ -9,9 +9,12 @@ let canvasInstances = {
 };
 let currentView = 'outer-front';
 
-// 인쇄방식과 포장방식 선택 상태를 저장할 변수
-let selectedPrintMethod = '';
-let selectedPackageMethod = '';
+// 색상,사이즈,인쇄방식과 포장방식 선택 상태를 저장하는 변수
+let selectedBraceletColor = ''; // ex. 레드, 야광라임, 투명스카이 등등
+let selectedSize = 'S'; // ex. S, M, L
+let selectedPrintMethod = ''; // ex. silk,engraving
+let selectedPackageMethod = ''; // ex. bulk,opp,opp_inner,opp_sticker
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Fabric.js 캔버스 초기화
@@ -101,8 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (colorObj.color === '#00b7e9') {
                         colorButton.classList.add('active');
                         // 초기 색상 이름 설정
-                        document.getElementById('selectedColor').textContent = colorObj.name;
-                        document.getElementById('sum_selectedColor').textContent = colorObj.name;
+                        selectedBraceletColor = colorObj.name;
+                        document.getElementById('selectedColor').textContent = selectedBraceletColor;
+                        document.getElementById('sum_selectedColor').textContent = selectedBraceletColor;
                     }
                     
                     colorButton.addEventListener('click', () => {
@@ -110,11 +114,17 @@ document.addEventListener('DOMContentLoaded', function() {
                             btn.classList.remove('active');
                         });
                         colorButton.classList.add('active');
+                        
+                        // 선택된 색상 이름 업데이트
+                        selectedBraceletColor = colorObj.name;
                         changeBraceletColor(colorObj.color);
                         
                         // 색상 이름 업데이트
-                        document.getElementById('selectedColor').textContent = colorObj.name;
-                        document.getElementById('sum_selectedColor').textContent = colorObj.name;
+                        document.getElementById('selectedColor').textContent = selectedBraceletColor;
+                        document.getElementById('sum_selectedColor').textContent = selectedBraceletColor;
+
+                        // 선택된 색상 로그 출력
+                        // console.log('선택된 색상:', selectedBraceletColor);
                     });
                     
                     container.appendChild(colorButton);
@@ -315,9 +325,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         document.getElementById(activeId).classList.add('active');
         
-        // 사이즈 텍스트 업데이트
+        // 사이즈 텍스트 업데이트 - 전역 변수 selectedSize 활용
         const sizeText = document.getElementById('sum_selectedSize');
-        const selectedSize = activeId.split('_')[1]; // 'size_S' -> 'S'
         if (sizeText) {
             sizeText.textContent = `${selectedSize}사이즈`;
         }
@@ -330,14 +339,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // 크기 변경 버튼 이벤트 리스너 추가
     document.getElementById('size_S').addEventListener('click', () => {
         updateSizeButtonState('size_S');
+        selectedSize = 'S';
+        // console.log('선택된 사이즈:', selectedSize);
         resizeBracelet('s');
     });
     document.getElementById('size_M').addEventListener('click', () => {
         updateSizeButtonState('size_M');
+        selectedSize = 'M';
+        // console.log('선택된 사이즈:', selectedSize);
         resizeBracelet('m');
     });
     document.getElementById('size_L').addEventListener('click', () => {
         updateSizeButtonState('size_L');
+        selectedSize = 'L';
+        // console.log('선택된 사이즈:', selectedSize);
         resizeBracelet('l');
     });
 
@@ -650,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
             // 선택된 값 저장
             selectedPrintMethod = this.id.replace('print_', '');
-            console.log('선택된 인쇄 방식:', selectedPrintMethod); // 선택된 인쇄 방식 출력
+            // console.log('선택된 인쇄 방식:', selectedPrintMethod); // 선택된 인쇄 방식 출력
         });
     });
 
@@ -666,7 +681,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
             // 선택된 값 저장
             selectedPackageMethod = this.id.replace('wrap_', '');
-            console.log('선택된 포장 방식:', selectedPackageMethod); // 선택된 포장 방식 출력
+            // console.log('선택된 포장 방식:', selectedPackageMethod); // 선택된 포장 방식 출력
         });
     });
 
