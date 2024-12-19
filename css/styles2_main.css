@@ -166,14 +166,17 @@ body.modal-open #editButtons {
 
 .modal-content { /*모달 컨텐츠 스타일 및 크기 조정*/
     background-color: #fff;
-    margin: 10% auto; 
     padding: 20px;
-    border-radius: 10px;
-    width: 60%; 
-    max-width: 600px; 
+    border-radius: 15px !important;
     z-index: 10000; /* 모달 컨텐츠의 z-index 설정 */
+    margin: 0 ; /* 기존 margin 제거 */
+    width: 100% ;
 }
-
+#templateModal .modal-content,
+#textModal .modal-content,
+#imageModal .modal-content {
+    max-width: 600px;
+}
 
 
 .template-grid {
@@ -348,16 +351,6 @@ body.modal-open #editButtons {
     transform: translateY(0) !important;
 }
 
-/* 모달 컨텐츠 스타일 */
-.modal-content {
-    border-bottom-left-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-    border-top-left-radius: 15px !important;
-    border-top-right-radius: 15px !important;
-    margin: 0 !important; /* 기존 margin 제거 */
-    width: 100% !important;
-}
-
 /* 모달 헤더 드래그 핸들 */
 .modal-header {
     padding-top: 25px !important;
@@ -482,18 +475,51 @@ body.modal-open #editButtons {
     left: 45%;
 }
 /* 상품변경 모달 설정 */
-#changeProductModal .modal-dialog {
-    top: 50% !important ;
+/* #changeProductModal .modal-dialog {
+    position: fixed !important;
+    top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     margin: 0 !important;
-    max-width: none !important;
+    width: 70vw !important;  /* 뷰포트 너비의 70% */
+    /* max-width: 1000px !important;  최대 너비 설정 */
+/* }
+
+#changeProductModal .modal-content {
+    width: 100% !important;
+    height: 70vh !important;  /* 뷰포트 높이의 70% */
+    /* max-height: 800px !important;  /* 최대 높이 설정 */
+    /* overflow: auto !important;  /* 내용이 넘칠 경우 스크롤 */
+/* }  */ 
+/* 상품변경 모달만 다른 스타일 적용 */
+#changeProductModal.fade .modal-dialog {
+    transform: translate(-50%, -40%) !important;
+    opacity: 0;
+    transition: all 0.3s ease-out !important;
+}
+
+#changeProductModal.show .modal-dialog {
+    transform: translate(-50%, -40%) !important;
+    opacity: 1;
+}
+
+#changeProductModal .modal-dialog {
+    position: fixed !important;
+    top: 35% !important;
+    left: 50% !important;
+    width: 80vw !important;
 }
 
 #changeProductModal .modal-content {
-    width: 70vw !important;
-    height: 70vh !important;
-    overflow: auto; /* 내용이 넘칠 경우 스크롤 생성 */
+    width: 100% ;
+    height: 80vh ;
+}
+#changeProductModal .modal-body {
+    overflow: auto;
+}
+/* 모달 backdrop 스타일 */
+#changeProductModal.modal {
+    background-color: rgba(0, 0, 0, 0.5) ; /* 뒷배경만 반투명 처리 */
 }
 /* 인쇄가능 영역 on/off */
 .toggle-switch-wrapper {
