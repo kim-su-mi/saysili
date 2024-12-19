@@ -110,9 +110,9 @@ body {
 
 /* 사이즈 버튼 active 상태 스타일 */
 #sizepicker button.active {
-    background-color: #0d6efd;
+    background-color: #3756b2;
     color: white;
-    border-color: #0d6efd;
+    border-color: #3756b2;
     transform: scale(1.05);
 }
 
@@ -133,6 +133,13 @@ body {
 #viewButtons .btn.active {
     background-color: #0d6efd;
     color: white;
+}
+
+#viewButtons button:hover {
+    background-color: #f0f0f0;
+}
+#viewButtons button.active:hover {
+    background-color: #0b5ed7;
 }
 /* 템플릿 모달 영역 스타일 */
 /* 모달이 열렸을 때 모달위로 다른 요소 뜨는거 방지 */

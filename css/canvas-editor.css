@@ -432,7 +432,9 @@
 
 .radio_select_btn {
   text-align: center;
-  background-color: #6481b8;
+  /* background-color: #6481b8; */
+  background-color: #ffffff;
+  border: 1px solid #d5d2d2;
   border-radius: 8px;
   width: 35px;
   height: auto;
