@@ -811,3 +811,28 @@ body.modal-open #editButtons {
     }
 }
 
+/* 오른쪽 패널 비활성화된 버튼 스타일 */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    /* background-color: #e9ecef; */
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+}
+
+/* active 상태의 버튼이 disabled일 때도 동일한 스타일 적용 */
+/* button.active:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+} */
+
+/* hover 효과 제거 */
+/* button:disabled:hover {
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    transform: none !important;
+} */
+

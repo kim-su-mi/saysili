@@ -173,9 +173,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         const index = layerInstances[currentView].findIndex(l => l === layer);
                         if (index > -1) {
                             layerInstances[currentView].splice(index, 1);
-                }
-                // 레이어 인덱스 업데이트
+                        }
+                        // 레이어 인덱스 업데이트
                         updateLayerIndices();
+                        
+                        // 캔버스 렌더링 추가
+                        fabricCanvas.renderAll();
+                        saveCurrentCanvasState(); // 상태 저장
                     });
                 }
             }
@@ -206,12 +210,30 @@ document.addEventListener('DOMContentLoaded', function() {
             item.classList.remove('selected');
         });
         
-        // 선택된 객체의 ID와 일치하는 레이어 찾기
-        const selectedObject = e.selected[0];
-        const layerItem = document.querySelector(`.layer-item[data-object-id="${selectedObject.id}"]`);
-        if (layerItem) {
-            layerItem.classList.add('selected');
-        }
+        // 선택된 모든 객체에 대해 처리
+        const selectedObjects = e.selected;
+        selectedObjects.forEach(selectedObject => {
+            const layerItem = document.querySelector(`.layer-item[data-object-id="${selectedObject.id}"]`);
+            if (layerItem) {
+                layerItem.classList.add('selected');
+            }
+        });
+    });
+    // selection:updated 이벤트 리스너 추가
+    fabricCanvas.on('selection:updated', function(e) {
+        // 모든 레이어 아이템에서 selected 클래스 제거
+        document.querySelectorAll('.layer-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        
+        // 새로 선택된 객체들에 대해 처리
+        const selectedObjects = e.selected;
+        selectedObjects.forEach(selectedObject => {
+            const layerItem = document.querySelector(`.layer-item[data-object-id="${selectedObject.id}"]`);
+            if (layerItem) {
+                layerItem.classList.add('selected');
+            }
+        });
     });
 
     // selection:cleared 이벤트 리스너 추가
