@@ -44,21 +44,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         
-        let layerName = 'template';  // 기본값을 Template로 설정
-        if (obj instanceof fabric.IText) {
-            layerName = 'Text';
-        } else if (obj instanceof fabric.Image) {
-            layerName = 'Image';
-        } else if (obj.objectType === 'group') {
-            layerName = 'Group';
-        }
-        // let layerName = 'Layer';  // 기본값
-        // if (obj.type === 'template') {
-        //     layerName = 'Template';
-        // } else if (obj instanceof fabric.IText) {
+        // let layerName = 'template';  // 기본값을 Template로 설정
+        // if (obj instanceof fabric.IText) {
         //     layerName = 'Text';
         // } else if (obj instanceof fabric.Image) {
         //     layerName = 'Image';
+        // } else if (obj.objectType === 'group') {
+        //     layerName = 'Group';
         // }
         
         // 새로운 레이어 아이템 요소 생성
@@ -66,16 +58,26 @@ document.addEventListener('DOMContentLoaded', function() {
         layerItem.className = 'layer-item';
         layerItem.dataset.objectId = obj.id; // fabric 객체의 ID를 HTML 요소에 데이터 속성으로 저장, 레이어와 캔버스 객체를 연결
 
+    //     layerItem.innerHTML = `
+    //         <div class="layertitlediv">
+    //             <span class="layer_title">${layerName} ${index}</span>
+    //         </div>
+    //         <div class="layerbtndiv">
+    //             <button id="layer_hide" class="visibility-btn" title="숨기기">👁</button>
+    //             <button id="layer_lock" class="lock-btn" title="잠금">🔓</button>
+    //             <button id="layer_delete" class="delete-btn" title="삭제">🗑</button>
+    //         </div>
+    // `   ;
         layerItem.innerHTML = `
             <div class="layertitlediv">
-                <span class="layer_title">${layerName} ${index}</span>
+                <span class="layer_title">레이어 ${index}</span>
             </div>
             <div class="layerbtndiv">
                 <button id="layer_hide" class="visibility-btn" title="숨기기">👁</button>
                 <button id="layer_lock" class="lock-btn" title="잠금">🔓</button>
                 <button id="layer_delete" class="delete-btn" title="삭제">🗑</button>
             </div>
-    `   ;
+        `;
 
         // 레이어 객체 생성
         const layer = {
@@ -87,8 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
         layerInstances[currentView].push(layer);
 
         setupLayerControls(layer, layerItem);
-
-       
 
         return layer;
     };
@@ -117,15 +117,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // 숨기기 버튼 이벤트
         visibilityBtn.addEventListener('click', function() {
-            // if (window.historyManager) {
-            //     window.historyManager.recordState(() => {
+            if (window.historyManager) {
+                window.historyManager.recordState(() => {
                     const isVisible = layer.fabricObject.visible;
                     layer.fabricObject.set('visible', !isVisible);
                     this.textContent = isVisible ? '👁‍🗨' : '👁';
                     fabricCanvas.renderAll();
                     saveCurrentCanvasState(); // 상태 저장
-            //     });
-            // }
+                });
+            }
         });
     
         // 잠금 버튼 초기 상태 설정
@@ -134,8 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // 잠금 버튼 이벤트
         lockBtn.addEventListener('click', function() {
-            // if (window.historyManager) {
-            //     window.historyManager.recordState(() => {
+            if (window.historyManager) {
+                window.historyManager.recordState(() => {
                     const isLocked = layer.fabricObject.lockMovementX;
                     const newLockState = !isLocked;
                     
@@ -155,15 +155,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.textContent = newLockState ? '🔒' : '🔓';
                     fabricCanvas.renderAll();
                     saveCurrentCanvasState(); // 상태 저장
-            //     });
-            // }
+                });
+            }
         });
     
         // 삭제 버튼 이벤트는 동일
         layerItem.querySelector('#layer_delete').addEventListener('click', function() {
             if (confirm('이 레이어를 삭제하시겠습니까?')) {
-                // if (window.historyManager) {
-                //     window.historyManager.recordState(() => {
+                if (window.historyManager) {
+                    window.historyManager.recordState(() => {
                         // 캔버스에서 객체 삭제
                         fabricCanvas.remove(layer.fabricObject);
                         // UI 레이어 요소 삭제
@@ -176,8 +176,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 // 레이어 인덱스 업데이트
                         updateLayerIndices();
-                //     });
-                // }
+                    });
+                }
             }
         });
     }

@@ -685,18 +685,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     activeSelection.getObjects().find(obj => obj.id === layer.fabricObject.id)
                 );
                 
-                // 선택된 객체들의 원래 레이어 이름 저장
-                const originalLayerNames = selectedLayers.map(layer => {
-                    const layerNameEl = layer.element.querySelector('.layer_title');
-                    return layerNameEl.textContent.split(' ')[0]; // "Template", "Text" 등의 원래 이름 저장
-                });
-
                 // 선택된 객체들을 그룹화
                 const group = activeSelection.toGroup();
                 group.set({
                     id: uuid.v4(),
-                    objectType: 'group',
-                    originalLayerNames: originalLayerNames // 원래 레이어 이름들 저장
+                    objectType: 'group'
                 });
 
                 // 먼저 모든 선택된 레이어를 layerInstances에서 제거
@@ -712,8 +705,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const layerContent = document.querySelector('#layer-content');
                 const groupLayer = createLayerItem(group, 1);
                 if (groupLayer && groupLayer.element) {
-                    const layerNameEl = groupLayer.element.querySelector('.layer_title');
-                    layerNameEl.textContent = `Group ${layerInstances[currentView].length}`;
                     layerContent.appendChild(groupLayer.element);
                 }
                 
@@ -729,9 +720,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (activeObject && activeObject.type === 'group' && window.historyManager) {
             window.historyManager.recordState(() => {
                 const items = activeObject.getObjects();
-                const originalLayerNames = activeObject.originalLayerNames || [];
-
-                console.log('그룹 해제 시 원래 레이어 이름:', originalLayerNames); // 로그 추가
                 
                 // 그룹 해제
                 activeObject.destroy();
@@ -752,24 +740,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // 개별 객체들을 캔버스에 추가하고 레이어 생성
-                items.forEach((item, index) => {
+                items.forEach((item) => {
                     item.set('id', uuid.v4());
                     fabricCanvas.add(item);
                     
                     const layerContent = document.querySelector('#layer-content');
                     const newLayer = createLayerItem(item, layerInstances[currentView].length + 1);
                     if (newLayer && newLayer.element) {
-                        const layerNameEl = newLayer.element.querySelector('.layer_title');
-                        // 1. 먼저 원래 저장된 이름이 있는지 확인
-                        const originalName = originalLayerNames[index];
-                        if (originalName) {
-                            // 2. 원래 이름이 있으면 그것을 사용
-                            layerNameEl.textContent = `${originalName} ${layerInstances[currentView].length}`;
-                        } else {
-                            // 3. 원래 이름이 없으면 objectType을 사용,objectType이 없으면 'Layer' 사용
-                            const objectType = item.objectType || 'Layer';
-                            layerNameEl.textContent = `${objectType} ${layerInstances[currentView].length}`;
-                        }
                         layerContent.appendChild(newLayer.element);
                     }
                 });
