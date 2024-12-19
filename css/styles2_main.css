@@ -141,6 +141,22 @@ body {
 #viewButtons button.active:hover {
     background-color: #0b5ed7;
 }
+
+/* 인쇄방식, 포장방식 버튼 active 상태 스타일 */
+.radio_select_container .radio_select_btn.active {
+    background-color: #3756b2;
+    color: white;
+}
+
+/* 인쇄방식, 포장방식 버튼 호버 효과 */
+.radio_select_container .radio_select_btn:hover {
+    background-color: #f0f0f0;
+}
+
+.radio_select_container .radio_select_btn.active:hover {
+    background-color: #3756b2;
+}
+
 /* 템플릿 모달 영역 스타일 */
 /* 모달이 열렸을 때 모달위로 다른 요소 뜨는거 방지 */
 body.modal-open #viewButtons,

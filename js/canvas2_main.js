@@ -9,6 +9,10 @@ let canvasInstances = {
 };
 let currentView = 'outer-front';
 
+// 인쇄방식과 포장방식 선택 상태를 저장할 변수
+let selectedPrintMethod = '';
+let selectedPackageMethod = '';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Fabric.js 캔버스 초기화
     fabricCanvas = new fabric.Canvas('activeCanvas', {
@@ -634,7 +638,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // 인쇄방식 선택 이벤트
+    document.querySelectorAll('#print_silk, #print_engraving').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            // 기존 선택 제거
+            document.querySelectorAll('#print_silk, #print_engraving').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // 새로운 선택 추가
+            this.classList.add('active');
+            // 선택된 값 저장
+            selectedPrintMethod = this.id.replace('print_', '');
+            console.log('선택된 인쇄 방식:', selectedPrintMethod); // 선택된 인쇄 방식 출력
+        });
+    });
 
+    // 포장방식 선택 이벤트
+    document.querySelectorAll('#wrap_bulk, #wrap_opp, #wrap_opp_inner, #wrap_opp_sticker').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            // 기존 선택 제거
+            document.querySelectorAll('#wrap_bulk, #wrap_opp, #wrap_opp_inner, #wrap_opp_sticker').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // 새로운 선택 추가
+            this.classList.add('active');
+            // 선택된 값 저장
+            selectedPackageMethod = this.id.replace('wrap_', '');
+            console.log('선택된 포장 방식:', selectedPackageMethod); // 선택된 포장 방식 출력
+        });
+    });
 
 });
 // Canvas 상태 저장 함수
