@@ -35,37 +35,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // SVG를 캔버스 배경으로 로드하는 함수
     function loadSVGBackground(svgUrl) {
-        fabric.loadSVGFromURL(svgUrl, function(objects, options) {
-            const svgGroup = fabric.util.groupSVGElements(objects, options);
-            
-            // SVG 그룹을 배경 이미지로 설정
-            fabricCanvas.setBackgroundImage(svgGroup, fabricCanvas.renderAll.bind(fabricCanvas), {
-                scaleX: fabricCanvas.width / svgGroup.width,
-                scaleY: fabricCanvas.height / svgGroup.height
-            });
-            
-            // 클리핑 영역 생성 (캔버스 크기의 85% x 75%)
-            const clipWidth = fabricCanvas.width * 0.85;
-            const clipHeight = fabricCanvas.height * 0.75;
-            
-            // 클리핑 패스를 위한 rect 생성
-            const clipPath = new fabric.Rect({
-                left: (fabricCanvas.width - clipWidth) / 2,
-                top: (fabricCanvas.height - clipHeight) / 2,
-                width: clipWidth,
-                height: clipHeight,
-                absolutePositioned: true
-            });
+        // SVG 파일을 텍스트로 가져오기
+        fetch(svgUrl)
+            .then(response => response.text())
+            .then(svgContent => {
+                // SVG 문자열을 DOM 요소로 파싱
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
 
-            // 클리핑 패스는 객체에만 적용
-            fabricCanvas.on('object:added', function(e) {
-                if (!e.target.isBackground) {
-                    e.target.clipPath = clipPath;
-                }
-            });
+                // SVG를 문자열로 변환하여 data URL 생성
+                const serializer = new XMLSerializer();
+                const svgString = serializer.serializeToString(svgElement);
+                const svgBlob = new Blob([svgString], {type: 'image/svg+xml'});
+                const url = URL.createObjectURL(svgBlob);
 
-            fabricCanvas.renderAll();
-        });
+                // Fabric.js로 SVG 로드
+                fabric.loadSVGFromURL(url, function(objects, options) {
+                    const svgGroup = fabric.util.groupSVGElements(objects, options);
+                    
+                    // SVG 그룹을 배경 이미지로 설정
+                    fabricCanvas.setBackgroundImage(svgGroup, fabricCanvas.renderAll.bind(fabricCanvas), {
+                        scaleX: fabricCanvas.width / svgGroup.width,
+                        scaleY: fabricCanvas.height / svgGroup.height
+                    });
+                    
+                    // 클리핑 영역 생성 (캔버스 크기의 85% x 75%)
+                    const clipWidth = fabricCanvas.width * 0.85;
+                    const clipHeight = fabricCanvas.height * 0.75;
+                    
+                    // 클리핑 패스를 위한 rect 생성
+                    const clipPath = new fabric.Rect({
+                        left: (fabricCanvas.width - clipWidth) / 2,
+                        top: (fabricCanvas.height - clipHeight) / 2,
+                        width: clipWidth,
+                        height: clipHeight,
+                        absolutePositioned: true
+                    });
+
+                    // 클리핑 패스는 객체에만 적용
+                    fabricCanvas.on('object:added', function(e) {
+                        if (!e.target.isBackground) {
+                            e.target.clipPath = clipPath;
+                        }
+                    });
+
+                    // Blob URL 해제
+                    URL.revokeObjectURL(url);
+                    fabricCanvas.renderAll();
+                });
+            });
     }
 
     // SVG 내용 로드 및 초기 설정
@@ -147,66 +166,95 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 이미지 색상 변경 함수
-    // 이미지 색상 변경 함수
     function changeBraceletColor(baseColor) {
-        // bracelet.svg용 그라디언트
-        const outerGradients = [
-            '_무제_그라디언트_95',
-            '_무제_그라디언트_92',
-            '_무제_그라디언트_78'
-        ];
+        const currentSvgUrl = currentView.startsWith('inner') ? 'images/braceletInner.svg' : 'images/bracelet.svg';
+        
+        fetch(currentSvgUrl)
+            .then(response => response.text())
+            .then(svgContent => {
+                // SVG 문자열을 DOM 요소로 파싱
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
 
-        // bracelet.svg 그라디언트 업데이트
-        outerGradients.forEach((gradientId, index) => {
-            const gradient = document.getElementById(gradientId);
-            if (gradient) {
-                const stops = gradient.getElementsByTagName('stop');
-                const adjustment = [-20, 0, -40][index];
-
-                for (let stop of stops) {
-                    stop.setAttribute('stop-color', adjustColor(baseColor, adjustment));
+                // 외부 팔찌용 그라디언트 ID들
+                const outerGradients = [
+                    '_무제_그라디언트_95',
+                    '_무제_그라디언트_92',
+                    '_무제_그라디언트_78'
+                ];
+        
+                // bracelet.svg 그라디언트 업데이트
+                outerGradients.forEach((gradientId, index) => {
+                    const gradient = svgDoc.getElementById(gradientId);
+                    if (gradient) {
+                        const stops = gradient.getElementsByTagName('stop');
+                        const adjustment = [-20, 0, -40][index];
+        
+                        for (let stop of stops) {
+                            stop.setAttribute('stop-color', adjustColor(baseColor, adjustment));
+                        }
+                    }
+                });
+        
+                // braceletInner.svg용 그라디언트 업데이트
+                const innerGradient = svgDoc.getElementById('_무제_그라디언트_78');
+                if (innerGradient) {
+                    const stops = innerGradient.getElementsByTagName('stop');
+                    const gradientStops = [
+                        { offset: "0", adjustment: -45 },
+                        { offset: "0.057", adjustment: -30 },
+                        { offset: "0.128", adjustment: -20 },
+                        { offset: "0.183", adjustment: -10 },
+                        { offset: "0.625", adjustment: -10 },
+                        { offset: "0.784", adjustment: -20 },
+                        { offset: "0.897", adjustment: -30 },
+                        { offset: "0.988", adjustment: -40 },
+                        { offset: "1", adjustment: -45 }
+                    ];
+        
+                    // 기존 stop 요소들 제거
+                    while (stops.length > 0) {
+                        stops[0].remove();
+                    }
+        
+                    // 새로운 stop 요소들 추가
+                    gradientStops.forEach(({ offset, adjustment }) => {
+                        const stop = svgDoc.createElementNS("http://www.w3.org/2000/svg", "stop");
+                        stop.setAttribute("offset", offset);
+                        stop.setAttribute("stop-color", adjustColor(baseColor, adjustment));
+                        innerGradient.appendChild(stop);
+                    });
                 }
-            }
-        });
+        
+                // 두 번째 그라디언트 업데이트 (무제_그라디언트_95-2)
+                const gradient2 = svgDoc.getElementById('_무제_그라디언트_95-2');
+                if (gradient2) {
+                    const stops = gradient2.getElementsByTagName('stop');
+                    for (let stop of stops) {
+                        stop.setAttribute('stop-color', adjustColor(baseColor, -20));
+                    }
+                }
 
-        // braceletInner.svg용 그라디언트 업데이트
-        const innerGradient = document.getElementById('_무제_그라디언트_78');
-        if (innerGradient) {
-            const stops = innerGradient.getElementsByTagName('stop');
-            const gradientStops = [
-                { offset: "0", adjustment: -45 },
-                { offset: "0.057", adjustment: -30 },
-                { offset: "0.128", adjustment: -20 },
-                { offset: "0.183", adjustment: -10 },
-                { offset: "0.625", adjustment: -10 },
-                { offset: "0.784", adjustment: -20 },
-                { offset: "0.897", adjustment: -30 },
-                { offset: "0.988", adjustment: -40 },
-                { offset: "1", adjustment: -45 }
-            ];
+                // SVG를 문자열로 변환
+                const serializer = new XMLSerializer();
+                const modifiedSvgString = serializer.serializeToString(svgElement);
+                const svgBlob = new Blob([modifiedSvgString], {type: 'image/svg+xml'});
+                const url = URL.createObjectURL(svgBlob);
 
-            // 기존 stop 요소들 제거
-            while (stops.length > 0) {
-                stops[0].remove();
-            }
+                // 수정된 SVG를 캔버스 배경으로 설정
+                fabric.loadSVGFromURL(url, function(objects, options) {
+                    const svgGroup = fabric.util.groupSVGElements(objects, options);
+                    fabricCanvas.setBackgroundImage(svgGroup, fabricCanvas.renderAll.bind(fabricCanvas), {
+                        scaleX: fabricCanvas.width / svgGroup.width,
+                        scaleY: fabricCanvas.height / svgGroup.height
+                    });
 
-            // 새로운 stop 요소들 추가
-            gradientStops.forEach(({ offset, adjustment }) => {
-                const stop = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-                stop.setAttribute("offset", offset);
-                stop.setAttribute("stop-color", adjustColor(baseColor, adjustment));
-                innerGradient.appendChild(stop);
+                    // Blob URL 해제
+                    URL.revokeObjectURL(url);
+                    fabricCanvas.renderAll();
+                });
             });
-        }
-
-        // 두 번째 그라디언트 업데이트 (무제_그라디언트_95-2)
-        const gradient2 = document.getElementById('_무제_그라디언트_95-2');
-        if (gradient2) {
-            const stops = gradient2.getElementsByTagName('stop');
-            for (let stop of stops) {
-                stop.setAttribute('stop-color', adjustColor(baseColor, -20));
-            }
-        }
     }
 
     /**
@@ -244,8 +292,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 height: canvasHeight
             });
 
+            // 현재 뷰에 따른 SVG 파일 결정
+            const svgPath = currentView.startsWith('inner') ? 'images/braceletInner.svg' : 'images/bracelet.svg';
+            
             // 배경 SVG 로드 - 클리핑 영역은 loadSVGBackground 내에서 설정됨
-            loadSVGBackground('images/bracelet.svg');
+            loadSVGBackground(svgPath);
 
             const printableAreaSpan = document.querySelector('.printable-area span');
             if (printableAreaSpan) {
@@ -261,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         document.getElementById(activeId).classList.add('active');
         
-        // 사이즈 텍스트 업데이트 - 전��� 변수 selectedSize 활용
+        // 사이즈 텍스트 업데이트 - 전역 변수 selectedSize 활용
         const sizeText = document.getElementById('sum_selectedSize');
         if (sizeText) {
             sizeText.textContent = `${selectedSize}사이즈`;
@@ -328,23 +379,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     saveCurrentCanvasState();
                     
                     // 뷰 변경 실행
-                    fabricCanvas.clear();
                     viewButtons.forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                     currentView = newView;
+
+                    // 캔버스 초기화 전에 기존 객체들 임시 저장
+                    const currentObjects = fabricCanvas.getObjects();
+                    
+                    fabricCanvas.clear();
                     updateLayerPanel(currentView);
 
-                    // SVG 이미지 업데이트
-                    switch(newView) {
-                        case 'outer-front':
-                        case 'outer-back':
-                            changeSVGImage('images/bracelet.svg');
-                            break;
-                        case 'inner-front':
-                        case 'inner-back':
-                            changeSVGImage('images/braceletInner.svg');
-                            break;
-                    }
+                    // SVG 이미지 업데이트 후 상태 복원
+                    const svgPath = newView.startsWith('inner') ? 'images/braceletInner.svg' : 'images/bracelet.svg';
+                    
+                    changeSVGImage(svgPath).then(() => {
+                        // 이전 뷰의 상태 복원
+                        if (canvasInstances[newView]) {
+                            loadCanvasState();
+                        } else {
+                            // 새로운 뷰의 경우 빈 캔버스 상태로 초기화
+                            canvasInstances[newView] = new fabric.Canvas(null);
+                        }
+                        fabricCanvas.renderAll();
+                    });
 
                     console.log('뷰 변경 작업 완료');
                 }, 'viewChange', { previousView, newView });
@@ -366,17 +423,26 @@ document.addEventListener('DOMContentLoaded', function() {
             const activeColorButton = document.querySelector('#colorPicker button.active');
             const currentColor = activeColorButton ? rgbToHex(activeColorButton.style.backgroundColor) : '#00b7e9';
 
-            // SVG를 캔버스 배경으로 로드
-            loadSVGBackground(src);
-            
-            // 사이즈와 색상 적용
-            resizeBracelet(currentSize);
-            changeBraceletColor(currentColor);
-            
-            // 저장된 canvas 상태 복원
-            loadCanvasState();
-            
-            resolve();
+            // SVG를 캔버스 배경으로 로드하고, 완료 후 캔버스 상태 복원
+            fabric.loadSVGFromURL(src, function(objects, options) {
+                const svgGroup = fabric.util.groupSVGElements(objects, options);
+                
+                fabricCanvas.setBackgroundImage(svgGroup, function() {
+                    fabricCanvas.renderAll();
+                    
+                    // 사이즈와 색상 적용
+                    resizeBracelet(currentSize);
+                    changeBraceletColor(currentColor);
+                    
+                    // 배경 이미지 로드 완료 후 저장된 canvas 상태 복원
+                    loadCanvasState();
+                    
+                    resolve();
+                }, {
+                    scaleX: fabricCanvas.width / svgGroup.width,
+                    scaleY: fabricCanvas.height / svgGroup.height
+                });
+            });
         });
     }
 
@@ -418,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateLayerIndices();
     });
 
-    // 할인��격표 툴팁
+    // 할인가격표 툴팁
     // const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
     // const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
     //     return new bootstrap.Popover(popoverTriggerEl, {
@@ -486,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </tr>
                     <tr class="packaging">
                         <td>포장단가</td>
-                        <td class="price" colspan="10">벌크포장(기본)<span>+100</span>개별포장(OPP)<span>+100</span>개별OPP+��티커<span>+250</span>개별OPP+내지<span>+200</span></td>
+                        <td class="price" colspan="10">벌크포장(기본)<span>+100</span>개별포장(OPP)<span>+100</span>개별OPP+스티커<span>+250</span>개별OPP+내지<span>+200</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -581,7 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 디자인 저장 버튼 이벤트 리스너 추가
     document.getElementById('saveButton').addEventListener('click', function() {
-        // 현재 캔버스의 SVG ���이터 가져오기
+        // 현재 캔버스의 SVG 데이터 가져오기
         const svgData = fabricCanvas.toSVG({
             viewBox: {
                 x: 0,
@@ -620,9 +686,12 @@ function saveCurrentCanvasState() {
     if (currentView && fabricCanvas) {
         const currentState = fabricCanvas.toJSON(['id', 'visible', 'lockMovementX', 
             'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 
-            'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']); 
+            'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']);
+        
+        // 현재 뷰의 상태를 저장
         canvasInstances[currentView] = new fabric.Canvas(null);
         canvasInstances[currentView].loadFromJSON(currentState, function() {
+            console.log(`Saved state for view: ${currentView}`);
         });
     }
 }
@@ -630,8 +699,6 @@ function saveCurrentCanvasState() {
 // Canvas 상태 로드 함수
 function loadCanvasState() {
     if (currentView && canvasInstances[currentView]) {
-        
-        fabricCanvas.clear();
         const savedState = canvasInstances[currentView].toJSON(['id', 'visible', 
             'lockMovementX', 'lockMovementY', 'lockRotation', 'lockScalingX', 
             'lockScalingY', 'selectable', 'evented', 'hoverCursor', 'moveCursor', 'objectType']);
@@ -641,29 +708,32 @@ function loadCanvasState() {
         layerContent.innerHTML = '';
         layerInstances[currentView] = [];
         
+        // 클리핑 패스 설정
+        const clipWidth = fabricCanvas.width * 0.85;
+        const clipHeight = fabricCanvas.height * 0.75;
+        const clipPath = new fabric.Rect({
+            left: (fabricCanvas.width - clipWidth) / 2,
+            top: (fabricCanvas.height - clipHeight) / 2,
+            width: clipWidth,
+            height: clipHeight,
+            absolutePositioned: true
+        });
+        
         // 상태 복원 후 콜백에서 레이어 생성
         fabricCanvas.loadFromJSON(savedState, function() {
-            
-            // 모든 객체의 레이어를 새로 생성
-            fabricCanvas.getObjects().forEach((obj, index) => {
-                
-                // 잠금 상태 복원
-                if (obj.lockMovementX) {
-                    obj.set({
-                        selectable: false,
-                        evented: false,
-                        hoverCursor: 'default',
-                        moveCursor: 'default'
-                    });
+            fabricCanvas.getObjects().forEach((obj) => {
+                if (!obj.isBackground) {
+                    obj.clipPath = clipPath;
                 }
                 
-                // 무조건 새로운 레이어 생성
-                const layer = createLayerItem(obj, index + 1);
+                // 레이어 생성
+                const layer = createLayerItem(obj, layerInstances[currentView].length + 1);
                 if (layer && layer.element) {
                     layerContent.appendChild(layer.element);
                 }
             });
             
+            console.log(`Loaded state for view: ${currentView}`);
             fabricCanvas.renderAll();
             updateLayerIndices();
         });
