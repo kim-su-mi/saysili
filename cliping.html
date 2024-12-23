@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Background Image with Dynamic Container</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <style>
+    #canvas-container {
+      border: 1px solid black;
+      background: no-repeat center;
+      background-size: contain;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <canvas id="canvas"></canvas>
+  </div>
+  <script>
+    const canvasContainer = document.getElementById('canvas-container');
+    const canvas = new fabric.Canvas('canvas');
+
+    fabric.loadSVGFromURL('images/bracelet.svg', function(objects, options) {
+            const svgGroup = fabric.util.groupSVGElements(objects, options);
+            
+            // SVG 그룹을 배경 이미지로 설정
+            fabricCanvas.setBackgroundImage(svgGroup, fabricCanvas.renderAll.bind(fabricCanvas), {
+                scaleX: fabricCanvas.width / svgGroup.width,
+                scaleY: fabricCanvas.height / svgGroup.height
+            });
+    });
+    // 배경 이미지 로드
+    // fabric.Image.fromURL('images/bracelet.svg', function (img) {
+    //   // 이미지 크기 가져오기
+    //   const imgWidth = img.width;
+    //   const imgHeight = img.height;
+
+    //   // 컨테이너 크기를 이미지 크기에 맞게 설정
+    //   canvasContainer.style.width = imgWidth + 'px';
+    //   canvasContainer.style.height = imgHeight + 'px';
+    //   canvasContainer.style.backgroundImage = `url('images/bracelet.svg')`;
+
+    //   // 캔버스 크기도 이미지 크기에 맞게 설정
+    //   canvas.setWidth(imgWidth);
+    //   canvas.setHeight(imgHeight);
+
+    //   // 클리핑 영역 계산 (이미지 크기의 80%)
+    //   const clipWidth = imgWidth * 0.85;
+    //   const clipHeight = imgHeight * 0.75;
+    //   const clipRect = new fabric.Rect({
+    //     left: (imgWidth - clipWidth) / 2, // 중심에 위치
+    //     top: (imgHeight - clipHeight) / 2,
+    //     width: clipWidth,
+    //     height: clipHeight,
+    //     originX: 'left',
+    //     originY: 'top',
+    //   });
+
+    //   // ClipPath 설정
+    //   canvas.clipPath = clipRect;
+
+    //   // 테스트용 객체 추가
+    //   const rect1 = new fabric.Rect({
+    //     left: imgWidth / 4,
+    //     top: imgHeight / 4,
+    //     width: 100,
+    //     height: 100,
+    //     fill: 'red',
+    //   });
+
+    //   const circle = new fabric.Circle({
+    //     left: imgWidth / 2,
+    //     top: imgHeight / 2,
+    //     radius: 50,
+    //     fill: 'blue',
+    //   });
+
+    //   canvas.add(rect1, circle);
+    // });
+  </script>
+</body>
+</html>

@@ -1,0 +1,880 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    /* justify-content: center; */
+    flex-direction: column;  /* 세로 방향으로 배치 */
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    gap: 20px;  /* 요소들 사이 간격 */
+}
+
+#container{
+    margin-top: 2%;
+    width: 800px;
+    height: 400px;
+    border: 1px solid #000;
+    position: relative;
+    /* width: fit-content; */
+}
+/* 팔찌 이미지 영역 */
+.canvas_div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    height: 80%; /* 높이 추가 */
+    justify-content: center; /* 세로 중앙 정렬 */
+}
+
+.canvas_div #bracelet {
+    /* border: 2px dotted #000; */
+    position: relative;
+    /* margin: 20px auto; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: auto 0; /* 세로 중앙 정렬을 위해 추가 */
+}
+
+.canvas_div #braceletImage {
+    display: block;
+    width: 603.153px;  /* 기본 크기(S 사이즈)로 설정 */
+    height: 87.732px;
+}
+
+/* 작업 가능 영역을 이미지위에 띄우기위해 */
+.canvas_div .printable-area {
+    position: absolute;
+}
+
+/* span 요소 스타일 추가 */
+.printable-area span {
+    position: absolute; /* 부모 요소(.printable-area) 기준으로 위치를 지정 */
+    top: 10px;
+    left: 10px;
+    font-size: 15px;
+    color: hsl(0, 100%, 50%);
+}
+
+
+/* 컬러피커와 사이즈피커 영역 스타일 */
+/* #colorPicker, #sizepicker {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+} */
+/* 컬러피커 영역 스타일 */
+
+#colorPicker {
+    display: flex;
+    flex-wrap: wrap;  /* 버튼들이 여러 줄로 나오도록 설정 */
+    gap: 5px;  /* 버튼 사이의 간격 */
+    padding: 10px;
+    /* border: 1px solid #ddd; */
+    border-radius: 5px;
+    /* background-color: white; */
+    max-width: 600px;  /* 전체 너비 제한 */
+}
+
+#colorPicker button {
+    border: 1px solid #898989;
+}
+
+/* 컬러피커 버튼 active 상태 스타일 */
+#colorPicker button.active {
+    transform: scale(1.1);
+    border: 3px solid #000;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+.color-grid {
+    align-self: flex-start; /* 왼쪽 정렬 */
+}
+/* 사이즈 버튼 기본 스타일 */
+/* #sizepicker button {
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+} */
+
+/* 사이즈 버튼 active 상태 스타일 */
+#sizepicker button.active {
+    background-color: #3756b2;
+    color: white;
+    border-color: #3756b2;
+    transform: scale(1.05);
+}
+
+/* 사이즈 버튼 호버 효과 */
+#sizepicker button:hover {
+    background-color: #f0f0f0;
+}
+
+#sizepicker button.active:hover {
+    background-color: #0b5ed7;
+}
+
+/* 뷰 버튼 스타일 */
+#viewButtons {
+    margin: 10px 0;
+}
+
+#viewButtons .btn.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+#viewButtons button:hover {
+    background-color: #f0f0f0;
+}
+#viewButtons button.active:hover {
+    background-color: #0b5ed7;
+}
+
+/* 인쇄방식, 포장방식 버튼 active 상태 스타일 */
+.radio_select_container .radio_select_btn.active {
+    background-color: #3756b2;
+    color: white;
+}
+
+/* 인쇄방식, 포장방식 버튼 호버 효과 */
+.radio_select_container .radio_select_btn:hover {
+    background-color: #f0f0f0;
+}
+
+.radio_select_container .radio_select_btn.active:hover {
+    background-color: #3756b2;
+}
+
+/* 템플릿 모달 영역 스타일 */
+/* 모달이 열렸을 때 모달위로 다른 요소 뜨는거 방지 */
+body.modal-open #viewButtons,
+body.modal-open #editButtons {
+    z-index: auto; /* 모달이 열렸을 때 다른 요소들의 z-index 초기화 */
+}
+
+.modal-content { /*모달 컨텐츠 스타일 및 크기 조정*/
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px !important;
+    z-index: 10000; /* 모달 컨텐츠의 z-index 설정 */
+    margin: 0 ; /* 기존 margin 제거 */
+    width: 100% ;
+}
+#templateModal .modal-content,
+#textModal .modal-content,
+#imageModal .modal-content {
+    max-width: 600px;
+}
+
+
+.template-grid {
+    width: 100%;
+    padding: 10px; 
+}
+
+.template-item {
+    aspect-ratio: 1; /* 정사각형 비율 설정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.template-item:hover {
+    background-color: #f5f5f5;
+}
+
+.template-item img {
+    width: 50%; /* 이미지 크기 조정 */
+    height: auto;
+    margin-bottom: 8px;
+}
+
+.template-item p {
+    margin: 0;
+    font-size: 12px;
+}
+/* 상세 템플릿 그리드 스타일 */
+.detail-template-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4x4 그리드 */
+    gap: 15px;
+    padding: 10px;
+}
+
+.detail-template-item {
+    aspect-ratio: 1;/* 정사각형 비율 유지 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.detail-template-item:hover {
+    background-color: #f5f5f5;
+}
+
+.detail-template-item img {
+    width: 60px;  /* 모든 이미지의 너비를 60px로 고정 */
+    height: 60px; /* 모든 이미지의 높이를 60px로 고정 */
+    object-fit: contain; /* 이미지 비율 유지하면서 컨테이너에 맞춤 */
+    padding: 5px;
+}
+
+/* 뒤로가기 버튼 스타일 */
+.back-btn {
+    float: right;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: none;
+    background: none;
+}
+
+.back-btn:hover {
+    color: #666;
+}
+
+/* 모달 헤더 스타일 */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+/* 페이징 처리 */
+.template-page {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3열 유지 */
+    grid-template-rows: repeat(2, 1fr); /* 2행 추가 */
+    gap: 15px;
+    width: 100%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.page-dot {
+    width: 8px;  /* 더 작은 동그라미 크기 */
+    height: 8px;  /* 더 작은 동그라미 크기 */
+    border-radius: 50%;
+    border: none;
+    background-color: #ddd;  /* 기본 색상 */
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+.page-dot:hover {
+    background-color: #b0b0b0;
+}
+.page-dot.active {
+    background-color: #666;  /* 활성화된 동그라미 색상 */
+}
+
+/**
+* 텍스트 모달 스타일    
+*/
+.color-btn {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.color-btn.selected {
+    border: 2px solid #000;
+    transform: scale(1.1);
+}
+
+.text-color-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    padding: 10px;
+}
+
+.bottom_panel_div .btn.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* 모달 기본 스타일 재정의 */
+.modal-dialog {
+    position: fixed !important; /* !important로 부트스트랩 스타일 덮어쓰기 */
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: translateY(100%);
+}
+
+/* 모달 애니메이션 */
+.modal.fade .modal-dialog {
+    transform: translateY(100%) !important;
+    transition: transform 0.3s ease-out !important;
+}
+
+.modal.show .modal-dialog {
+    transform: translateY(0) !important;
+}
+
+/* 모달 헤더 드래그 핸들 */
+.modal-header {
+    padding-top: 25px !important;
+    position: relative !important;
+}
+
+/* 모달 헤더에 드래그 표시 추가 */
+.modal-header::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background-color: #dee2e6;
+    border-radius: 2px;
+    margin: 0 auto;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 이미지 업로드 모달 스타일 */
+.modal-lg {
+    max-width: 900px; /* 모달 전체 크기도 키워줍니다 */
+}
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.image-page {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+#uploadedImages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    grid-column: 1 / -1;
+    
+}
+
+
+
+
+
+.upload-section {
+    text-align: center;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.drag-drop-zone {
+    width: 100%;
+    max-width: 800px; /* 드래그 앤 드롭 영역도 키워줍니다 */
+    aspect-ratio: 1;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.drag-drop-zone.drag-over {
+    background: #e9ecef;
+    border-color: #0d6efd;
+}
+
+.drag-drop-content {
+    text-align: center;
+    color: #6c757d;
+}
+
+.drag-drop-content p {
+    margin: 16px 0;
+    font-size: 14px;
+}
+
+#uploadedImages.has-images {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.uploaded-image-item {
+    min-height: 150px; /* 최소 높이 설정 */
+    aspect-ratio: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.uploaded-image-item:hover {
+    transform: scale(1.05);
+}
+
+.uploaded-image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 10px;
+}
+
+/* 템플릿,이미지 색상 버튼 위치 */
+.template-image-color-picker{
+    position: absolute;
+    top: 0;
+    left: 45%;
+}
+/* 상품변경 모달 설정 */
+/* #changeProductModal .modal-dialog {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    width: 70vw !important;  /* 뷰포트 너비의 70% */
+    /* max-width: 1000px !important;  최대 너비 설정 */
+/* }
+
+#changeProductModal .modal-content {
+    width: 100% !important;
+    height: 70vh !important;  /* 뷰포트 높이의 70% */
+    /* max-height: 800px !important;  /* 최대 높이 설정 */
+    /* overflow: auto !important;  /* 내용이 넘칠 경우 스크롤 */
+/* }  */ 
+/* 상품변경 모달만 다른 스타일 적용 */
+#changeProductModal.fade .modal-dialog {
+    transform: translate(-50%, -40%) !important;
+    opacity: 0;
+    transition: all 0.3s ease-out !important;
+}
+
+#changeProductModal.show .modal-dialog {
+    transform: translate(-50%, -40%) !important;
+    opacity: 1;
+}
+
+#changeProductModal .modal-dialog {
+    position: fixed !important;
+    top: 35% !important;
+    left: 50% !important;
+    width: 80vw !important;
+}
+
+#changeProductModal .modal-content {
+    width: 100% ;
+    height: 80vh ;
+}
+#changeProductModal .modal-body {
+    overflow: auto;
+}
+/* 모달 backdrop 스타일 */
+#changeProductModal.modal {
+    background-color: rgba(0, 0, 0, 0.5) ; /* 뒷배경만 반투명 처리 */
+}
+/* 인쇄가능 영역 on/off */
+.toggle-switch-wrapper {
+    margin: 10px 0;
+    text-align: center;
+  }
+  
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 40px;
+  }
+  
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #919191;
+    border-radius: 20px;
+    transition: 0.4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 32px;
+    width: 32px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+  }
+  
+  .slider .on,
+  .slider .off {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .slider .on {
+    left: 10px;
+    opacity: 0;
+  }
+  
+  .slider .off {
+    right: 10px;
+  }
+  
+  input:checked + .slider {
+    background-color: #3756b2;
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(60px);
+  }
+  
+  input:checked + .slider .on {
+    opacity: 1;
+  }
+  
+  input:checked + .slider .off {
+    opacity: 0;
+  }
+
+  /* 가격표 툴팁 스타일 */
+  .custom-tooltip {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    padding: 15px;
+    width: 40vw;  /* 최소 가로 길이 설정 */
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.custom-tooltip table {
+    width: 100%;
+    table-layout: auto;  /* 테이블 셀 크기 내용에 맞게 조정 */
+    border-collapse: collapse;
+    margin-bottom: 10px;  /* 마진 축소 */
+    transform: scale(1);  /* 기본 스케일 */
+    transform-origin: top left;  /* 변환 기준점 */
+}
+
+.custom-tooltip caption {
+    caption-side: top;  /* 캡션을 상단에 표시 */
+    font-weight: bold;
+    margin-bottom: 8px;  /* 마진 축소 */
+    font-size: 14px;  /* 글자 크기 축소 */
+    color: #3756b2;
+}
+
+.custom-tooltip th,
+.custom-tooltip td {
+    border: 1px solid #ddd;
+    padding: 6px;  /* 패딩 축소 */
+    text-align: center;
+    font-size: 12px;  /* 글자 크기 축소 */
+    white-space: nowrap;  /* 텍스트 줄바꿈 방지 */
+}
+
+.custom-tooltip th {
+    background: #f5f5f5;
+}
+
+.custom-tooltip .packaging td {
+    text-align: cneter;
+    font-size: 11px;  /* 포장단가 글자 크기 더 축소 */
+}
+.custom-tooltip .packaging td.price {
+    font-weight: bold;  /* 볼드 효과 추가 */
+    text-align: center;
+}
+
+.custom-tooltip .packaging span {
+    color: #3756b2;
+    margin: 0 10px 0 0;
+}
+
+.custom-tooltip .notes {
+    font-size: 11px;  /* 노트 글자 크기 축소 */
+    color: #666;
+    margin-top: 10px;  /* 마진 축소 */
+}
+
+.custom-tooltip .notes ul {
+    padding-left: 6px;  /* 테이블 셀의 패딩과 동일하게 설정 */
+    margin: 0 6px;      /* 좌우 마진도 동일하게 설정 */
+    flex-wrap: wrap;  /* 필요시 줄바꿈 */
+    gap: 10px;  /* 항목 간 간격 */
+}
+
+.custom-tooltip .notes li {
+    margin-bottom: 3px;
+    line-height: 1.2;  /* 줄간격 축소 */
+    flex: 1 1 auto;  /* 균등하게 공간 분배 */
+}
+@media screen and (max-width: 1390px) {
+    .custom-tooltip {
+        width: 45vw;
+        padding: 14px;
+    }
+    .custom-tooltip table {
+        font-size: 12px;
+        transform: scale(0.95);
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 5px;
+    }
+
+    .custom-tooltip caption {
+        font-size: 13px;
+    }
+
+    .custom-tooltip .packaging td {
+        font-size: 11px;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 11px;
+    }
+}
+
+/* 1100px 이하 */
+@media screen and (max-width: 1100px) {
+    .custom-tooltip {
+        width: 50vw;
+        padding: 13px;
+    }
+    .custom-tooltip table {
+        font-size: 11.5px;
+        transform: scale(0.92);
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 5px;
+    }
+
+    .custom-tooltip caption {
+        font-size: 12.5px;
+    }
+
+    .custom-tooltip .packaging td {
+        font-size: 10.5px;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 10.5px;
+    }
+}
+@media screen and (max-width: 1024px) {
+    .custom-tooltip {
+        width: 55vw;
+        padding: 12px;
+        font-size: 1.2vw;
+    }
+    .custom-tooltip table {
+        font-size: 11px;
+        transform: scale(0.9);
+    }
+
+    .custom-tooltip caption {
+        font-size: 1.4vw;
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 0.5vw;
+        font-size: 1.2vw;
+    }
+
+    .custom-tooltip .packaging td {
+        font-size: 1.1vw;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 1.1vw;
+    }
+}
+
+/* 작은 화면 (768px 이하) */
+@media screen and (max-width: 768px) {
+    .custom-tooltip {
+        width: 60vw;
+        padding: 10px;
+        font-size: 1.4vw;
+    }
+    .custom-tooltip table {
+        font-size: 10px;
+        transform: scale(0.8);
+    }
+
+    .custom-tooltip caption {
+        font-size: 1.6vw;
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 0.4vw;
+        font-size: 1.4vw;
+    }
+
+    .custom-tooltip .packaging td {
+        font-size: 1.3vw;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 1.3vw;
+    }
+
+    .custom-tooltip .notes ul {
+        gap: 0.6vw;
+    }
+}
+
+/* 매우 작은 화면 (480px 이하) */
+@media screen and (max-width: 480px) {
+    .custom-tooltip {
+        width: 70vw;
+        padding: 8px;
+        font-size: 2vw;
+    }
+    .custom-tooltip table {
+        font-size: 9px;
+        transform: scale(0.7);
+    }
+
+    .custom-tooltip caption {
+        font-size: 2.2vw;
+    }
+
+    .custom-tooltip th,
+    .custom-tooltip td {
+        padding: 0.3vw;
+        font-size: 2vw;
+        white-space: normal;  /* 작은 화면에서는 줄바꿈 허용 */
+    }
+
+
+    .custom-tooltip .packaging td {
+        font-size: 1.8vw;
+    }
+
+    .custom-tooltip .notes {
+        font-size: 1.8vw;
+    }
+
+    .custom-tooltip .notes ul {
+        gap: 0.4vw;
+    }
+}
+
+/* 오른쪽 패널 비활성화된 버튼 스타일 */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    /* background-color: #e9ecef; */
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+}
+
+/* active 상태의 버튼이 disabled일 때도 동일한 스타일 적용 */
+/* button.active:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+} */
+
+/* hover 효과 제거 */
+/* button:disabled:hover {
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    transform: none !important;
+} */
+
+.printable-area {
+    position: relative;
+    display: inline-block;
+}
+
+.printable-area::after {
+    content: '';
+    position: absolute;
+    left: 7.5%; /* (100% - 85%) / 2 */
+    top: 12.5%; /* (100% - 75%) / 2 */
+    width: 85%;
+    height: 75%;
+    border: 3px dashed #ff0000; /* 점선 테두리 추가 */
+    pointer-events: none; /* 마우스 이벤트 무시 */
+    box-sizing: border-box;
+}
