@@ -687,6 +687,20 @@ document.addEventListener('DOMContentLoaded', function() {
         URL.revokeObjectURL(downloadLink.href);
     });
 
+    // 인쇄 가능 영역 토글 버튼 이벤트 리스너
+    const onOffBtn = document.getElementById('onOffBtn');
+    const printableArea = document.querySelector('.printable-area');
+    
+    onOffBtn.addEventListener('change', function() {
+        if (this.checked) {
+            // ON 상태 - 인쇄 가능 영역 표시
+            printableArea.classList.remove('hide-print-area');
+        } else {
+            // OFF 상태 - 인쇄 가능 영역 숨김
+            printableArea.classList.add('hide-print-area');
+        }
+    });
+
 });
 // Canvas 상태 저장 함수
 function saveCurrentCanvasState() {
