@@ -309,10 +309,13 @@
             <!-- 템플릿,이미지 색상 버튼 -->
             <div class="template-image-color-picker"></div>
             <div class="printable-area">
-                <span class="area-text">인쇄 가능 영역 - </span>
                 <canvas id="activeCanvas" class="canvas-border"></canvas>
+                <div class="printable-area-text">
+                  인쇄 가능 영역 <span class="print-size"></span>
+                </div>
+                
             </div>
-            <!-- <div class="toggle-switch-wrapper">
+            <div class="toggle-switch-wrapper">
                 <label class="toggle-switch">
                     <input type="checkbox" id="onOffBtn" checked>
                     <span class="slider">
@@ -320,7 +323,7 @@
                         <span class="off">OFF</span>
                     </span>
                 </label>
-            </div> -->
+            </div>
             
           </div>
           <button type="button" id="saveButton" class="btn btn-primary">디자인 저장</button>
@@ -431,6 +434,7 @@
           </div>
           <div class="option_wrapper below">
             <h4 class="option_title">요청사항</h4>
+            <input type="text" id="requestInput" class="form-control" placeholder="요청사항을 입력해주세요">
           </div>
           <div class="popup_wrapper">
             <a id="showPricePopupBtn" href="#" class="popup_price_btn w-button" data-bs-price-tooltip="true">할인가격표 보기</a>

@@ -292,11 +292,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 height: canvasHeight
             });
 
+            // 현재 선택된 색상 버튼 찾기
+            const activeColorButton = document.querySelector('.color_selection_btn.active');
+            const currentColor = activeColorButton ? 
+                window.getComputedStyle(activeColorButton).backgroundColor :
+                '#00b7e9';
+
             // 현재 뷰에 따른 SVG 파일 결정
             const svgPath = currentView.startsWith('inner') ? 'images/braceletInner.svg' : 'images/bracelet.svg';
             
-            // 배경 SVG 로드 - 클리핑 영역은 loadSVGBackground 내에서 설정됨
+            // 배경 SVG 로드 후 현재 색상 적용
             loadSVGBackground(svgPath);
+            changeBraceletColor(rgbToHex(currentColor));
 
             const printableAreaSpan = document.querySelector('.printable-area span');
             if (printableAreaSpan) {
