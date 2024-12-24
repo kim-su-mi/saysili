@@ -652,41 +652,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 디자인 저장 버튼 이벤트 리스너 추가
-    document.getElementById('saveButton').addEventListener('click', function() {
-        // 현재 캔버스의 SVG 데이터 가져오기
-        const svgData = fabricCanvas.toSVG({
-            viewBox: {
-                x: 0,
-                y: 0,
-                width: fabricCanvas.width,
-                height: fabricCanvas.height
-            },
-            width: fabricCanvas.width,
-            height: fabricCanvas.height
-        });
-
-        // SVG 데이터를 Blob으로 변환
-        const blob = new Blob([svgData], { type: 'image/svg+xml' });
-        
-        // 다운로드 링크 생성
-        const downloadLink = document.createElement('a');
-        downloadLink.href = URL.createObjectURL(blob);
-        
-        // 현재 날짜와 시간을 파일명에 포함
-        const date = new Date();
-        const timestamp = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_${date.getHours().toString().padStart(2,'0')}${date.getMinutes().toString().padStart(2,'0')}`;
-        downloadLink.download = `bracelet_design_${timestamp}.svg`;
-        
-        // 다운로드 트리거
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-        
-        // Blob URL 해제
-        URL.revokeObjectURL(downloadLink.href);
-    });
-
     // 인쇄 가능 영역 토글 버튼 이벤트 리스너
     const onOffBtn = document.getElementById('onOffBtn');
     const printableArea = document.querySelector('.printable-area');
