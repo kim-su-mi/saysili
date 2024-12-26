@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const canvasDivWidth = canvasDiv.offsetWidth;
         
         // 기준이 되는 S사이즈의 높이를 먼저 계산
-        const baseHeight = canvasDivWidth * 0.5 * 0.13; // S사이즈 너비(50%)의 13%
+        const baseHeight = canvasDivWidth * 0.5 * 0.15; // S사이즈 너비(50%)의 13%
 
         const sizes = {
             's': { 

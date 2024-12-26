@@ -26,7 +26,6 @@ body {
     justify-content: center;
     width: 100%;
     height: 100%;
-    position: relative;
 }
 
 .canvas_div #bracelet {
@@ -135,11 +134,7 @@ body {
 }
 
 /* 템플릿 모달 영역 스타일 */
-/* 모달이 열렸을 때 모달위로 다른 요소 뜨는거 방지 */
-body.modal-open #viewButtons,
-body.modal-open #editButtons {
-    z-index: auto; /* 모달이 열렸을 때 다른 요소들의 z-index 초기화 */
-}
+
 
 .modal-content { /*모달 컨텐츠 스타일 및 크기 조정*/
     background-color: #fff;
@@ -501,7 +496,7 @@ body.modal-open #editButtons {
 /* 인쇄가능 영역 on/off */
 .toggle-switch-wrapper {
     position: absolute;
-    bottom: 0;
+    bottom: 30%;
     left: 50%;
     transform: translateX(-50%);
     margin: 10px 0;
@@ -910,10 +905,7 @@ button:disabled {
         padding: 15px;
         gap: 15px;
     }
-    /* .canvas_div #braceletImage {
-        width: 482.522px;  
-        height: 70.186px;
-    } */
+    
 
     .printable-area-text {
         font-size: 12px;
@@ -991,10 +983,9 @@ button:disabled {
         gap: 5px;
         height: 70%;
     }
-    /* .canvas_div #braceletImage {
-        width: 241.261px;  
-        height: 35.093px;
-    } */
+    .toggle-switch-wrapper {
+        bottom: 10%;
+    }
 
     .printable-area-text {
         font-size: 8px;
