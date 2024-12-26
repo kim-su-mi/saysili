@@ -33,6 +33,36 @@ document.addEventListener('DOMContentLoaded', function() {
         canvasInstances[view] = new fabric.Canvas(null);
     });
 
+    // function resizeCanvas() {
+    //     const width = window.innerWidth;
+    //     let canvasWidth, canvasHeight;
+        
+    //     if (width >= 1920) {
+    //         canvasWidth = 603.153;
+    //         canvasHeight = 87.732;
+    //     } else if (width >= 992) {
+    //         canvasWidth = 603.153;
+    //         canvasHeight = 87.732;
+    //     } else if (width >= 768) {
+    //         canvasWidth = 482.522;  // 80%
+    //         canvasHeight = 70.186;
+    //     } else if (width >= 480) {
+    //         canvasWidth = 361.892;  // 60%
+    //         canvasHeight = 52.639;
+    //     } else {
+    //         canvasWidth = 241.261;  // 40%
+    //         canvasHeight = 35.093;
+    //     }
+    
+    //     fabricCanvas.setWidth(canvasWidth);
+    //     fabricCanvas.setHeight(canvasHeight);
+    //     fabricCanvas.renderAll();
+    // }
+    
+    // // 초기 로드와 리사이즈 시 캔버스 크기 조정
+    // window.addEventListener('load', resizeCanvas);
+    // window.addEventListener('resize', resizeCanvas);
+
     // SVG를 캔버스 배경으로 로드하는 함수
     function loadSVGBackground(svgUrl) {
         // SVG 파일을 텍스트로 가져오기
@@ -262,20 +292,27 @@ document.addEventListener('DOMContentLoaded', function() {
      */
 
     function resizeBracelet(size) {
+        // canvas_div의 가로 길이를 기준으로 설정
+        const canvasDiv = document.querySelector('.canvas_div');
+        const canvasDivWidth = canvasDiv.offsetWidth;
+        
+        // 기준이 되는 S사이즈의 높이를 먼저 계산
+        const baseHeight = canvasDivWidth * 0.5 * 0.13; // S사이즈 너비(50%)의 13%
+
         const sizes = {
             's': { 
-                width: 603.153, 
-                height: 102.346,
+                widthPercent: 0.5,  // canvas_div 너비의 50%
+                height: baseHeight,  // 모든 사이즈가 동일한 높이 사용
                 printSize: '65 x 8mm'
             },
             'm': { 
-                width: 676.263, 
-                height: 102.387,
+                widthPercent: 0.55,  // canvas_div 너비의 60%
+                height: baseHeight,  // S사이즈와 동일한 높이
                 printSize: '75 x 8mm'
             },
             'l': { 
-                width: 731.095, 
-                height: 102.731,
+                widthPercent: 0.6,  // canvas_div 너비의 70%
+                height: baseHeight,  // S사이즈와 동일한 높이
                 printSize: '80 x 8mm'
             }
         };
@@ -286,9 +323,10 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedSize = size.toUpperCase();
             document.getElementById('sum_selectedSize').textContent = `${selectedSize}사이즈`;
 
-            const canvasWidth = newSize.width;
-            const canvasHeight = newSize.height;
-            
+            // canvas_div 너비에 따른 캔버스 크기 계산
+            const canvasWidth = canvasDivWidth * newSize.widthPercent;
+            const canvasHeight = newSize.height;  // 모든 사이즈가 동일한 높이 사용
+
             fabricCanvas.setWidth(canvasWidth);
             fabricCanvas.setHeight(canvasHeight);
             fabricCanvas.setDimensions({
@@ -309,6 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadSVGBackground(svgPath);
             changeBraceletColor(rgbToHex(currentColor));
 
+            // 인쇄 가능 영역 크기 표시 업데이트
             const printableAreaSpan = document.querySelector('.printable-area span');
             if (printableAreaSpan) {
                 const existingText = printableAreaSpan.textContent.split('-')[0];
@@ -316,6 +355,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }    
         }
     }
+
+    // 창 크기가 변경될 때마다 현재 선택된 사이즈로 리사이즈
+    window.addEventListener('resize', () => {
+        const activeButton = document.querySelector('#sizepicker button.active');
+        if (activeButton) {
+            const currentSize = activeButton.id.split('_')[1].toLowerCase();
+            resizeBracelet(currentSize);
+        }
+    });
+
     // 사이즈 버튼 상태 업데이트 함수
     function updateSizeButtonState(activeId) {
         ['size_S', 'size_M', 'size_L'].forEach(id => {
