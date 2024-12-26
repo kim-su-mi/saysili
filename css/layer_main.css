@@ -55,28 +55,7 @@
 /* 미디어 쿼리 추가 */
 @media screen and (max-width: 1200px) {
     .layer-panel {
-        width: 20vw;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .layer-panel {
-        width: 25vw;
-    }
-    
-    .layer-header span {
-        font-size: clamp(0.7rem, 0.9vw, 1rem);
-    }
-    
-    .layer-item {
-        font-size: clamp(0.6rem, 0.8vw, 0.9rem);
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .layer-panel {
-        width: 30vw;
-        min-width: 150px;
+        width: 15vw;
     }
 }
 

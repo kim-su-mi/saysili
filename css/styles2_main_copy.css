@@ -905,6 +905,10 @@ button:disabled {
         padding: 15px;
         gap: 15px;
     }
+
+    .layer-panel {
+        display: none !important; /* !important로 다른 display 설정보다 우선순위 부여 */
+    }
     
 
     .printable-area-text {
@@ -942,10 +946,7 @@ button:disabled {
         padding: 10px;
         gap: 10px;
     }
-    /* .canvas_div #braceletImage {
-        width: 361.892px;  
-        height: 52.639px;
-    } */
+    
 
     .printable-area-text {
         font-size: 10px;
@@ -972,6 +973,42 @@ button:disabled {
 
     input:checked + .slider:before {
         transform: translateX(50px);
+    }
+
+    /* 드래그 앤 드롭 영역 모바일 스타일 */
+    .drag-drop-zone.mobile {
+        border: none;
+        background: transparent;
+        width: 180%; 
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    .drag-drop-zone.mobile .drag-drop-content {
+        text-align: center;
+        color: #666;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .drag-drop-zone.mobile .drag-drop-content p {
+        font-size: 13px;
+        line-height: 1.4;
+        margin: 10px 0;
+    }
+
+    /* 드래그 오버 효과 제거 */
+    .drag-drop-zone.mobile.drag-over {
+        background: transparent;
+        border-color: transparent;
     }
 }
 
@@ -1022,5 +1059,9 @@ button:disabled {
         width: 90%;
         height: 80%;
         border-width: 2px;
+    }
+
+    .drag-drop-zone.mobile .drag-drop-content p {
+        font-size: 10px;
     }
 }

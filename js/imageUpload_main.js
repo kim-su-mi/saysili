@@ -8,17 +8,26 @@ function initImageUpload() {
     // 이미지 표시 상태 업데이트 함수
     function updateImageDisplay() {
         if (uploadedImagesList.length === 0) {
-            // 업로드된 이미지가 없을 때 드래그 앤 드롭 영역 표시
-            uploadedImages.innerHTML = `
+            // 모바일/태블릿 여부 확인
+            const isMobileOrTablet = window.innerWidth <= 767;
+            
+            // 화면 크기에 따라 다른 내용 표시
+            uploadedImages.innerHTML = isMobileOrTablet ? `
+                <div class="drag-drop-zone mobile">
+                    <div class="drag-drop-content">
+                        <p><strong>업로드 가능한 이미지 파일은 JPEG 또는 PNG파일이며 최대 25MB이하 입니다.</strong><br> 제품의 색상과 디자인 시안 색상은 모니터 사양이나 컬러모드(CMYK/RGB)에 따라 차이가 발생할 수 있으며 시안과 실제 제품의 인쇄 위치 및 크기의 오차가 발생할 수 있습니다. 이미지를 업로드하면 저작권에 대한 모든 권리와 책임이 있음을 인정하는 것입니다. 타인의 저작권 또는 개인정보 보호 권한을 침해하지 않음을 확인합니다.</p>
+                    </div>
+                </div>
+            ` : `
                 <div class="drag-drop-zone">
                     <div class="drag-drop-content">
-                        <img src="images/default-image.svg" alt="업로드 이미지 아이콘" style="width: 48px; height: 48px; margin-bottom: 16px;">
+                        <img alt="업로드 이미지 아이콘" style="width: 48px; height: 48px; margin-bottom: 16px;">
                         <p>드래그 앤 드롭으로 이미지 업로드</p>
                     </div>
                 </div>
             `;
-            uploadedImages.classList.remove('has-images'); // 업로드된 이미지가 없을 때 has-image라는 클래스를 요소에서 제거, 효과 : css에서 그리드 숨김으로써 업로드 유무에 따라 이미지 영역에 css적용
-            // 버튼 텍스트 변경
+            
+            uploadedImages.classList.remove('has-images');
             uploadBtn.textContent = '내 PC에서 파일 찾기';
         } else {
             // 이미지가 있을 때 그리드 표시
@@ -177,6 +186,13 @@ function initImageUpload() {
 
     // 드래그 앤 드롭 설정
     setupDragAndDrop();
+
+    // 윈도우 리사이즈 이벤트에 대한 처리 추가
+    window.addEventListener('resize', () => {
+        if (uploadedImagesList.length === 0) {
+            updateImageDisplay();
+        }
+    });
 
     // 초기 화면 표시
     updateImageDisplay();
