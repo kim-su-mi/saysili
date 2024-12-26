@@ -637,6 +637,115 @@
 //     }
 // });
 
+// document.addEventListener('DOMContentLoaded', function() {
+//     async function exportAllViewsToSVG() {
+//         const views = ['outer-front', 'outer-back', 'inner-front', 'inner-back'];
+//         const originalView = currentView;
+        
+//         // 현재 모든 뷰의 상태를 백업
+//         const viewStates = {};
+//         views.forEach(view => {
+//             if (canvasInstances[view]) {
+//                 viewStates[view] = canvasInstances[view].toJSON();
+//             }
+//         });
+        
+//         const svgContents = [];
+//         const canvasHeight = fabricCanvas.height;
+//         const canvasWidth = fabricCanvas.width;
+        
+//         for (const view of views) {
+//             await new Promise(resolve => {
+//                 currentView = view;
+//                 console.log(`Processing view: ${view}`);
+                
+//                 // 저장된 상태가 있는지 확인
+//                 const viewState = viewStates[view];
+//                 if (!viewState) {
+//                     console.log(`No state found for view: ${view}`);
+//                     svgContents.push({
+//                         defs: '',
+//                         content: ''
+//                     });
+//                     resolve();
+//                     return;
+//                 }
+
+//                 fabricCanvas.clear();
+//                 fabricCanvas.loadFromJSON(viewState, function() {
+//                     let svgData = fabricCanvas.toSVG({
+//                         suppressPreamble: true,
+//                         viewBox: {
+//                             x: 0,
+//                             y: 0,
+//                             width: fabricCanvas.width,
+//                             height: fabricCanvas.height
+//                         }
+//                     })
+//                         .replace(/<\?xml[^>]*\?>/, '')
+//                         .replace(/<!DOCTYPE[^>]*>/, '')
+//                         .replace(/<svg[^>]*>/, '')
+//                         .replace(/<\/svg>/, '')
+//                         .replace(/<desc>Created with Fabric.js[^<]*<\/desc>/, '');
+                    
+//                     const defsMatch = svgData.match(/<defs>([\s\S]*?)<\/defs>/);
+//                     const defs = defsMatch ? defsMatch[1] : '';
+//                     svgData = svgData.replace(/<defs>[\s\S]*?<\/defs>/, '');
+                    
+//                     svgContents.push({
+//                         defs: defs,
+//                         content: svgData.trim()
+//                     });
+//                     resolve();
+//                 });
+//             });
+//         }
+
+//         // 모든 defs를 하나로 통합
+//         const allDefs = svgContents.map(item => item.defs).join('\n');
+
+//         const svgDocument = `<?xml version="1.0" encoding="UTF-8"?>
+// <svg xmlns="http://www.w3.org/2000/svg" 
+//      xmlns:xlink="http://www.w3.org/1999/xlink"
+//      width="${canvasWidth}" 
+//      height="${canvasHeight * views.length}" 
+//      viewBox="0 0 ${canvasWidth} ${canvasHeight * views.length}">
+//     <defs>
+//         ${allDefs}
+//     </defs>
+//     ${svgContents.map((item, index) => `
+//     <g transform="translate(0, ${index * canvasHeight})">
+//         ${item.content}
+//     </g>`).join('\n')}
+// </svg>`;
+
+//         const blob = new Blob([svgDocument], { type: 'image/svg+xml;charset=utf-8' });
+//         const url = URL.createObjectURL(blob);
+//         const link = document.createElement('a');
+//         link.href = url;
+        
+//         const date = new Date();
+//         const timestamp = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_${date.getHours().toString().padStart(2,'0')}${date.getMinutes().toString().padStart(2,'0')}`;
+//         link.download = `bracelet_design_${timestamp}.svg`;
+        
+//         link.click();
+//         URL.revokeObjectURL(url);
+
+//         currentView = originalView;
+//         fabricCanvas.clear();
+//         fabricCanvas.loadFromJSON(JSON.parse(originalState), function() {
+//             fabricCanvas.renderAll();
+//         });
+//     }
+
+//     const saveButton = document.getElementById('saveButton');
+//     if (saveButton) {
+//         saveButton.addEventListener('click', exportAllViewsToSVG);
+//     } else {
+//         console.error('Save button not found in the document');
+//     }
+// });
+
 document.addEventListener('DOMContentLoaded', function() {
     async function exportAllViewsToSVG() {
         const views = ['outer-front', 'outer-back', 'inner-front', 'inner-back'];
@@ -652,10 +761,16 @@ document.addEventListener('DOMContentLoaded', function() {
         for (const view of views) {
             await new Promise(resolve => {
                 currentView = view;
+                console.log(`Processing view: ${view}`);
+                
                 const viewState = canvasInstances[view]?.toJSON() || { objects: [] };
+                console.log('View state:', viewState); // 디버깅용
                 
                 fabricCanvas.clear();
-                fabricCanvas.loadFromJSON(viewState, function() {
+                fabricCanvas.loadFromJSON(viewState, () => {
+                    // fabricCanvas가 완전히 로드된 후에 SVG 생성
+                    fabricCanvas.renderAll();
+                    
                     let svgData = fabricCanvas.toSVG({
                         suppressPreamble: true,
                         viewBox: {
@@ -665,11 +780,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             height: fabricCanvas.height
                         }
                     })
-                        .replace(/<\?xml[^>]*\?>/, '')
-                        .replace(/<!DOCTYPE[^>]*>/, '')
-                        .replace(/<svg[^>]*>/, '')
-                        .replace(/<\/svg>/, '')
-                        .replace(/<desc>Created with Fabric.js[^<]*<\/desc>/, '');
+                    .replace(/<\?xml[^>]*\?>/, '')
+                    .replace(/<!DOCTYPE[^>]*>/, '')
+                    .replace(/<svg[^>]*>/, '')
+                    .replace(/<\/svg>/, '')
+                    .replace(/<desc>Created with Fabric.js[^<]*<\/desc>/, '');
                     
                     const defsMatch = svgData.match(/<defs>([\s\S]*?)<\/defs>/);
                     const defs = defsMatch ? defsMatch[1] : '';
@@ -679,6 +794,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         defs: defs,
                         content: svgData.trim()
                     });
+                    
+                    // SVG 생성이 완료된 후에 resolve 호출
                     resolve();
                 });
             });

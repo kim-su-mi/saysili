@@ -282,6 +282,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const newSize = sizes[size];
         if (newSize) {
+            // 사이즈에 따른 selectedSize 업데이트
+            selectedSize = size.toUpperCase();
+            document.getElementById('sum_selectedSize').textContent = `${selectedSize}사이즈`;
+
             const canvasWidth = newSize.width;
             const canvasHeight = newSize.height;
             
@@ -319,11 +323,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         document.getElementById(activeId).classList.add('active');
         
-        // 사이즈 텍스트 업데이트 - 전역 변수 selectedSize 활용
-        const sizeText = document.getElementById('sum_selectedSize');
-        if (sizeText) {
-            sizeText.textContent = `${selectedSize}사이즈`;
-        }
     }
     
     // 초기 S 사이즈 버튼에 active 클래스 추가 및 텍스트 설정
