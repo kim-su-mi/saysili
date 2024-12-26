@@ -441,11 +441,24 @@ body {
 }
 
 /* 템플릿,이미지 색상 버튼 위치 */
-.template-image-color-picker{
-    position: absolute;
-    top: 0;
-    left: 45%;
+.template-image-color-picker {
+    margin: 20px 10px 0 10px;
 }
+.template-image-color-picker button{
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 10px;
+    border-radius: 50px;
+    max-width: 600px;
+}
+.mainpanel_wrapper.color-edit {
+    display: none;
+}
+
+.mainpanel_wrapper.color-edit.active {
+    display: block;
+}
+
 /* 상품변경 모달 설정 */
 /* #changeProductModal .modal-dialog {
     position: fixed !important;
@@ -914,10 +927,10 @@ button:disabled {
     .printable-area-text {
         font-size: 12px;
     }
-
+/* 
     .template-image-color-picker {
         left: 42%;
-    }
+    } */
 
     .toggle-switch {
         width: 90px;
@@ -952,9 +965,9 @@ button:disabled {
         font-size: 10px;
     }
 
-    .template-image-color-picker {
+    /* .template-image-color-picker {
         left: 40%;
-    }
+    } */
 
     .toggle-switch {
         width: 80px;
@@ -1030,9 +1043,9 @@ button:disabled {
         top: 12%;
     }
 
-    .template-image-color-picker {
+    /* .template-image-color-picker {
         left: 35%;
-    }
+    } */
 
     .toggle-switch {
         width: 70px;

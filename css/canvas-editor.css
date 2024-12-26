@@ -17,7 +17,7 @@
 }
 
 .mainpanel_wrapper {
-  background-color: #e7e7e7;
+  /* background-color: #e7e7e7; */
   width: 30%;
   max-width: 500px;
   height: 100%;
@@ -583,7 +583,8 @@
     position: static;
   }
 
-  .mainpanel_wrapper {
+  .mainpanel_wrapper,
+  .mainpanel_wrapper.color-edit {
     background-color: #e7e7e7;
     width: 30%;
     max-width: 600px;
@@ -1003,7 +1004,8 @@
     width: 62%;
   }
 
-  .mainpanel_wrapper {
+  .mainpanel_wrapper,
+  .mainpanel_wrapper.color-edit {
     width: 38%;
     padding-right: 10px;
   }
@@ -1165,7 +1167,8 @@
 }
 
 @media screen and (max-width: 767px) {
-  .mainpanel_wrapper {
+  .mainpanel_wrapper,
+  .mainpanel_wrapper.color-edit {
     padding-bottom: 50px;
   }
 
@@ -1373,7 +1376,8 @@
     height: 35%;
   }
 
-  .mainpanel_wrapper {
+  .mainpanel_wrapper,
+  .mainpanel_wrapper.color-edit {
     width: 100%;
     max-width: none;
     height: 65%;

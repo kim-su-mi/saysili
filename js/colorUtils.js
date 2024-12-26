@@ -57,20 +57,27 @@ function setupColorButtonEvents(fabricCanvas) {
     fabricCanvas.on('selection:updated', handleObjectSelection);
 
     // 객체 선택이 해제되었을 때
-    fabricCanvas.on('selection:cleared', function() {
-        const colorPicker = document.querySelector('.template-image-color-picker');
-        colorPicker.innerHTML = ''; // 색상 버튼 제거
-    });
+    fabricCanvas.on('selection:cleared', handleSelectionCleared);
 }
 
 // 객체 선택 했을 때 색상 버튼 생성하는 함수
 function handleObjectSelection(e) {
     const selectedObject = e.selected[0];
     const colorPicker = document.querySelector('.template-image-color-picker');
+    const colorEditPanel = document.querySelector('.mainpanel_wrapper.color-edit');
+    const mainPanel = document.querySelector('.mainpanel_wrapper:not(.color-edit)');
     
     if (selectedObject instanceof fabric.IText) {
         // 텍스트 객체가 선택된 경우
         colorPicker.innerHTML = ''; // 색상 버튼 제거
+        
+        // 색상 편집 패널 숨기기
+        if (colorEditPanel) {
+            colorEditPanel.classList.remove('active');
+        }
+        if (mainPanel) {
+            mainPanel.style.display = 'block';
+        }
         
         // 텍스트 모달 표시
         const textModal = new bootstrap.Modal(document.getElementById('textModal'));
@@ -86,7 +93,38 @@ function handleObjectSelection(e) {
     } 
     else if (selectedObject.objectType === 'image' || selectedObject.objectType === 'template') {
         // 이미지나 템플릿 객체가 선택된 경우
+        
+        // 메인 패널 숨기기
+        if (mainPanel) {
+            mainPanel.style.display = 'none';
+        }
+        
+        // 색상 편집 패널 표시
+        if (colorEditPanel) {
+            colorEditPanel.classList.add('active');
+        }
+        
+        // 색상 버튼 생성
         createColorButtons(selectedObject);
+    }
+}
+
+// 객체 선택 해제 시 처리하는 함수 추가
+function handleSelectionCleared() {
+    const colorPicker = document.querySelector('.template-image-color-picker');
+    const colorEditPanel = document.querySelector('.mainpanel_wrapper.color-edit');
+    const mainPanel = document.querySelector('.mainpanel_wrapper:not(.color-edit)');
+    
+    colorPicker.innerHTML = ''; // 색상 버튼 제거
+    
+    // 색상 편집 패널 숨기기
+    if (colorEditPanel) {
+        colorEditPanel.classList.remove('active');
+    }
+    
+    // 메인 패널 다시 표시
+    if (mainPanel) {
+        mainPanel.style.display = 'block';
     }
 }
 
