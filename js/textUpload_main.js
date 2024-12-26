@@ -10,22 +10,34 @@ async function loadFontOptions() {
     try {
         const response = await fetch('css/font.css');
         const cssText = await response.text();
-        
+
         const fontFamilyRegex = /font-family:\s*['"]([^'"]+)['"]/g;
         const fontSelect = document.getElementById('fontSelect');
-        
+
         const fonts = new Set();
         let match;
         while ((match = fontFamilyRegex.exec(cssText)) !== null) {
             fonts.add(match[1]);
         }
-        
+
+        await document.fonts.ready; // 폰트가 로드될 때까지 대기
+
         fonts.forEach(fontName => {
             const option = document.createElement('option');
             option.value = fontName;
             option.textContent = fontName;
+            option.style.fontFamily = fontName; // 스타일 적용
             fontSelect.appendChild(option);
         });
+
+        // select 엘리먼트 자체 스타일 적용
+        fontSelect.addEventListener('change', function() {
+            this.style.fontFamily = this.value;
+        });
+
+        if (fontSelect.value) {
+            fontSelect.style.fontFamily = fontSelect.value;
+        }
     } catch (error) {
         console.error('폰트 목록을 불러오는데 실패했습니다:', error);
     }
@@ -149,6 +161,7 @@ function initializeTextEvents() {
     // 텍스트 색상 버튼 생성
     createTextColorButtons();
 
+
     // 텍스트 추가 버튼 클릭 이벤트
     document.getElementById('text-add').addEventListener('click', () => {
         if (window.historyManager) {
@@ -157,12 +170,12 @@ function initializeTextEvents() {
                 
                 const initialColor = getInitialColor(fabricCanvas);
                 
-                currentText = new fabric.IText('텍^스*트我를 \n입abc력de♥하세요', {
+                currentText = new fabric.IText('텍스트', {
                     left: textLeft,
                     top: textTop,
                     fontSize: 20,
                     fill: initialColor,
-                    fontFamily: 'Arial',
+                    fontFamily: '세방고딕체',
                     editable: true,
                     textAlign: 'center',
                     charSpacing: 0,

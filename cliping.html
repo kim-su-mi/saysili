@@ -1,86 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canvas Background Image with Dynamic Container</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
-  <style>
-    #canvas-container {
-      border: 1px solid black;
-      background: no-repeat center;
-      background-size: contain;
-    }
-    canvas {
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/font.css">
+    <title>폰트 선택기</title>
+    <style>
+
+body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            font-family: sans-serif;
+        }
+
+        .custom-select {
+            position: relative;
+            width: 200px;
+        }
+
+        .select-button {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .options-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .options-list.show {
+            display: block;
+        }
+
+        .option-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .option-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* 각 옵션에 폰트 적용 */
+        [data-font="세방고딕체"] {
+            font-family: '세방고딕체';
+        }
+
+        [data-font="칠백삼체"] {
+            font-family: '칠백삼체';
+        }
+
+        [data-font="엄마까투리체"] {
+            font-family: '엄마까투리체';
+        }
+
+        #preview {
+            margin-top: 20px;
+            font-size: 18px;
+            min-height: 100px;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-  <div id="canvas-container">
-    <canvas id="canvas"></canvas>
-  </div>
-  <script>
-    const canvasContainer = document.getElementById('canvas-container');
-    const canvas = new fabric.Canvas('canvas');
+    <div class="custom-select">
+        <button class="select-button" data-font="세방고딕체">세방고딕체</button>
+        <ul class="options-list">
+            <li class="option-item" data-font="세방고딕체">세방고딕체</li>
+            <li class="option-item" data-font="칠백삼체">칠백삼체</li>
+            <li class="option-item" data-font="엄마까투리체">엄마까투리체</li>
+        </ul>
+    </div>
 
-    fabric.loadSVGFromURL('images/bracelet.svg', function(objects, options) {
-            const svgGroup = fabric.util.groupSVGElements(objects, options);
-            
-            // SVG 그룹을 배경 이미지로 설정
-            fabricCanvas.setBackgroundImage(svgGroup, fabricCanvas.renderAll.bind(fabricCanvas), {
-                scaleX: fabricCanvas.width / svgGroup.width,
-                scaleY: fabricCanvas.height / svgGroup.height
+    <div id="preview" data-font="세방고딕체">
+        선택된 폰트로 보여지는 미리보기 텍스트입니다.
+    </div>
+
+    <script>
+        const selectButton = document.querySelector('.select-button');
+        const optionsList = document.querySelector('.options-list');
+        const options = document.querySelectorAll('.option-item');
+        const preview = document.getElementById('preview');
+
+        // 드롭다운 토글
+        selectButton.addEventListener('click', () => {
+            optionsList.classList.toggle('show');
+        });
+
+        // 옵션 선택
+        options.forEach(option => {
+            option.addEventListener('click', () => {
+                const font = option.dataset.font;
+                selectButton.textContent = font;
+                selectButton.dataset.font = font;
+                preview.style.fontFamily = font;
+                preview.dataset.font = font;
+                optionsList.classList.remove('show');
             });
-    });
-    // 배경 이미지 로드
-    // fabric.Image.fromURL('images/bracelet.svg', function (img) {
-    //   // 이미지 크기 가져오기
-    //   const imgWidth = img.width;
-    //   const imgHeight = img.height;
+        });
 
-    //   // 컨테이너 크기를 이미지 크기에 맞게 설정
-    //   canvasContainer.style.width = imgWidth + 'px';
-    //   canvasContainer.style.height = imgHeight + 'px';
-    //   canvasContainer.style.backgroundImage = `url('images/bracelet.svg')`;
-
-    //   // 캔버스 크기도 이미지 크기에 맞게 설정
-    //   canvas.setWidth(imgWidth);
-    //   canvas.setHeight(imgHeight);
-
-    //   // 클리핑 영역 계산 (이미지 크기의 80%)
-    //   const clipWidth = imgWidth * 0.85;
-    //   const clipHeight = imgHeight * 0.75;
-    //   const clipRect = new fabric.Rect({
-    //     left: (imgWidth - clipWidth) / 2, // 중심에 위치
-    //     top: (imgHeight - clipHeight) / 2,
-    //     width: clipWidth,
-    //     height: clipHeight,
-    //     originX: 'left',
-    //     originY: 'top',
-    //   });
-
-    //   // ClipPath 설정
-    //   canvas.clipPath = clipRect;
-
-    //   // 테스트용 객체 추가
-    //   const rect1 = new fabric.Rect({
-    //     left: imgWidth / 4,
-    //     top: imgHeight / 4,
-    //     width: 100,
-    //     height: 100,
-    //     fill: 'red',
-    //   });
-
-    //   const circle = new fabric.Circle({
-    //     left: imgWidth / 2,
-    //     top: imgHeight / 2,
-    //     radius: 50,
-    //     fill: 'blue',
-    //   });
-
-    //   canvas.add(rect1, circle);
-    // });
-  </script>
+        // 외부 클릭시 드롭다운 닫기
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-select')) {
+                optionsList.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>

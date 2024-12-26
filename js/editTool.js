@@ -765,10 +765,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.historyManager.redoStack = [];
                 window.historyManager.updateButtonStates();
      
-                // 캔버스 초기화
-                fabricCanvas.clear();
+                // SVG 객체를 제외한 모든 객체 제거
+                const objects = fabricCanvas.getObjects();
+                objects.forEach(obj => {
+                    // SVG 객체가 아닌 경우에만 제거
+                    if (obj.objectType !== 'bracelet') {
+                        fabricCanvas.remove(obj);
+                    }
+                });
+
+                // 다른 뷰의 캔버스도 초기화
                 Object.values(canvasInstances).forEach(canvas => {
-                    if (canvas) canvas.clear();
+                    if (canvas) {
+                        const canvasObjects = canvas.getObjects();
+                        canvasObjects.forEach(obj => {
+                            if (obj.objectType !== 'bracelet') {
+                                canvas.remove(obj);
+                            }
+                        });
+                    }
                 });
      
                 // 레이어 패널 초기화
@@ -782,6 +797,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 viewButtons.forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.view === 'outer-front');
                 });
+     
                 // 초기 화면 렌더링
                 fabricCanvas.renderAll();
                 updateButtonStates();
