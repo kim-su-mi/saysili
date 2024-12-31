@@ -903,10 +903,10 @@ button:disabled {
     font-size: 14px; /* placeholder 글자 크기 */
     color: #999; /* placeholder 글자 색상 */
 }
-/* body.modal-open #viewButtons,
+body.modal-open #viewButtons,
 body.modal-open #editButtons { 
     z-index: auto; 
-} */
+}
 /* 1920px 이상 */
 /* @media screen and (min-width: 1920px) {
     .canvas_div #braceletImage {
@@ -1010,7 +1010,7 @@ body.modal-open #editButtons {
         color: #666;
         width: 100%;
         height: 100%;
-        display: flex;
+        /* display: flex; */
         flex-direction: column;
         align-items: center;
         justify-content: center;
