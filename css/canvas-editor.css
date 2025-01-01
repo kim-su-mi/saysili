@@ -564,6 +564,31 @@
   display: flex;
 }
 
+.color-edit-back-btn {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 5px 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+}
+
+.color-edit-back-btn:hover {
+    color: #000;
+}
+
+.title_product_div {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
 @media screen and (min-width: 1920px) {
   .full_div {
     flex-flow: row;

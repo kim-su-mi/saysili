@@ -66,6 +66,7 @@ function handleObjectSelection(e) {
     const colorPicker = document.querySelector('.template-image-color-picker');
     const colorEditPanel = document.querySelector('.mainpanel_wrapper.color-edit');
     const mainPanel = document.querySelector('.mainpanel_wrapper:not(.color-edit)');
+    const backBtn = document.querySelector('.color-edit-back-btn');
     
     if (selectedObject instanceof fabric.IText) {
         // 텍스트 객체가 선택된 경우
@@ -106,6 +107,25 @@ function handleObjectSelection(e) {
         
         // 색상 버튼 생성
         createColorButtons(selectedObject);
+        
+        // 뒤로가기 버튼 이벤트 리스너 추가
+        if (backBtn) {
+            backBtn.onclick = function() {
+                // 색상 편집 패널 숨기기
+                if (colorEditPanel) {
+                    colorEditPanel.classList.remove('active');
+                }
+                
+                // 메인 패널 다시 표시
+                if (mainPanel) {
+                    mainPanel.style.display = 'block';
+                }
+                
+                // 객체 선택 해제
+                fabricCanvas.discardActiveObject();
+                fabricCanvas.renderAll();
+            };
+        }
     }
 }
 
