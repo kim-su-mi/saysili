@@ -33,36 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
         canvasInstances[view] = new fabric.Canvas(null);
     });
 
-    // function resizeCanvas() {
-    //     const width = window.innerWidth;
-    //     let canvasWidth, canvasHeight;
-        
-    //     if (width >= 1920) {
-    //         canvasWidth = 603.153;
-    //         canvasHeight = 87.732;
-    //     } else if (width >= 992) {
-    //         canvasWidth = 603.153;
-    //         canvasHeight = 87.732;
-    //     } else if (width >= 768) {
-    //         canvasWidth = 482.522;  // 80%
-    //         canvasHeight = 70.186;
-    //     } else if (width >= 480) {
-    //         canvasWidth = 361.892;  // 60%
-    //         canvasHeight = 52.639;
-    //     } else {
-    //         canvasWidth = 241.261;  // 40%
-    //         canvasHeight = 35.093;
-    //     }
-    
-    //     fabricCanvas.setWidth(canvasWidth);
-    //     fabricCanvas.setHeight(canvasHeight);
-    //     fabricCanvas.renderAll();
-    // }
-    
-    // // 초기 로드와 리사이즈 시 캔버스 크기 조정
-    // window.addEventListener('load', resizeCanvas);
-    // window.addEventListener('resize', resizeCanvas);
-
     // SVG를 캔버스 배경으로 로드하는 함수
     function loadSVGBackground(svgUrl) {
         // SVG 파일을 텍스트로 가져오기
@@ -126,9 +96,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 초기 색상 (#00b7e9) 적용
         changeBraceletColor('#00b7e9');
-
-        // SVG를 캔버스 배경으로 로드
-        loadSVGBackground('images/bracelet.svg');
+        console.log('초기 색상 파란색 적용');
+        
+        // 주석 처리 또는 제거
+        // loadSVGBackground('images/bracelet.svg');
 
         // commonColors를 사용하여 색상 버튼 생성
         Object.entries({
@@ -142,9 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     const colorButton = document.createElement('button');
                     colorButton.className = 'color_selection_btn w-button';
                     colorButton.style.backgroundColor = colorObj.color;
-                    
-                    // 툴팁 추가
-                    colorButton.title = colorObj.name;
                     
                     const prefix = {
                         normal: 'col_',
@@ -197,6 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 이미지 색상 변경 함수
     function changeBraceletColor(baseColor) {
+        console.log('changeBraceletColor 함수 호출',baseColor);
         const currentSvgUrl = currentView.startsWith('inner') ? 'images/braceletInner.svg' : 'images/bracelet.svg';
         
         fetch(currentSvgUrl)
@@ -336,9 +305,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 현재 선택된 색상 버튼 찾기
             const activeColorButton = document.querySelector('.color_selection_btn.active');
-            const currentColor = activeColorButton ? 
-                window.getComputedStyle(activeColorButton).backgroundColor :
-                '#00b7e9';
+            const currentColor = activeColorButton ? window.getComputedStyle(activeColorButton).backgroundColor : '#00b7e9';
+            console.log('currentColor',currentColor);
 
             // 현재 뷰에 따른 SVG 파일 결정
             const svgPath = currentView.startsWith('inner') ? 'images/braceletInner.svg' : 'images/bracelet.svg';
@@ -346,6 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 배경 SVG 로드 후 현재 색상 적용
             loadSVGBackground(svgPath);
             changeBraceletColor(rgbToHex(currentColor));
+            console.log('changeBraceletColor 함수 호출22',rgbToHex(currentColor));
 
             // 인쇄 가능 영역 크기 표시 업데이트
             const printableAreaSpan = document.querySelector('.printable-area span');
@@ -397,21 +366,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // console.log('선택된 사이즈:', selectedSize);
         resizeBracelet('l');
     });
-
-    
-    // /*
-    // *테스트를 위한 도형 추가
-    // */
-    // fabricCanvas.add(new fabric.Circle({
-    //     radius: 20,
-    //     fill: 'red',
-    //     left: 50,
-    //     top: 20
-    // }));
-
-    
-    // // fabricCanvas.add(text);
-    // fabricCanvas.renderAll();
 
      /**
      * 팔찌 뷰 전환에 대한 js
