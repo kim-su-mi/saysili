@@ -275,12 +275,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 printSize: '65 x 8mm'
             },
             'm': { 
-                widthPercent: 0.55,  // canvas_div 너비의 60%
+                widthPercent: 0.55,  
                 height: baseHeight,  // S사이즈와 동일한 높이
                 printSize: '75 x 8mm'
             },
             'l': { 
-                widthPercent: 0.6,  // canvas_div 너비의 70%
+                widthPercent: 0.6,  
                 height: baseHeight,  // S사이즈와 동일한 높이
                 printSize: '80 x 8mm'
             }
@@ -303,18 +303,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 height: canvasHeight
             });
 
-            // 현재 선택된 색상 버튼 찾기
+            // 현재 선택된 색상 가져오기 (RGB 형식을 HEX로 변환)
             const activeColorButton = document.querySelector('.color_selection_btn.active');
-            const currentColor = activeColorButton ? window.getComputedStyle(activeColorButton).backgroundColor : '#00b7e9';
-            console.log('currentColor',currentColor);
+            let currentColor;
+            if (activeColorButton) {
+                const computedStyle = window.getComputedStyle(activeColorButton);
+                currentColor = rgbToHex(computedStyle.backgroundColor);
+            } else {
+                currentColor = '#00b7e9'; // 기본 색상
+            }
 
             // 현재 뷰에 따른 SVG 파일 결정
             const svgPath = currentView.startsWith('inner') ? 'images/braceletInner.svg' : 'images/bracelet.svg';
             
             // 배경 SVG 로드 후 현재 색상 적용
             loadSVGBackground(svgPath);
-            changeBraceletColor(rgbToHex(currentColor));
-            console.log('changeBraceletColor 함수 호출22',rgbToHex(currentColor));
+            changeBraceletColor(currentColor);
 
             // 인쇄 가능 영역 크기 표시 업데이트
             const printableAreaSpan = document.querySelector('.printable-area span');
@@ -326,12 +330,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 창 크기가 변경될 때마다 현재 선택된 사이즈로 리사이즈
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-        const activeButton = document.querySelector('#sizepicker button.active');
-        if (activeButton) {
-            const currentSize = activeButton.id.split('_')[1].toLowerCase();
-            resizeBracelet(currentSize);
-        }
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            const activeButton = document.querySelector('#sizepicker button.active');
+            if (activeButton) {
+                const currentSize = activeButton.id.split('_')[1].toLowerCase();
+                resizeBracelet(currentSize);
+            }
+        }, 50); // 250ms 딜레이    
     });
 
     // 사이즈 버튼 상태 업데이트 함수

@@ -19,9 +19,9 @@ function initImageUpload() {
                     </div>
                 </div>
             ` : `
-                <div class="drag-drop-zone">
+                <div class="drag-drop-zone pc">
                     <div class="drag-drop-content">
-                        <img alt="업로드 이미지 아이콘" style="width: 48px; height: 48px; margin-bottom: 16px;">
+                        <img alt="업로드 이미지 아이콘" src="images/uploadImg.png" style="width: 48px; height: 48px; margin-bottom: 16px;">
                         <p>드래그 앤 드롭으로 이미지 업로드</p>
                     </div>
                 </div>

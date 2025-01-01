@@ -108,9 +108,12 @@
 }
 
 .canvas_div {
-  /* background-color: #e7e7e7; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  height: 100%;
+  height: 90%;
   position: absolute;
   inset: 0%;
 }
@@ -563,32 +566,30 @@
   align-items: center;
   display: flex;
 }
-
 .color-edit-back-btn {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 5px 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    color: #666;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 5px 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
 }
 
 .color-edit-back-btn:hover {
-    color: #000;
+  color: #000;
 }
 
 .title_product_div {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
-
 @media screen and (min-width: 1920px) {
   .full_div {
     flex-flow: row;
@@ -862,7 +863,6 @@
   }
 
   .radio_select_btn {
-    /* background-color: #6481b8; */
     width: 55px;
     height: auto;
     padding-top: 7px;
